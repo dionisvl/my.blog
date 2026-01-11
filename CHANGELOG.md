@@ -8,6 +8,9 @@
 
 ### 2026-01-11
 
+- **Laravel Octane with FrankenPHP worker mode** - 8x performance boost
+    - Worker mode with max_requests=1000 for memory leak protection
+    - OPcache JIT enabled (128MB buffer)
 - Migrated from nginx+php-fpm to FrankenPHP
 - Laravel 12.46.0 upgrade
 - Service renamed: php-fpm → laravel

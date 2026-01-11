@@ -16,6 +16,7 @@ services:
       - app-network
 
   laravel:
+    command: php artisan octane:frankenphp --host=0.0.0.0 --port=80 --max-requests=1 --workers=1
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.laravel.loadbalancer.server.port=80"

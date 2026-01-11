@@ -19,6 +19,7 @@
         "jenssegers/agent": "^2.6",
       "laravel/framework": "^12.0",
         "laravel/helpers": "^1.2",
+      "laravel/octane": "^2.13",
       "laravel/telescope": "^5.3",
         "laravel/tinker": "^2.0",
         "maatwebsite/excel": "^3.1",

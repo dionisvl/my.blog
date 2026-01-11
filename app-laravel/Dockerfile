@@ -81,3 +81,5 @@ WORKDIR /app
 COPY Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80 443 443/udp
+
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=80", "--max-requests=1000"]
