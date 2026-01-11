@@ -47,7 +47,7 @@ services:
       - "traefik.tcp.routers.ws-phpqa.service=ws-phpqa-service"
       - "traefik.tcp.services.ws-phpqa-service.loadbalancer.server.port=80"
 
-  laravel:
+  php-fpm:
     labels:
       - "traefik.enable=true"
 
@@ -60,23 +60,23 @@ services:
       - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.permanent=true"
 
       # HTTP
-      - "traefik.http.routers.laravel-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
-      - "traefik.http.routers.laravel-http.entrypoints=web"
-      - "traefik.http.routers.laravel-http.service=laravel"
-      - "traefik.http.routers.laravel-http.middlewares=redirect-old-domain,redirect-old-domain-www"
+      - "traefik.http.routers.phpqa-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      - "traefik.http.routers.phpqa-http.entrypoints=web"
+      - "traefik.http.routers.phpqa-http.service=phpqa"
+      - "traefik.http.routers.phpqa-http.middlewares=redirect-old-domain,redirect-old-domain-www"
 
       # HTTPS
-      - "traefik.http.routers.laravel.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
-      - "traefik.http.routers.laravel.entrypoints=websecure"
-      - "traefik.http.routers.laravel.tls.certresolver=myresolver"
-      - "traefik.http.routers.laravel.middlewares=redirect-old-domain,redirect-old-domain-www,laravel-compress"
+      - "traefik.http.routers.phpqa.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      - "traefik.http.routers.phpqa.entrypoints=websecure"
+      - "traefik.http.routers.phpqa.tls.certresolver=myresolver"
+      - "traefik.http.routers.phpqa.middlewares=redirect-old-domain,redirect-old-domain-www,php-compress"
 
-      - "traefik.http.routers.laravel.service=laravel"
-      - "traefik.http.services.laravel.loadbalancer.server.port=80"
+      - "traefik.http.routers.phpqa.service=phpqa"
+      - "traefik.http.services.phpqa.loadbalancer.server.port=80"
 
       # Compress
-      - "traefik.http.middlewares.laravel-compress.compress=true"
-      - "traefik.http.middlewares.laravel-compress.compress.includedcontenttypes=text/html,text/plain,text/css,application/javascript,application/json"
+      - "traefik.http.middlewares.php-compress.compress=true"
+      - "traefik.http.middlewares.php-compress.compress.includedcontenttypes=text/html,text/plain,text/css,application/javascript,application/json"
 
     networks:
       - app-network

@@ -6,6 +6,14 @@
 - Saving cookies in local storage
 - Ajax full-text search
 
+### 2026-01-11
+
+- Migrated from nginx+php-fpm to FrankenPHP
+- Laravel 12.46.0 upgrade
+- Service renamed: php-fpm → laravel
+- Simplified Docker stack (1 process instead of 3)
+- Fixed security vulnerabilities
+
 ### 2025-01-06
 
 - Laravel 11 upgrade with Rector modernization

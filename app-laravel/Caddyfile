@@ -1,0 +1,33 @@
+{
+    frankenphp
+
+# admin off
+}
+
+:80 {
+# Root directory for Laravel public folder
+    root * /app/public
+
+    encode zstd br gzip
+
+# PHP handler with Laravel routing
+    php_server {
+                   try_files {path} index.php
+               }
+
+    header {
+           # Disable FLoC tracking
+               -Permissions-Policy
+           # XSS Protection
+               X-Content-Type-Options "nosniff"
+               X-Frame-Options "SAMEORIGIN"
+               Referrer-Policy "no-referrer-when-downgrade"
+           }
+
+# Logging (optional, for debugging)
+    log {
+            output stdout
+            format console
+            level INFO
+        }
+}

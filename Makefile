@@ -5,8 +5,10 @@ init: docker-down-clear \
 	npm-i npx-mix \
 	migrate
 
-up:
-	docker compose up -d
+up-dev:
+	docker compose -f compose.yml -f compose.override.dev.yaml up -d
+up-prod:
+	docker compose -f compose.yml -f compose.override.prod.yaml up -d
 rebuild:
 	docker compose down -t 0 && docker compose up --build
 down:
@@ -18,15 +20,15 @@ docker-down-clear:
 	docker compose down -v --remove-orphans
 
 composer-install:
-	docker compose exec php-fpm composer install
+	docker compose exec laravel composer install
 
 migrate:
-	docker compose exec php-fpm php artisan migrate
+	docker compose exec laravel php artisan migrate
 
 bash:
-	docker compose exec php-fpm /bin/bash
+	docker compose exec laravel /bin/bash
 sh:
-	docker compose exec php-fpm /bin/sh
+	docker compose exec laravel /bin/sh
 
 npm-i:
 	cd app-laravel/api-laravel
@@ -55,31 +57,31 @@ a:
 	sudo chmod 777 -R ${APP_STORAGE_LOCATION}
 
 routes:
-	docker compose exec php-fpm php artisan route:list
+	docker compose exec laravel php artisan route:list
 
 # Testing commands
 test:
-	docker compose exec php-fpm ./vendor/bin/phpunit
+	docker compose exec laravel ./vendor/bin/phpunit
 
 test-filter:
-	docker compose exec php-fpm ./vendor/bin/phpunit --filter $(FILTER)
+	docker compose exec laravel ./vendor/bin/phpunit --filter $(FILTER)
 
 test-coverage:
-	docker compose exec php-fpm ./vendor/bin/phpunit --coverage-html coverage
+	docker compose exec laravel ./vendor/bin/phpunit --coverage-html coverage
 
 # Code quality commands
 rector:
-	docker compose exec php-fpm ./vendor/bin/rector process --dry-run
+	docker compose exec laravel ./vendor/bin/rector process --dry-run
 
 rector-fix:
-	docker compose exec php-fpm ./vendor/bin/rector process
+	docker compose exec laravel ./vendor/bin/rector process
 
 phpstan:
 	@if [ "$$(git rev-parse --abbrev-ref HEAD)" = "master" ]; then \
-		git diff --name-only --diff-filter=ACM HEAD~1 | grep "\.php$$" | xargs -r docker compose exec -T php-fpm vendor/bin/phpstan analyse --memory-limit=2048M; \
+		git diff --name-only --diff-filter=ACM HEAD~1 | grep "\.php$$" | xargs -r docker compose exec -T laravel vendor/bin/phpstan analyse --memory-limit=2048M; \
 	else \
-		git diff --name-only --diff-filter=ACM origin/master | grep "\.php$$" | xargs -r docker compose exec -T php-fpm vendor/bin/phpstan analyse --memory-limit=2048M; \
+		git diff --name-only --diff-filter=ACM origin/master | grep "\.php$$" | xargs -r docker compose exec -T laravel vendor/bin/phpstan analyse --memory-limit=2048M; \
 	fi
 
 cs-fix:
-	docker compose exec php-fpm ./vendor/bin/php-cs-fixer fix
+	docker compose exec laravel ./vendor/bin/php-cs-fixer fix

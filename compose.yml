@@ -17,7 +17,7 @@ services:
     networks:
       - app-network
 
-  php-fpm:
+  laravel:
     build:
       context: ./app-laravel
       dockerfile: ./Dockerfile
@@ -30,11 +30,15 @@ services:
       DB_USER: ${MYSQL_ROOT_USER}
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       DB_NAME: ${MYSQL_DATABASE}
+      SERVER_NAME: ":80"
     expose:
       - "80"
+      - "443"
+      - "443/udp"
     volumes:
       - ./app-laravel/api-laravel:/app:rw
       - ./app-laravel/storage/public:/app/public/storage:rw
+      - ./app-laravel/Caddyfile:/etc/caddy/Caddyfile:ro
     networks:
       - app-network
     restart: unless-stopped
