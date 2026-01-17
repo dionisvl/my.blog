@@ -21,9 +21,22 @@ final class HomeController extends AbstractController
     }
 
     #[Route('/', name: 'home')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        return $this->render('home/index.html.twig', $this->homePageQuery->getIndexViewData());
+        $page = max(1, (int)$request->query->get('page', 1));
+        $perPage = 10;
+        $data = $this->homePageQuery->getIndexViewData();
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $paginated = $this->homePageQuery->findLatestPostsPaginated($page, $perPage);
+        } else {
+            $paginated = $this->homePageQuery->findPublishedLatestPaginated($page, $perPage);
+        }
+
+        $data['posts'] = $paginated['items'];
+        $data['pagination'] = $this->buildPagination($page, $perPage, $paginated['total']);
+
+        return $this->render('home/index.html.twig', $data);
     }
 
     #[Route('/post/{slug}', name: 'post_show')]
@@ -62,5 +75,82 @@ final class HomeController extends AbstractController
     public function contacts(): Response
     {
         return $this->render('home/contacts.html.twig');
+    }
+
+    #[Route('/search', name: 'search', methods: ['GET', 'POST'])]
+    public function search(Request $request): Response
+    {
+        $query = trim((string)$request->get('q', ''));
+        $posts = [];
+
+        if ($query !== '') {
+            $posts = $this->homePageQuery->searchPosts($query, 20, $this->isGranted('ROLE_ADMIN'));
+        }
+
+        $data = $this->homePageQuery->getIndexViewData();
+        $data['details'] = $posts;
+        $data['query'] = $query;
+
+        return $this->render('home/search.html.twig', $data);
+    }
+
+    #[Route('/tag/{slug}', name: 'tag_show')]
+    public function tag(string $slug, Request $request): Response
+    {
+        $tag = $this->homePageQuery->findTagBySlug($slug);
+
+        if (!$tag) {
+            throw $this->createNotFoundException('Tag not found');
+        }
+
+        $page = max(1, (int)$request->query->get('page', 1));
+        $perPage = 10;
+        $paginated = $this->homePageQuery->findPublishedByTagSlugPaginated($slug, $page, $perPage);
+
+        $data = $this->homePageQuery->getIndexViewData();
+        $data['posts'] = $paginated['items'];
+        $data['tag'] = $tag;
+        $data['pagination'] = $this->buildPagination($page, $perPage, $paginated['total']);
+
+        return $this->render('home/list.html.twig', $data);
+    }
+
+    #[Route('/category/{slug}', name: 'category_show')]
+    public function category(string $slug, Request $request): Response
+    {
+        $category = $this->homePageQuery->findCategoryBySlug($slug);
+
+        if (!$category) {
+            throw $this->createNotFoundException('Category not found');
+        }
+
+        $page = max(1, (int)$request->query->get('page', 1));
+        $perPage = 10;
+        $paginated = $this->homePageQuery->findPublishedByCategorySlugPaginated($slug, $page, $perPage);
+
+        $data = $this->homePageQuery->getIndexViewData();
+        $data['posts'] = $paginated['items'];
+        $data['category'] = $category;
+        $data['pagination'] = $this->buildPagination($page, $perPage, $paginated['total']);
+
+        return $this->render('home/list.html.twig', $data);
+    }
+
+    /**
+     * @return array{currentPage: int, totalPages: int, hasPrev: bool, hasNext: bool, prevPage: int, nextPage: int}
+     */
+    private function buildPagination(int $page, int $perPage, int $total): array
+    {
+        $totalPages = max(1, (int)ceil($total / $perPage));
+        $currentPage = min($page, $totalPages);
+
+        return [
+            'currentPage' => $currentPage,
+            'totalPages' => $totalPages,
+            'hasPrev' => $currentPage > 1,
+            'hasNext' => $currentPage < $totalPages,
+            'prevPage' => max(1, $currentPage - 1),
+            'nextPage' => min($totalPages, $currentPage + 1),
+        ];
     }
 }

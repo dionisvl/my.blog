@@ -3,8 +3,18 @@
 ## Unreleased
 
 - Turbo pages export via API instead of RSS
-- Saving cookies in local storage
 - Ajax full-text search
+
+### 2026-01-17
+
+- **Symfony 7.4 parallel clone application**
+    - Homepage, post detail, contacts pages
+    - Likes system (cookie-based, no IP tracking for privacy)
+    - Comments system with anti-bot protection
+    - Admin panel (posts CRUD with image upload)
+    - Modern Symfony 7.4 features: Attributes, DTOs, Repositories, Managers
+    - Symfony: expanded admin (catalog, orders, frontparts, etc.), frontend search + pagination
+    - Prod routing: Symfony serves prod, Laravel disabled
 
 ### 2026-01-11
 

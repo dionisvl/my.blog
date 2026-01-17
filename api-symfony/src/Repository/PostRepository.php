@@ -62,6 +62,46 @@ final class PostRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return array{items: list<Post>, total: int}
+     */
+    public function findPublishedLatestPaginated(int $page, int $perPage): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->where('p.status = :status')
+            ->setParameter('status', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+
+        return [
+            'items' => iterator_to_array($paginator),
+            'total' => $paginator->count(),
+        ];
+    }
+
+    /**
+     * @return array{items: list<Post>, total: int}
+     */
+    public function findLatestPaginated(int $page, int $perPage): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+
+        return [
+            'items' => iterator_to_array($paginator),
+            'total' => $paginator->count(),
+        ];
+    }
+
+    /**
      * @return list<Post>
      */
     public function findFeatured(int $limit = 3): array
@@ -108,5 +148,116 @@ final class PostRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
 
         return $post;
+    }
+
+    /**
+     * @return list<Post>
+     */
+    public function findPublishedByCategorySlug(string $slug): array
+    {
+        /** @var list<Post> $rows */
+        $rows = $this->createQueryBuilder('p')
+            ->innerJoin('p.category', 'c')
+            ->where('c.slug = :slug')
+            ->andWhere('p.status = :status')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $rows;
+    }
+
+    /**
+     * @return array{items: list<Post>, total: int}
+     */
+    public function findPublishedByCategorySlugPaginated(string $slug, int $page, int $perPage): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->innerJoin('p.category', 'c')
+            ->where('c.slug = :slug')
+            ->andWhere('p.status = :status')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+
+        return [
+            'items' => iterator_to_array($paginator),
+            'total' => $paginator->count(),
+        ];
+    }
+
+    /**
+     * @return list<Post>
+     */
+    public function findPublishedByTagSlug(string $slug): array
+    {
+        /** @var list<Post> $rows */
+        $rows = $this->createQueryBuilder('p')
+            ->innerJoin('p.tags', 't')
+            ->where('t.slug = :slug')
+            ->andWhere('p.status = :status')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return $rows;
+    }
+
+    /**
+     * @return list<Post>
+     */
+    public function searchPosts(string $query, int $limit, bool $includeDrafts = false): array
+    {
+        $builder = $this->createQueryBuilder('p')
+            ->where('p.title LIKE :query')
+            ->orWhere('p.description LIKE :query')
+            ->orWhere('p.content LIKE :query')
+            ->setParameter('query', '%' . $query . '%')
+            ->orderBy('p.createdAt', 'DESC')
+            ->setMaxResults($limit);
+
+        if (!$includeDrafts) {
+            $builder->andWhere('p.status = :status')
+                ->setParameter('status', true);
+        }
+
+        /** @var list<Post> $rows */
+        $rows = $builder->getQuery()->getResult();
+
+        return $rows;
+    }
+
+    /**
+     * @return array{items: list<Post>, total: int}
+     */
+    public function findPublishedByTagSlugPaginated(string $slug, int $page, int $perPage): array
+    {
+        $query = $this->createQueryBuilder('p')
+            ->select('DISTINCT p')
+            ->innerJoin('p.tags', 't')
+            ->where('t.slug = :slug')
+            ->andWhere('p.status = :status')
+            ->setParameter('slug', $slug)
+            ->setParameter('status', true)
+            ->orderBy('p.createdAt', 'DESC')
+            ->setFirstResult(($page - 1) * $perPage)
+            ->setMaxResults($perPage)
+            ->getQuery();
+
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query, true);
+
+        return [
+            'items' => iterator_to_array($paginator),
+            'total' => $paginator->count(),
+        ];
     }
 }

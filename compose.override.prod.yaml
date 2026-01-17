@@ -55,8 +55,6 @@ services:
       - ./app-laravel/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
     labels:
       - "traefik.enable=false"
-      - "traefik.http.middlewares.laravel-compress.compress=true"
-      - "traefik.http.middlewares.laravel-compress.compress.includedcontenttypes=text/html,text/plain,text/css,application/javascript,application/json"
 
     networks:
       - app-network
@@ -103,8 +101,9 @@ services:
       - app-network
 
   symfony:
-    build:
-      target: prod
+    image: 45.9.73.190:5000/phpqa-api:latest
+    #build:
+    #  target: prod
     labels:
       - "traefik.enable=true"
 
@@ -126,7 +125,7 @@ services:
       - "traefik.http.routers.symfony.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
       - "traefik.http.routers.symfony.entrypoints=websecure"
       - "traefik.http.routers.symfony.tls.certresolver=myresolver"
-      - "traefik.http.routers.symfony.middlewares=redirect-old-domain,redirect-old-domain-www,laravel-compress"
+      - "traefik.http.routers.symfony.middlewares=redirect-old-domain,redirect-old-domain-www"
 
       - "traefik.http.routers.symfony.service=symfony"
       - "traefik.http.services.symfony.loadbalancer.server.port=80"

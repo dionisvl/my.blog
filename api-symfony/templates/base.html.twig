@@ -48,6 +48,7 @@
         <div id="navbarMenu"
              class="hidden md:flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 absolute sm:static top-full left-0 right-0 bg-gray-800 sm:bg-transparent p-4 sm:p-0 shadow sm:shadow-none text-center mx-3">
             <a class="text-gray-300 hover:text-blue-400 font-medium" href="/">Homepage</a>
+            <a class="text-gray-300 hover:text-blue-400 font-medium" href="{{ path('search') }}">Search</a>
             <a class="text-gray-300 hover:text-blue-400 font-medium" href="/contacts/">Contacts</a>
 
             {% if app.user %}
@@ -59,6 +60,20 @@
             {% else %}
                 <a class="text-gray-300 hover:text-blue-400 font-medium" href="{{ path('app_login') }}">Login</a>
             {% endif %}
+
+            <form class="relative w-full md:w-auto" role="search" method="POST" action="{{ path('search') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('search') }}">
+                <input class="pl-8 pr-4 py-1 border border-gray-600 bg-gray-700 text-gray-100 rounded-full text-sm
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                       type="text" placeholder="Search..." name="q">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="16" height="16"
+                     class="h-4 w-4 absolute left-2.5 top-2 text-gray-400"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </form>
         </div>
     </div>
 

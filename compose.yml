@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.2.5
+    image: traefik:v3.6.1
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -69,7 +69,7 @@ services:
       - "443/udp"
     volumes:
       - ./api-symfony:/app:rw
-      - ./app-laravel/storage/public:/app/public/storage:rw
+      - ./api-symfony/public/storage:/app/public/storage:rw
       - ./api-symfony/Caddyfile:/etc/caddy/Caddyfile:ro
     labels:
       - "traefik.enable=true"
