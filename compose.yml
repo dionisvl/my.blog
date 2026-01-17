@@ -52,6 +52,7 @@ services:
     build:
       context: ./api-symfony
       dockerfile: ./Dockerfile
+      target: dev
     env_file:
       - path: ./.env
         required: true

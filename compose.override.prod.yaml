@@ -103,6 +103,8 @@ services:
       - app-network
 
   symfony:
+    build:
+      target: prod
     labels:
       - "traefik.enable=true"
 
