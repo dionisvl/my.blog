@@ -22,8 +22,15 @@ docker-down-clear:
 composer-install:
 	docker compose exec laravel composer install
 
+db-drop:
+	docker compose exec symfony bin/console doctrine:schema:drop --force --full-database
+
 migrate:
 	docker compose exec laravel php artisan migrate
+
+migrates:
+	docker compose exec symfony bin/console doctrine:migrations:migrate --no-interaction
+
 
 bash:
 	docker compose exec laravel /bin/bash
@@ -62,6 +69,9 @@ routes:
 # Testing commands
 test:
 	docker compose exec laravel ./vendor/bin/phpunit
+
+test-symfony:
+	docker compose exec -e APP_ENV=test -e APP_DEBUG=1 symfony ./vendor/bin/phpunit
 
 test-filter:
 	docker compose exec laravel ./vendor/bin/phpunit --filter $(FILTER)

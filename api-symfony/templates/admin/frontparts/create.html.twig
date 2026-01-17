@@ -1,0 +1,55 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Add Front Part{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>Add Component</h1>
+        </section>
+
+        <section class="content">
+            <form method="POST" action="{{ path('admin_frontparts_store') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('frontpart_form') }}">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Create Component</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="">
+
+                                <label for="slug">Slug</label>
+                                <input type="text" class="form-control" id="slug" name="slug" value="">
+
+                                <label for="category_name">Category</label>
+                                <input type="text" class="form-control" id="category_name" name="category_name"
+                                       value="">
+
+                                <label for="type">Type (JS/CSS)</label>
+                                <input type="text" class="form-control" id="type" name="type" value="">
+
+                                <label for="preview_text">Preview</label>
+                                <textarea name="preview_text" id="preview_text" cols="30" rows="4"
+                                          class="form-control"></textarea>
+
+                                <label for="detail_text">Content</label>
+                                <textarea name="detail_text" id="detail_text" cols="30" rows="4"
+                                          class="form-control"></textarea>
+
+                                <label for="status">Status</label>
+                                <input type="text" class="form-control" id="status" name="status" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a href="{{ path('admin_frontparts_index') }}" class="btn btn-default">Back</a>
+                        <button class="btn btn-success pull-right">Add</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

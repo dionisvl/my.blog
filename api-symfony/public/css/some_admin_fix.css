@@ -1,0 +1,82 @@
+#cke_1_contents {
+    height: 800px !important;
+}
+
+table.table form {
+    display: inline-block;
+}
+
+button.delete {
+    background: transparent;
+    border: none;
+    color: #337ab7;
+    padding: 0;
+}
+
+
+.ql-showHtml:after {
+    content: "[source]";
+}
+
+/* Text contrast improvements */
+body,
+.content-wrapper,
+.box,
+.box-body,
+.table {
+    color: #333 !important;
+}
+
+.table td,
+.table th {
+    color: #333 !important;
+}
+
+.box-title {
+    color: #333 !important;
+}
+
+.content-header h1,
+.content-header h1 small {
+    color: #333 !important;
+}
+
+.form-control {
+    color: #555 !important;
+}
+
+.breadcrumb > li {
+    color: #333 !important;
+}
+
+.breadcrumb > li a {
+    color: #337ab7 !important;
+}
+
+.breadcrumb > .active {
+    color: #777 !important;
+}
+
+label {
+    color: #333 !important;
+    font-weight: 600;
+}
+
+.help-block {
+    color: #737373 !important;
+}
+
+.sidebar-menu > li > a {
+    color: #b8c7ce !important;
+}
+
+.navbar-nav > li > a {
+    color: #fff !important;
+}
+
+.user-panel .info,
+.user-panel .info > p,
+.user-panel .info > a {
+    color: #fff !important;
+}
+

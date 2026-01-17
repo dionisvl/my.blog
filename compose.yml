@@ -4,6 +4,7 @@ services:
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
       - "--tracing=true"
       - "--tracing.serviceName=traefik"
       - "--metrics.prometheus=true"
@@ -11,6 +12,8 @@ services:
       - "--accesslog=true"
       - "--accesslog.filepath=/var/log/traefik/access.log"
       - "--accesslog.format=json"
+    ports:
+      - "80:80"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/var/log/traefik:/var/log/traefik"
@@ -39,6 +42,38 @@ services:
       - ./app-laravel/api-laravel:/app:rw
       - ./app-laravel/storage/public:/app/public/storage:rw
       - ./app-laravel/Caddyfile:/etc/caddy/Caddyfile:ro
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      - mysql
+
+  symfony:
+    build:
+      context: ./api-symfony
+      dockerfile: ./Dockerfile
+    env_file:
+      - path: ./.env
+        required: true
+    environment:
+      PHP_IDE_CONFIG: serverName=${SERVER_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${MYSQL_ROOT_USER}
+      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      SERVER_NAME: ":80"
+    expose:
+      - "80"
+      - "443"
+      - "443/udp"
+    volumes:
+      - ./api-symfony:/app:rw
+      - ./app-laravel/storage/public:/app/public/storage:rw
+      - ./api-symfony/Caddyfile:/etc/caddy/Caddyfile:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.symfony.rule=Host(`phpqas.local`)"
+      - "traefik.http.services.symfony.loadbalancer.server.port=80"
     networks:
       - app-network
     restart: unless-stopped

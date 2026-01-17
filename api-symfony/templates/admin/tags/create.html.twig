@@ -1,0 +1,37 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Create Tag{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Add Tag
+                <small>create a new tag</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <div class="box">
+                <form method="POST" action="{{ path('admin_tags_store') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('tag_create') }}">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Create Tag</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a href="{{ path('admin_tags_index') }}" class="btn btn-default">Back</a>
+                        <button type="submit" class="btn btn-success pull-right">Add</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Create New Post{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Add New Post
+                <small>create a new blog post</small>
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <form method="POST" action="{{ path('admin_posts_store') }}" enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="{{ csrf_token('post_form') }}">
+
+                <!-- Default box -->
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Adding Post</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" placeholder="" name="title" value="">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="image">Featured Image</label>
+                                <input type="file" id="image" name="image">
+                                <p class="help-block">Upload post thumbnail image</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select name="category_id" class="form-control select2">
+                                    <option value="">Select Category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Tags</label>
+                                <select name="tags[]" class="form-control select2" multiple="multiple"
+                                        data-placeholder="Select Tags">
+                                    {% for tag in tags %}
+                                        <option value="{{ tag.id }}">{{ tag.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="form-group">
+                                <label>Date:</label>
+                                <input type="date" class="form-control" name="date" value="{{ "now"|date("Y-m-d") }}">
+                            </div>
+
+                            <!-- checkbox -->
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" class="minimal" name="is_featured">
+                                </label>
+                                <label>
+                                    Featured
+                                </label>
+                            </div>
+
+                            <!-- checkbox -->
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" class="minimal" name="status">
+                                </label>
+                                <label>
+                                    Published
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="content">Full Content</label>
+                                <textarea name="content" id="content" cols="30" rows="10"
+                                          class="form-control myeditable"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" id="description" cols="30" rows="10"
+                                          class="form-control myeditable"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        <a href="{{ path('admin_posts_index') }}" class="btn btn-default">Back</a>
+                        <button type="submit" class="btn btn-success pull-right">Add Post</button>
+                    </div>
+                    <!-- /.box-footer-->
+                </div>
+                <!-- /.box -->
+            </form>
+        </section>
+        <!-- /.content -->
+    </div>
+{% endblock %}

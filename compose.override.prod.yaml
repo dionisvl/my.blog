@@ -49,35 +49,12 @@ services:
 
   laravel:
     command: php artisan octane:frankenphp --host=0.0.0.0 --port=80 --max-requests=1000 --workers=4
+    profiles:
+      - legacy
     volumes:
       - ./app-laravel/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
     labels:
-      - "traefik.enable=true"
-
-      # Middleware: redirect from phpqa.ru to web3main.pro (301 permanent)
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.regex=^https?://phpqa\\.ru/(.*)"
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.replacement=https://web3main.pro/$${1}"
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.permanent=true"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.regex=^https?://www\\.phpqa\\.ru/(.*)"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.replacement=https://www.web3main.pro/$${1}"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.permanent=true"
-
-      # HTTP
-      - "traefik.http.routers.laravel-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
-      - "traefik.http.routers.laravel-http.entrypoints=web"
-      - "traefik.http.routers.laravel-http.service=laravel"
-      - "traefik.http.routers.laravel-http.middlewares=redirect-old-domain,redirect-old-domain-www"
-
-      # HTTPS
-      - "traefik.http.routers.laravel.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
-      - "traefik.http.routers.laravel.entrypoints=websecure"
-      - "traefik.http.routers.laravel.tls.certresolver=myresolver"
-      - "traefik.http.routers.laravel.middlewares=redirect-old-domain,redirect-old-domain-www,laravel-compress"
-
-      - "traefik.http.routers.laravel.service=laravel"
-      - "traefik.http.services.laravel.loadbalancer.server.port=80"
-
-      # Compress
+      - "traefik.enable=false"
       - "traefik.http.middlewares.laravel-compress.compress=true"
       - "traefik.http.middlewares.laravel-compress.compress.includedcontenttypes=text/html,text/plain,text/css,application/javascript,application/json"
 
@@ -124,3 +101,30 @@ services:
       - "traefik.http.services.sveltewar.loadbalancer.server.port=80"
     networks:
       - app-network
+
+  symfony:
+    labels:
+      - "traefik.enable=true"
+
+      # Middleware: redirect from phpqa.ru to web3main.pro (301 permanent)
+      - "traefik.http.middlewares.redirect-old-domain.redirectregex.regex=^https?://phpqa\\.ru/(.*)"
+      - "traefik.http.middlewares.redirect-old-domain.redirectregex.replacement=https://web3main.pro/$${1}"
+      - "traefik.http.middlewares.redirect-old-domain.redirectregex.permanent=true"
+      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.regex=^https?://www\\.phpqa\\.ru/(.*)"
+      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.replacement=https://www.web3main.pro/$${1}"
+      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.permanent=true"
+
+      # HTTP
+      - "traefik.http.routers.symfony-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      - "traefik.http.routers.symfony-http.entrypoints=web"
+      - "traefik.http.routers.symfony-http.service=symfony"
+      - "traefik.http.routers.symfony-http.middlewares=redirect-old-domain,redirect-old-domain-www"
+
+      # HTTPS
+      - "traefik.http.routers.symfony.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      - "traefik.http.routers.symfony.entrypoints=websecure"
+      - "traefik.http.routers.symfony.tls.certresolver=myresolver"
+      - "traefik.http.routers.symfony.middlewares=redirect-old-domain,redirect-old-domain-www,laravel-compress"
+
+      - "traefik.http.routers.symfony.service=symfony"
+      - "traefik.http.services.symfony.loadbalancer.server.port=80"

@@ -1,0 +1,80 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit Portfolio Entry{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Edit Portfolio Entry
+                <small>update content</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <form action="{{ path('admin_portfolios_update', {id: portfolio.id}) }}" method="POST"
+                  enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="{{ csrf_token('portfolio_form') }}">
+                <input type="hidden" name="_method" value="PUT">
+
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Update Portfolio Entry</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                       value="{{ portfolio.title }}">
+                            </div>
+
+                            <div class="form-group">
+                                <img src="{{ portfolio.imagePath }}" alt="" class="img-responsive" width="200">
+                                <label for="image">Cover Image</label>
+                                <input type="file" id="image" name="image">
+                                <p class="help-block">Upload a new cover image if needed</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="is_featured" value="1"
+                                           class="minimal" {{ portfolio.isFeatured == 1 ? 'checked' : '' }}>
+                                </label>
+                                <label>Featured</label>
+                            </div>
+
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="status" value="1"
+                                           class="minimal" {{ portfolio.status == 1 ? 'checked' : '' }}>
+                                </label>
+                                <label>Published</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="content">Full Content</label>
+                                <textarea name="content" id="content" cols="30" rows="10"
+                                          class="form-control myeditable">{{ portfolio.content }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea name="description" id="description" cols="30" rows="10"
+                                          class="form-control myeditable">{{ portfolio.description }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-footer">
+                        <button class="btn btn-warning pull-right">Update Entry</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

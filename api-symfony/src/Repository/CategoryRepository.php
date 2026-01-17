@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Entity\Category;
+use App\Entity\Post;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+final class CategoryRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Category::class);
+    }
+
+    /**
+     * @return list<array{0: Category, posts_count: string|int}>
+     */
+    public function findWithPostCounts(): array
+    {
+        /** @var list<array{0: Category, posts_count: string|int}> $rows */
+        $rows = $this->createQueryBuilder('c')
+            ->select('c', 'COUNT(p.id) as posts_count')
+            ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c.id')
+            ->groupBy('c.id')
+            ->getQuery()
+            ->getResult();
+
+        return $rows;
+    }
+
+    /**
+     * @return list<array{0: Category, posts_count: string|int}>
+     */
+    public function findPopularWithPostCounts(int $minCount = 2): array
+    {
+        /** @var list<array{0: Category, posts_count: string|int}> $rows */
+        $rows = $this->createQueryBuilder('c')
+            ->select('c', 'COUNT(p.id) as posts_count')
+            ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c.id AND p.status = true')
+            ->groupBy('c.id')
+            ->having('COUNT(p.id) >= :minCount')
+            ->orderBy('COUNT(p.id)', 'DESC')
+            ->setParameter('minCount', $minCount)
+            ->getQuery()
+            ->getResult();
+
+        return $rows;
+    }
+}

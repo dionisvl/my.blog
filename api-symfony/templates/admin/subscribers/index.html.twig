@@ -1,0 +1,59 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Subscribers{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Subscribers
+                <small>email list</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Subscribers List</h3>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <a href="{{ path('admin_subscribers_create') }}" class="btn btn-success">Add Subscriber</a>
+                    </div>
+                    <table id="admin_data_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for subscriber in subs %}
+                            <tr>
+                                <td>{{ subscriber.id }}</td>
+                                <td>{{ subscriber.email }}</td>
+                                <td>{{ subscriber.createdAt|date('Y-m-d H:i') }}</td>
+                                <td>
+                                    <form method="POST"
+                                          action="{{ path('admin_subscribers_delete', {id: subscriber.id}) }}"
+                                          style="display: inline;">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ subscriber.id) }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button onclick="return confirm('Are you sure?')" type="submit" class="delete"
+                                                style="background:none;border:none;color:#337ab7;cursor:pointer;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
