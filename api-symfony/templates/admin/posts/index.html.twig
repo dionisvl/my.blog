@@ -51,7 +51,12 @@
                         {% for post in posts %}
                             <tr>
                                 <td>{{ post.id }}</td>
-                                <td>{{ post.title }}</td>
+                                <td>
+                                    {{ post.title }}
+                                    {% if post.status %}
+                                        <span class="label label-warning" style="margin-left:6px;">Draft</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if post.category %}
                                         {{ post.category.title }}

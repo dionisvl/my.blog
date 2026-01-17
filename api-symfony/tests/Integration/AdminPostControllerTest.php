@@ -14,8 +14,8 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 {
     public static function providePostFormData(): iterable
     {
-        yield 'published featured' => ['1', '1', '2024-01-02'];
-        yield 'draft not featured' => ['0', '0', '2023-12-31'];
+        yield 'published featured' => ['0', '1', '2024-01-02'];
+        yield 'draft not featured' => ['1', '0', '2023-12-31'];
     }
 
     public static function provideAdminViews(): iterable
@@ -29,7 +29,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $category = $this->createCategory('UX', 'ux');
-        $post = $this->createPost($user, $category, 'Edit Me', 'edit-me', true);
+        $post = $this->createPost($user, $category, 'Edit Me', 'edit-me', false);
 
         $path = str_contains($pathTemplate, '%d')
             ? sprintf($pathTemplate, (int)$post->getId())
@@ -169,7 +169,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $category = $this->createCategory('PHP', 'php');
-        $post = $this->createPost($user, $category, 'Public Post', 'public-post', true);
+        $post = $this->createPost($user, $category, 'Public Post', 'public-post', false);
 
         $this->client->request('GET', '/post/' . $post->getSlug());
 
@@ -209,7 +209,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
             'description' => 'Initial description',
             'date' => '2024-02-01',
             'category_id' => (string)$category->getId(),
-            'status' => '1',
+            'status' => '0',
             'is_featured' => '0',
         ]);
 
@@ -228,7 +228,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
             'description' => 'Updated description',
             'date' => '2024-02-02',
             'category_id' => (string)$category->getId(),
-            'status' => '1',
+            'status' => '0',
             'is_featured' => '0',
         ]);
 

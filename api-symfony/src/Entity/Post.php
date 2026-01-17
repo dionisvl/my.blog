@@ -14,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'posts')]
 class Post
 {
+    public const int STATUS_PUBLISHED = 0;
+    public const int STATUS_DRAFT = 1;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]

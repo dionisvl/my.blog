@@ -52,7 +52,7 @@ final class PostRepository extends ServiceEntityRepository
         /** @var list<Post> $rows */
         $rows = $this->createQueryBuilder('p')
             ->where('p.status = :status')
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
@@ -68,7 +68,7 @@ final class PostRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('p')
             ->where('p.status = :status')
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
@@ -111,7 +111,7 @@ final class PostRepository extends ServiceEntityRepository
             ->where('p.isFeatured = :featured')
             ->andWhere('p.status = :status')
             ->setParameter('featured', true)
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -127,7 +127,7 @@ final class PostRepository extends ServiceEntityRepository
         /** @var list<Post> $rows */
         $rows = $this->createQueryBuilder('p')
             ->where('p.status = :status')
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
@@ -143,7 +143,7 @@ final class PostRepository extends ServiceEntityRepository
             ->where('p.slug = :slug')
             ->andWhere('p.status = :status')
             ->setParameter('slug', $slug)
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->getQuery()
             ->getOneOrNullResult();
 
@@ -161,7 +161,7 @@ final class PostRepository extends ServiceEntityRepository
             ->where('c.slug = :slug')
             ->andWhere('p.status = :status')
             ->setParameter('slug', $slug)
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -179,7 +179,7 @@ final class PostRepository extends ServiceEntityRepository
             ->where('c.slug = :slug')
             ->andWhere('p.status = :status')
             ->setParameter('slug', $slug)
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
@@ -204,7 +204,7 @@ final class PostRepository extends ServiceEntityRepository
             ->where('t.slug = :slug')
             ->andWhere('p.status = :status')
             ->setParameter('slug', $slug)
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
@@ -227,7 +227,7 @@ final class PostRepository extends ServiceEntityRepository
 
         if (!$includeDrafts) {
             $builder->andWhere('p.status = :status')
-                ->setParameter('status', true);
+                ->setParameter('status', false);
         }
 
         /** @var list<Post> $rows */
@@ -247,7 +247,7 @@ final class PostRepository extends ServiceEntityRepository
             ->where('t.slug = :slug')
             ->andWhere('p.status = :status')
             ->setParameter('slug', $slug)
-            ->setParameter('status', true)
+            ->setParameter('status', false)
             ->orderBy('p.createdAt', 'DESC')
             ->setFirstResult(($page - 1) * $perPage)
             ->setMaxResults($perPage)
