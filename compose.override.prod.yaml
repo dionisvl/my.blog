@@ -104,8 +104,8 @@ services:
     image: 45.9.73.190:5000/phpqa-api:latest
     #build:
     #  target: prod
-    volumes:
-      - ./api-symfony/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
+    #    volumes:
+    #      - ./api-symfony/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
     labels:
       - "traefik.enable=true"
 
