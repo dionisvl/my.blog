@@ -110,7 +110,7 @@
                     <h4 class="text-lg font-semibold uppercase mb-2">Contact Info</h4>
                     <p class="text-gray-300 mb-1">10 Rustaveli Avenue, Tbilisi, Georgia</p>
                     <p class="text-gray-300 mb-1">Phone: +123 456 78900</p>
-                    <p class="text-gray-300">info@phpqa.ru</p>
+                    <p class="text-gray-300">info@{{ app.request.server.get('HTTP_HOST') }}</p>
                 </div>
             </div>
 
@@ -135,16 +135,25 @@
             <!-- Custom Post Section -->
             <div>
                 <h3 class="text-lg font-semibold uppercase mb-4">Custom Category Post</h3>
-                <div class="flex items-start">
-                    <div class="flex-shrink-0 mr-3">
-                        <a href="#"><img src="/storage/blog_images/footer-img.png" alt="" loading="lazy"
-                                         class="w-20 h-20 object-cover rounded"></a>
+                {% if customCategoryPost %}
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 mr-3">
+                            <a href="{{ path('post_show', {slug: customCategoryPost.slug}) }}">
+                                <img src="{{ customCategoryPost.image }}" alt="{{ customCategoryPost.title|e }}"
+                                     loading="lazy" class="w-20 h-20 object-cover rounded">
+                            </a>
+                        </div>
+                        <div>
+                            <a href="{{ path('post_show', {slug: customCategoryPost.slug}) }}"
+                               class="text-white hover:text-blue-300 font-medium">
+                                {{ customCategoryPost.title }}
+                            </a>
+                            <p class="text-sm text-gray-400 mt-1">{{ customCategoryPost.formattedDate }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <a href="#" class="text-white hover:text-blue-300 font-medium">Home is peaceful Place</a>
-                        <p class="text-sm text-gray-400 mt-1">February 15, 2019</p>
-                    </div>
-                </div>
+                {% else %}
+                    <p class="text-sm text-gray-400">No published posts yet.</p>
+                {% endif %}
             </div>
         </div>
     </div>

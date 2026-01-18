@@ -7,6 +7,8 @@ services:
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
+      - "8080:8080"
+      - "2019:2019"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
@@ -25,6 +27,11 @@ services:
     # Uncomment to enable xdebug config mount for local dev
     # volumes:
     #   - ./app-laravel/php/conf.d/50_xdebug.ini:/usr/local/etc/php/conf.d/50_xdebug.ini:rw
+
+  symfony:
+    volumes:
+      - ./api-symfony/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ./api-symfony/php/conf.d/opcache.dev.ini:/usr/local/etc/php/conf.d/opcache.dev.ini:ro
 
   pets-app:
     volumes:

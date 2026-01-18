@@ -63,6 +63,8 @@ services:
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       DB_NAME: ${MYSQL_DATABASE}
       SERVER_NAME: ":80"
+      MAX_REQUESTS: "500"
+      GOMEMLIMIT: "512MiB"
     expose:
       - "80"
       - "443"
@@ -71,6 +73,7 @@ services:
       - ./api-symfony:/app:rw
       - ./api-symfony/public/storage:/app/public/storage:rw
       - ./api-symfony/Caddyfile:/etc/caddy/Caddyfile:ro
+    command: sh -c "php bin/console cache:warmup --no-interaction && frankenphp run --config /etc/caddy/Caddyfile"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.symfony.rule=Host(`phpqas.local`)"
@@ -80,6 +83,12 @@ services:
     restart: unless-stopped
     depends_on:
       - mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "php -r 'exit(file_get_contents(\"http://127.0.0.1/health\") === \"OK\" ? 0 : 1);'" ]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 30s
 
   pets-app:
     build:

@@ -30,6 +30,13 @@ security:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/login, roles: PUBLIC_ACCESS }
 
+when@dev:
+    security:
+        firewalls:
+            main:
+                # Avoid WrappedLazyListener chain growth in long-running dev workers.
+                lazy: false
+
 when@test:
     security:
         password_hashers:

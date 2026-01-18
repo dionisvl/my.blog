@@ -26,6 +26,15 @@
                     {{ post.content|raw }}
                 </div>
 
+                {% if aphorism %}
+                    <div class="mt-8">
+                        <h4 class="font-semibold mb-2 text-white">Quote of the day:</h4>
+                        <div class="border-2 rounded-sm p-2 m-2 flex items-center bg-gray-700 text-white">
+                            {{ aphorism.detail_text }}
+                        </div>
+                    </div>
+                {% endif %}
+
                 {% if post.tags|length > 0 %}
                     <div class="flex flex-wrap mt-6 mb-4">
                         {% for tag in post.tags %}

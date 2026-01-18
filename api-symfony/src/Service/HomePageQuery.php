@@ -16,7 +16,8 @@ final readonly class HomePageQuery
     public function __construct(
         private PostRepository $posts,
         private CategoryRepository $categories,
-        private TagRepository $tags
+        private TagRepository $tags,
+        private AphorismQuery $aphorisms
     ) {
     }
 
@@ -129,6 +130,7 @@ final readonly class HomePageQuery
             'featuredPosts' => $this->posts->findFeatured($featuredLimit),
             'recentPosts' => $this->posts->findRecentPublished($recentLimit),
             'categories' => $this->categories->findPopularWithPostCounts($minCategoryCount),
+            'aphorism' => $this->aphorisms->findRandom(),
         ];
     }
 }

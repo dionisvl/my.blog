@@ -136,6 +136,48 @@ final class PostRepository extends ServiceEntityRepository
         return $rows;
     }
 
+    public function findPublishedById(int $id): ?Post
+    {
+        /** @var Post|null $post */
+        $post = $this->createQueryBuilder('p')
+            ->where('p.id = :id')
+            ->andWhere('p.status = :status')
+            ->setParameter('id', $id)
+            ->setParameter('status', false)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $post;
+    }
+
+    public function findRandomPublishedId(): ?int
+    {
+        $count = (int)$this->createQueryBuilder('p')
+            ->select('COUNT(p.id)')
+            ->where('p.status = :status')
+            ->setParameter('status', false)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        if ($count === 0) {
+            return null;
+        }
+
+        $offset = random_int(0, $count - 1);
+
+        $id = $this->createQueryBuilder('p')
+            ->select('p.id')
+            ->where('p.status = :status')
+            ->setParameter('status', false)
+            ->orderBy('p.id', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int)$id;
+    }
+
     public function findPublishedBySlug(string $slug): ?Post
     {
         /** @var Post|null $post */

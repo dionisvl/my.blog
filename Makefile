@@ -9,6 +9,8 @@ up-dev:
 	docker compose -f compose.yml -f compose.override.dev.yaml up -d
 up-prod:
 	docker compose -f compose.yml -f compose.override.prod.yaml up -d
+restart-symfony-dev:
+	docker compose -f compose.yml -f compose.override.dev.yaml up -d --force-recreate symfony
 rebuild:
 	docker compose down -t 0 && docker compose up --build
 down:
@@ -33,9 +35,9 @@ migrates:
 
 
 bash:
-	docker compose exec laravel /bin/bash
+	docker compose exec symfony /bin/bash
 sh:
-	docker compose exec laravel /bin/sh
+	docker compose exec symfony /bin/sh
 
 npm-i:
 	cd app-laravel/api-laravel
@@ -95,3 +97,11 @@ phpstan:
 
 cs-fix:
 	docker compose exec laravel ./vendor/bin/php-cs-fixer fix
+
+cache-clear:
+	docker compose exec symfony php bin/console cache:clear
+	docker compose exec symfony sh -c "rm -rf var/cache/dev/* && php -r 'opcache_reset();'"
+	docker compose exec symfony php bin/console cache:warmup
+
+aphorizm:
+	docker compose exec symfony php bin/console app:seed-aphorisms

@@ -11,10 +11,5 @@
     root * /app/public
     encode zstd gzip
 
-    php_server {
-                   worker {
-                              file /app/public/index.php
-                              num 3
-                          }
-               }
+    php_server
 }
