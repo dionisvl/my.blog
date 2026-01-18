@@ -12,11 +12,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class AdminTagPayload
 {
     public function __construct(
-        #[Assert\Positive]
-        public ?int $id = null,
         #[Assert\NotBlank]
         #[Assert\Length(max: 255)]
         public string $title,
+        #[Assert\Positive]
+        public ?int $id = null,
     ) {
     }
 }

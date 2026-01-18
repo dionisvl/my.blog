@@ -12,8 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class AdminUserPayload
 {
     public function __construct(
-        #[Assert\Positive]
-        public ?int $id = null,
         #[Assert\NotBlank]
         #[Assert\Length(max: 255)]
         public string $name,
@@ -24,6 +22,8 @@ final class AdminUserPayload
         public ?string $password = null,
         public string|bool $isAdmin = false,
         public string|bool $status = false,
+        #[Assert\Positive]
+        public ?int $id = null,
     ) {
     }
 }

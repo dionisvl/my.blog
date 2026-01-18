@@ -12,11 +12,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class AdminSubscriberPayload
 {
     public function __construct(
-        #[Assert\Positive]
-        public ?int $id = null,
         #[Assert\NotBlank]
         #[Assert\Email]
         public string $email,
+        #[Assert\Positive]
+        public ?int $id = null,
     ) {
     }
 }

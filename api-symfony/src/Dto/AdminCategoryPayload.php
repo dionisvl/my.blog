@@ -13,8 +13,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class AdminCategoryPayload
 {
     public function __construct(
-        #[Assert\Positive]
-        public ?int $id = null,
         #[Assert\NotBlank]
         #[Assert\Length(max: 255)]
         public string $title,
@@ -22,6 +20,8 @@ final class AdminCategoryPayload
         public ?string $detailText = null,
         #[SerializedName('preview_text')]
         public ?string $previewText = null,
+        #[Assert\Positive]
+        public ?int $id = null,
     ) {
     }
 }
