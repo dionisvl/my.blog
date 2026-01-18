@@ -1,5 +1,54 @@
 {% extends 'base.html.twig' %}
 
+{% set defaultDescription = 'Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.' %}
+{% set rawDescription = post.description ? post.description|striptags : post.content|striptags %}
+{% set shortDescription = rawDescription|trim %}
+{% if shortDescription|length > 160 %}
+    {% set shortDescription = shortDescription|slice(0, 157) ~ '...' %}
+{% endif %}
+{% if shortDescription is empty %}
+    {% set shortDescription = defaultDescription %}
+{% endif %}
+{% set absoluteImage = app.request.schemeAndHttpHost ~ post.image %}
+{% set canonicalUrl = app.request.schemeAndHttpHost ~ app.request.requestUri %}
+{% set authorName = post.author ? post.author.name : 'Web3main LLC' %}
+
+{% block title %}{{ post.title }} - Web3 Blog{% endblock %}
+{% block meta_title %}{{ block('title') }}{% endblock %}
+{% block meta_description %}{{ shortDescription }}{% endblock %}
+{% block meta_image %}{{ absoluteImage }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block head_extra %}
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            'headline': post.title,
+            'description': shortDescription,
+            'image': [absoluteImage],
+            'datePublished': post.date|date('c'),
+            'author': {
+                '@type': 'Person',
+                'name': authorName
+            },
+            'publisher': {
+                '@type': 'Organization',
+                'name': 'Web3main LLC',
+                'logo': {
+                    '@type': 'ImageObject',
+                    'url': app.request.schemeAndHttpHost ~ '/storage/blog_images/logo.png'
+                }
+            },
+            'mainEntityOfPage': {
+                '@type': 'WebPage',
+                '@id': canonicalUrl
+            },
+            'inLanguage': 'en'
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+
+    </script>
+{% endblock %}
+
 {% block content %}
     <div class="w-full md:w-3/4 pr-0 md:pr-6">
         <article class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700">

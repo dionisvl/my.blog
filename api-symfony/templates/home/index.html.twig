@@ -1,6 +1,31 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Web3 Blog - Homepage{% endblock %}
+{% block meta_title %}Web3 Blog - Homepage{% endblock %}
+{% block meta_description %}Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.{% endblock %}
+{% block og_type %}website{% endblock %}
+{% block head_extra %}
+    {% set siteUrl = app.request.schemeAndHttpHost %}
+    {% set listItems = [] %}
+    {% for post in posts %}
+        {% set item = {
+            '@type': 'ListItem',
+            'position': loop.index,
+            'url': siteUrl ~ path('post_show', {slug: post.slug})
+        } %}
+        {% set listItems = listItems|merge([item]) %}
+    {% endfor %}
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            'name': 'Latest posts',
+            'itemListOrder': 'https://schema.org/ItemListOrderDescending',
+            'itemListElement': listItems
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+
+    </script>
+{% endblock %}
 
 {% block content %}
     <div class="w-full md:w-3/4 pr-0 md:pr-6 space-y-3">

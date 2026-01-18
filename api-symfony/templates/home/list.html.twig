@@ -1,6 +1,35 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Filtered Posts - Web3 Blog{% endblock %}
+{% set filterTitle = tag is defined ? tag.title : (category is defined ? category.title : 'Filtered Posts') %}
+{% set filterUrl = tag is defined ? path('tag_show', {slug: tag.slug}) : (category is defined ? path('category_show', {slug: category.slug}) : path('home')) %}
+{% block meta_title %}{{ filterTitle }} - Web3 Blog{% endblock %}
+{% block meta_description %}Browse posts in {{ filterTitle }}.{% endblock %}
+{% block og_type %}website{% endblock %}
+{% block head_extra %}
+    {% set siteUrl = app.request.schemeAndHttpHost %}
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+                {
+                    '@type': 'ListItem',
+                    'position': 1,
+                    'name': 'Homepage',
+                    'item': siteUrl ~ path('home')
+                },
+                {
+                    '@type': 'ListItem',
+                    'position': 2,
+                    'name': filterTitle,
+                    'item': siteUrl ~ filterUrl
+                }
+            ]
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+
+    </script>
+{% endblock %}
 
 {% block content %}
     <div class="w-full md:w-3/4 pr-0 md:pr-6 space-y-3">

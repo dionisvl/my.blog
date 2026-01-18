@@ -4,11 +4,90 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-          content="Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.">
+    {% set siteHost = app.request.server.get('HTTP_HOST') %}
+    {% set siteUrl = app.request.schemeAndHttpHost %}
+    {% set siteName = 'Web3 Blog' %}
+    {% set orgName = 'Web3main LLC' %}
+    {% set orgEmail = 'info@' ~ siteHost %}
+    {% set orgPhone = '+123 456 78900' %}
+    {% set orgLogo = siteUrl ~ '/storage/blog_images/logo.png' %}
+    {% set canonicalUrl = siteUrl ~ app.request.requestUri %}
+    {% set metaTitle %}{% block meta_title %}{{ block('title') }}{% endblock %}{% endset %}
+    {% set metaDescription %}{% block meta_description %}Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.{% endblock %}{% endset %}
+    {% set metaImage %}{% block meta_image %}{{ orgLogo }}{% endblock %}{% endset %}
+    {% set ogType %}{% block og_type %}website{% endblock %}{% endset %}
+
+    <meta name="description" content="{{ metaDescription|trim }}">
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+    <meta name="author" content="{{ orgName }}">
     <meta name="_token" content="{{ csrf_token('post-like') }}">
 
     <title>{% block title %}Web3 Blog{% endblock %}</title>
+
+    <link rel="canonical" href="{{ canonicalUrl }}">
+    <link rel="alternate" hreflang="en" href="{{ canonicalUrl }}">
+    <link rel="alternate" hreflang="x-default" href="{{ canonicalUrl }}">
+
+    <meta property="og:site_name" content="{{ siteName }}">
+    <meta property="og:type" content="{{ ogType|trim }}">
+    <meta property="og:title" content="{{ metaTitle|trim }}">
+    <meta property="og:description" content="{{ metaDescription|trim }}">
+    <meta property="og:url" content="{{ canonicalUrl }}">
+    <meta property="og:image" content="{{ metaImage|trim }}">
+    <meta property="og:locale" content="en_US">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ metaTitle|trim }}">
+    <meta name="twitter:description" content="{{ metaDescription|trim }}">
+    <meta name="twitter:image" content="{{ metaImage|trim }}">
+
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            'name': orgName,
+            'url': siteUrl,
+            'logo': orgLogo,
+            'email': orgEmail,
+            'telephone': orgPhone,
+            'sameAs': ['https://t.me/+17JT99yABvI0OGZi'],
+            'contactPoint': [{
+                '@type': 'ContactPoint',
+                'telephone': orgPhone,
+                'email': orgEmail,
+                'contactType': 'customer support',
+                'areaServed': 'Worldwide',
+                'availableLanguage': ['English']
+            }]
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+
+    </script>
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            'name': siteName,
+            'url': siteUrl,
+            'publisher': {
+                '@type': 'Organization',
+                'name': orgName,
+                'logo': {
+                    '@type': 'ImageObject',
+                    'url': orgLogo
+                }
+            },
+            'inLanguage': 'en',
+            'potentialAction': {
+                '@type': 'SearchAction',
+                'target': siteUrl ~ path('search') ~ '?q={search_term_string}',
+                'query-input': 'required name=search_term_string'
+            }
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+
+    </script>
+
+    {% block head_extra %}{% endblock %}
 
     <!-- Tailwind CSS v4 -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
