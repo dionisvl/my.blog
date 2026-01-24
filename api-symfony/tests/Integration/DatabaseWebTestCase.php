@@ -26,7 +26,8 @@ abstract class DatabaseWebTestCase extends WebTestCase
     protected function resetDatabase(): void
     {
         $metadata = $this->em->getMetadataFactory()->getAllMetadata();
-        if ($metadata === []) {
+
+        if ([] === $metadata) {
             return;
         }
 

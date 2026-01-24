@@ -19,7 +19,7 @@ final class CategoryController extends AbstractController
 {
     public function __construct(
         private readonly CategoryRepository $categoryRepository,
-        private readonly AdminCategoryManager $categoryManager
+        private readonly AdminCategoryManager $categoryManager,
     ) {
     }
 
@@ -48,7 +48,7 @@ final class CategoryController extends AbstractController
         return $this->render('admin/categories/create.html.twig');
     }
 
-    #[Route('/{id}/edit', name: 'admin_categories_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_categories_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $category = $this->categoryRepository->find($id);
@@ -62,7 +62,7 @@ final class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_categories_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_categories_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(int $id, #[MapRequestPayload] AdminCategoryPayload $payload): Response
     {
         $category = $this->categoryRepository->find($id);
@@ -77,9 +77,9 @@ final class CategoryController extends AbstractController
         return $this->redirectToRoute('admin_categories_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_categories_delete', requirements: ['id' => '\\d+'], methods: [
+    #[Route('/{id}/delete', name: 'admin_categories_delete', requirements: ['id' => '\d+'], methods: [
         'POST',
-        'DELETE'
+        'DELETE',
     ])]
     public function delete(int $id): Response
     {

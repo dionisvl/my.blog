@@ -12,6 +12,7 @@ final class AdminIncomingControllerTest extends DatabaseWebTestCase
     public static function provideIncomingStatuses(): iterable
     {
         yield 'unread' => [0];
+
         yield 'read' => [1];
     }
 
@@ -35,15 +36,15 @@ final class AdminIncomingControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(Incoming::class)->find($incoming->getId());
-        $this->assertNotNull($updated);
-        $this->assertSame($status === 1 ? 0 : 1, $updated->getStatus());
+        self::assertNotNull($updated);
+        self::assertSame(1 === $status ? 0 : 1, $updated->getStatus());
 
         $this->client->request('POST', '/admin/incomings/' . $incoming->getId() . '/delete');
         $this->assertResponseRedirects('/admin/incomings/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Incoming::class)->find($incoming->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testIncomingsIndexView(): void
@@ -59,6 +60,6 @@ final class AdminIncomingControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/incomings/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Need help', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Need help', $this->client->getResponse()->getContent());
     }
 }

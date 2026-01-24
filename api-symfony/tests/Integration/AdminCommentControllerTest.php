@@ -13,6 +13,7 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
     public static function provideCommentStatuses(): iterable
     {
         yield 'draft comment' => [0];
+
         yield 'approved comment' => [1];
     }
 
@@ -43,15 +44,15 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(Comment::class)->find($comment->getId());
-        $this->assertNotNull($updated);
-        $this->assertSame($status === 1 ? 0 : 1, $updated->getStatus());
+        self::assertNotNull($updated);
+        self::assertSame(1 === $status ? 0 : 1, $updated->getStatus());
 
         $this->client->request('POST', '/admin/comments/' . $comment->getId() . '/delete');
         $this->assertResponseRedirects('/admin/comments/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Comment::class)->find($comment->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testCommentsIndexView(): void
@@ -77,6 +78,6 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/comments/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Hello!', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Hello!', $this->client->getResponse()->getContent());
     }
 }

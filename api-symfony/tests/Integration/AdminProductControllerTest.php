@@ -13,6 +13,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
     public static function provideProductPayloads(): iterable
     {
         yield 'basic product' => ['Coffee Beans', 'Strong beans', 1990, 1000];
+
         yield 'simple product' => ['Tea', 'Green tea', 1200, 50];
     }
 
@@ -47,8 +48,8 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $product = $this->em->getRepository(Product::class)->findOneBy(['title' => $title]);
-        $this->assertNotNull($product);
-        $this->assertSame($price, $product->getPrice());
+        self::assertNotNull($product);
+        self::assertSame($price, $product->getPrice());
 
         $newTitle = $title . ' Updated';
         $this->client->request('POST', '/admin/products/' . $product->getId() . '/update', [
@@ -63,15 +64,15 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(Product::class)->find($product->getId());
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
 
         $this->client->request('POST', '/admin/products/' . $product->getId() . '/delete');
         $this->assertResponseRedirects('/admin/products/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Product::class)->find($product->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testProductIndexView(): void
@@ -87,7 +88,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/products/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Index Product', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Index Product', $this->client->getResponse()->getContent());
     }
 
     public function testProductCreateView(): void
@@ -98,7 +99,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_products_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testProductEditView(): void
@@ -115,7 +116,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_products_update', ['id' => $product->getId()]);
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testProductValidationErrorsReturnJson(): void
@@ -129,7 +130,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
     }
 }

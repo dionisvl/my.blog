@@ -25,7 +25,7 @@ final class PostController extends AbstractController
         private readonly PostRepository $postRepository,
         private readonly CategoryRepository $categoryRepository,
         private readonly TagRepository $tagRepository,
-        private readonly AdminPostManager $postManager
+        private readonly AdminPostManager $postManager,
     ) {
     }
 
@@ -39,7 +39,7 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'admin_posts_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_posts_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $post = $this->postRepository->find($id);
@@ -51,6 +51,7 @@ final class PostController extends AbstractController
         $categories = $this->categoryRepository->findAll();
         $tags = $this->tagRepository->findAll();
         $selectedTags = [];
+
         foreach ($post->getTags() as $tag) {
             $selectedTags[] = $tag->getId();
         }
@@ -63,11 +64,11 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_posts_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_posts_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(
         int $id,
         #[MapRequestPayload] AdminPostPayload $payload,
-        #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null
+        #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null,
     ): Response {
         $post = $this->postRepository->find($id);
 
@@ -83,7 +84,7 @@ final class PostController extends AbstractController
         return $this->redirectToRoute('admin_posts_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_posts_delete', requirements: ['id' => '\\d+'], methods: ['POST', 'DELETE'])]
+    #[Route('/{id}/delete', name: 'admin_posts_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
     public function delete(int $id): Response
     {
         $post = $this->postRepository->find($id);
@@ -101,7 +102,7 @@ final class PostController extends AbstractController
     #[Route('/store', name: 'admin_posts_store', methods: ['POST'])]
     public function store(
         #[MapRequestPayload] AdminPostPayload $payload,
-        #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null
+        #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null,
     ): Response {
         $payload->image = $image;
 

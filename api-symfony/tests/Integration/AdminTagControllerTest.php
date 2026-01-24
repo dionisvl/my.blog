@@ -12,6 +12,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
     public static function provideTagPayloads(): iterable
     {
         yield 'short title' => ['PHP'];
+
         yield 'compound title' => ['Symfony Framework'];
     }
 
@@ -30,7 +31,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $tag = $this->em->getRepository(Tag::class)->findOneBy(['title' => $title]);
 
-        $this->assertNotNull($tag);
+        self::assertNotNull($tag);
 
         $newTitle = $title . ' Updated';
 
@@ -44,8 +45,8 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $updated = $this->em->getRepository(Tag::class)->find($tag->getId());
 
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
 
         $this->client->request('POST', '/admin/tags/' . $tag->getId() . '/delete');
 
@@ -53,7 +54,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Tag::class)->find($tag->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testTagIndexView(): void
@@ -69,7 +70,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/tags/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Docker', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Docker', $this->client->getResponse()->getContent());
     }
 
     public function testTagCreateView(): void
@@ -80,7 +81,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_tags_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testTagEditView(): void
@@ -97,7 +98,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_tags_update', ['id' => $tag->getId()]);
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testTagValidationErrorsReturnJson(): void
@@ -110,8 +111,8 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
     }
 
     public function testTagSlugIsUnique(): void
@@ -128,11 +129,11 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
             'title' => 'Same Tag',
         ]);
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
 
         $this->em->clear();
         $tags = $this->em->getRepository(Tag::class)->findBy(['title' => 'Same Tag']);
-        $this->assertCount(1, $tags);
+        self::assertCount(1, $tags);
     }
 }

@@ -33,6 +33,7 @@ final class FrontPartRepository extends ServiceEntityRepository
     {
         /** @var FrontPart|null $frontPart */
         $frontPart = $this->findOneBy(['slug' => $slug]);
+
         return $frontPart;
     }
 }

@@ -13,7 +13,7 @@ final readonly class AdminUserManager
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
     ) {
     }
 
@@ -24,7 +24,7 @@ final readonly class AdminUserManager
         $user->setIsAdmin($this->normalizeBool($payload->isAdmin));
         $user->setStatus($this->normalizeBool($payload->status) ? 1 : 0);
 
-        if ($payload->password !== null && $payload->password !== '') {
+        if (null !== $payload->password && '' !== $payload->password) {
             $hash = $this->passwordHasher->hashPassword($user, $payload->password);
             $user->setPassword($hash);
         }
@@ -37,11 +37,11 @@ final readonly class AdminUserManager
 
     private function normalizeBool(string|bool $value): bool
     {
-        if (is_bool($value)) {
+        if (\is_bool($value)) {
             return $value;
         }
 
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        return filter_var($value, \FILTER_VALIDATE_BOOLEAN);
     }
 
     public function create(AdminUserPayload $payload): User

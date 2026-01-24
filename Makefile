@@ -96,12 +96,13 @@ phpstan:
 	fi
 
 cs-fix:
-	docker compose exec laravel ./vendor/bin/php-cs-fixer fix
+	docker compose exec symfony ./vendor/bin/php-cs-fixer fix
 
 cache-clear:
 	docker compose exec symfony php bin/console cache:clear
 	docker compose exec symfony sh -c "rm -rf var/cache/dev/* && php -r 'opcache_reset();'"
 	docker compose exec symfony php bin/console cache:warmup
+    #docker compose restart symfony
 
 aphorizm:
 	docker compose exec symfony php bin/console app:seed-aphorisms

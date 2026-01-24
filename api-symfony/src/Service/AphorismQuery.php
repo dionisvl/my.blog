@@ -10,7 +10,7 @@ use Doctrine\DBAL\ParameterType;
 final readonly class AphorismQuery
 {
     public function __construct(
-        private Connection $connection
+        private Connection $connection,
     ) {
     }
 
@@ -20,7 +20,8 @@ final readonly class AphorismQuery
     public function findRandom(): ?array
     {
         $count = (int)$this->connection->fetchOne('SELECT COUNT(id) FROM aphorism');
-        if ($count === 0) {
+
+        if (0 === $count) {
             return null;
         }
 
@@ -29,10 +30,10 @@ final readonly class AphorismQuery
         $row = $this->connection->fetchAssociative(
             'SELECT id, detail_text FROM aphorism ORDER BY id ASC LIMIT 1 OFFSET :offset',
             ['offset' => $offset],
-            ['offset' => ParameterType::INTEGER]
+            ['offset' => ParameterType::INTEGER],
         );
 
-        if ($row === false) {
+        if (false === $row) {
             return null;
         }
 

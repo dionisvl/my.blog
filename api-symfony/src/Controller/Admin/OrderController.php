@@ -23,7 +23,7 @@ final class OrderController extends AbstractController
     public function __construct(
         private readonly OrderRepository $orderRepository,
         private readonly AdminOrderManager $orderManager,
-        private readonly OrdersListPresenter $ordersListPresenter
+        private readonly OrdersListPresenter $ordersListPresenter,
     ) {
     }
 
@@ -68,10 +68,11 @@ final class OrderController extends AbstractController
         return $this->render('admin/orders/create.html.twig');
     }
 
-    #[Route('/{id}/edit', name: 'admin_orders_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_orders_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $order = $this->orderRepository->find($id);
+
         if (!$order) {
             throw $this->createNotFoundException('Order not found');
         }
@@ -81,10 +82,11 @@ final class OrderController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_orders_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_orders_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(int $id, #[MapRequestPayload] AdminOrderPayload $payload): Response
     {
         $order = $this->orderRepository->find($id);
+
         if (!$order) {
             throw $this->createNotFoundException('Order not found');
         }
@@ -95,10 +97,11 @@ final class OrderController extends AbstractController
         return $this->redirectToRoute('admin_orders_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_orders_delete', requirements: ['id' => '\\d+'], methods: ['POST', 'DELETE'])]
+    #[Route('/{id}/delete', name: 'admin_orders_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
     public function delete(int $id): Response
     {
         $order = $this->orderRepository->find($id);
+
         if (!$order) {
             throw $this->createNotFoundException('Order not found');
         }

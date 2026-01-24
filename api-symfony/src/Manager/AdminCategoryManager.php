@@ -15,7 +15,7 @@ final readonly class AdminCategoryManager
     public function __construct(
         private EntityManagerInterface $entityManager,
         private CategoryRepository $categoryRepository,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
     ) {
     }
 
@@ -41,7 +41,7 @@ final readonly class AdminCategoryManager
 
         while ($this->categoryRepository->findOneBy(['slug' => $slug])) {
             $slug = $base . '-' . $suffix;
-            $suffix++;
+            ++$suffix;
         }
 
         return $slug;
@@ -53,7 +53,7 @@ final readonly class AdminCategoryManager
         $category->setDetailText($payload->detailText);
         $category->setPreviewText($payload->previewText);
 
-        if ($category->getSlug() === '') {
+        if ('' === $category->getSlug()) {
             $category->setSlug($this->generateUniqueSlug($payload->title));
         }
 

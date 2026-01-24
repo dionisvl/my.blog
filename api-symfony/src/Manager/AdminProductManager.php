@@ -22,7 +22,7 @@ final readonly class AdminProductManager
         private CategoryRepository $categoryRepository,
         private SluggerInterface $slugger,
         private TokenStorageInterface $tokenStorage,
-        #[Autowire('%kernel.project_dir%')] private string $projectDir
+        #[Autowire('%kernel.project_dir%')] private string $projectDir,
     ) {
     }
 
@@ -31,6 +31,7 @@ final readonly class AdminProductManager
         $product = new Product();
         $token = $this->tokenStorage->getToken();
         $user = $token?->getUser();
+
         if ($user instanceof User) {
             $product->setAuthor($user);
         }
@@ -44,10 +45,12 @@ final readonly class AdminProductManager
         $product->setSlug($this->generateUniqueSlug($payload->title, $product));
         $product->setDetailText($payload->detailText);
         $product->setPreviewText($payload->previewText);
-        if ($payload->price !== null) {
+
+        if (null !== $payload->price) {
             $product->setPrice($payload->price);
         }
-        if ($payload->balance !== null) {
+
+        if (null !== $payload->balance) {
             $product->setBalance($payload->balance);
         }
         $product->setComposition($payload->composition);
@@ -55,35 +58,40 @@ final readonly class AdminProductManager
         $product->setSize($payload->size);
         $product->setManufacturer($payload->manufacturer);
         $product->setDelivery($payload->delivery);
-        if ($payload->stars !== null) {
+
+        if (null !== $payload->stars) {
             $product->setStars($payload->stars);
         }
 
-        if ($payload->date !== null && $payload->date !== '') {
+        if (null !== $payload->date && '' !== $payload->date) {
             $parsed = \DateTime::createFromFormat('Y-m-d', $payload->date);
-            if ($parsed instanceof \DateTime) {
-                $product->setDate($parsed);
+
+            if (false === $parsed) {
+                throw new \InvalidArgumentException(\sprintf('Invalid date format: %s', $payload->date));
             }
+            $product->setDate($parsed);
         }
 
-        if ($payload->categoryId !== null) {
+        if (null !== $payload->categoryId) {
             $category = $this->categoryRepository->find($payload->categoryId);
+
             if ($category) {
                 $product->setCategory($category);
             }
         }
 
         $uploadDir = $this->projectDir . '/public/storage/shop_uploads';
+
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+            mkdir($uploadDir, 0755, true);
         }
 
-        if ($payload->previewPicture !== null) {
+        if (null !== $payload->previewPicture) {
             $product->removeImage('preview_picture', $uploadDir);
             $product->uploadImage($payload->previewPicture, 'preview_picture', $uploadDir);
         }
 
-        if ($payload->detailPicture !== null) {
+        if (null !== $payload->detailPicture) {
             $product->removeImage('detail_picture', $uploadDir);
             $product->uploadImage($payload->detailPicture, 'detail_picture', $uploadDir);
         }
@@ -102,7 +110,7 @@ final readonly class AdminProductManager
 
         while ($this->slugExists($slug, $current)) {
             $slug = $base . '-' . $suffix;
-            $suffix++;
+            ++$suffix;
         }
 
         return $slug;
@@ -111,11 +119,12 @@ final readonly class AdminProductManager
     private function slugExists(string $slug, ?Product $current): bool
     {
         $existing = $this->productRepository->findOneBy(['slug' => $slug]);
-        if ($existing === null) {
+
+        if (null === $existing) {
             return false;
         }
 
-        if ($current === null || $current->getId() === null) {
+        if (null === $current || null === $current->getId()) {
             return true;
         }
 

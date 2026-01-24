@@ -20,7 +20,7 @@ final class UserController extends AbstractController
 {
     public function __construct(
         private readonly UserRepository $userRepository,
-        private readonly AdminUserManager $userManager
+        private readonly AdminUserManager $userManager,
     ) {
     }
 
@@ -37,7 +37,7 @@ final class UserController extends AbstractController
     #[Route('/store', name: 'admin_users_store', methods: ['POST'])]
     public function store(#[MapRequestPayload] AdminUserPayload $payload): Response
     {
-        if ($payload->password === null || $payload->password === '') {
+        if (null === $payload->password || '' === $payload->password) {
             return new JsonResponse([
                 'errors' => [
                     ['field' => 'password', 'message' => 'Password is required.'],
@@ -57,7 +57,7 @@ final class UserController extends AbstractController
         return $this->render('admin/users/create.html.twig');
     }
 
-    #[Route('/{id}/edit', name: 'admin_users_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_users_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $user = $this->userRepository->find($id);
@@ -71,7 +71,7 @@ final class UserController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_users_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_users_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(int $id, #[MapRequestPayload] AdminUserPayload $payload): Response
     {
         $user = $this->userRepository->find($id);
@@ -86,7 +86,7 @@ final class UserController extends AbstractController
         return $this->redirectToRoute('admin_users_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_users_delete', requirements: ['id' => '\\d+'], methods: ['POST', 'DELETE'])]
+    #[Route('/{id}/delete', name: 'admin_users_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
     public function delete(int $id): Response
     {
         $user = $this->userRepository->find($id);

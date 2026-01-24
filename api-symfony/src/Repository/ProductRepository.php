@@ -33,6 +33,7 @@ final class ProductRepository extends ServiceEntityRepository
     {
         /** @var Product|null $product */
         $product = $this->findOneBy(['slug' => $slug]);
+
         return $product;
     }
 }

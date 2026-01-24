@@ -17,7 +17,7 @@ final class CommentController extends AbstractController
 {
     public function __construct(
         private readonly PostRepository $postRepository,
-        private readonly CommentManager $commentManager
+        private readonly CommentManager $commentManager,
     ) {
     }
 
@@ -31,16 +31,19 @@ final class CommentController extends AbstractController
 
         if (empty($message)) {
             $this->addFlash('error', 'Comment text is required');
+
             return $this->redirect($referer);
         }
 
         if ($countMe < 3) {
             $this->addFlash('error', 'Anti-bot check failed');
+
             return $this->redirect($referer);
         }
 
         if (!empty($honeypot)) {
             $this->addFlash('error', 'Error: HPF');
+
             return $this->redirect($referer);
         }
 
@@ -48,6 +51,7 @@ final class CommentController extends AbstractController
 
         if (!$post) {
             $this->addFlash('error', 'Post not found');
+
             return $this->redirect($referer);
         }
 

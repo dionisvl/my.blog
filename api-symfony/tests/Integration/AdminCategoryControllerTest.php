@@ -12,6 +12,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
     public static function provideCategoryPayloads(): iterable
     {
         yield 'simple content' => ['Backend', 'Detailed text', 'Preview text'];
+
         yield 'empty descriptions' => ['DevOps', null, null];
     }
 
@@ -32,9 +33,9 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $category = $this->em->getRepository(Category::class)->findOneBy(['title' => $title]);
 
-        $this->assertNotNull($category);
-        $this->assertContains($category->getDetailText(), [$detail, '']);
-        $this->assertContains($category->getPreviewText(), [$preview, '']);
+        self::assertNotNull($category);
+        self::assertContains($category->getDetailText(), [$detail, '']);
+        self::assertContains($category->getPreviewText(), [$preview, '']);
 
         $newTitle = $title . ' Updated';
 
@@ -50,8 +51,8 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $updated = $this->em->getRepository(Category::class)->find($category->getId());
 
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
 
         $this->client->request('POST', '/admin/categories/' . $category->getId() . '/delete');
 
@@ -59,7 +60,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Category::class)->find($category->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testCategoryIndexView(): void
@@ -75,7 +76,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/categories/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Python', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Python', $this->client->getResponse()->getContent());
     }
 
     public function testCategoryCreateView(): void
@@ -86,7 +87,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_categories_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testCategoryEditView(): void
@@ -102,9 +103,11 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/categories/' . $category->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
-        $action = self::getContainer()->get('router')->generate('admin_categories_update', ['id' => $category->getId()]
+        $action = self::getContainer()->get('router')->generate(
+            'admin_categories_update',
+            ['id' => $category->getId()],
         );
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testCategoryValidationErrorsReturnJson(): void
@@ -117,8 +120,8 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
     }
 
     public function testCategorySlugIsUnique(): void
@@ -135,11 +138,11 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
             'title' => 'Same Title',
         ]);
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
 
         $this->em->clear();
         $categories = $this->em->getRepository(Category::class)->findBy(['title' => 'Same Title']);
-        $this->assertCount(1, $categories);
+        self::assertCount(1, $categories);
     }
 }

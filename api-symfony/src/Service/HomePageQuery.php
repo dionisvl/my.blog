@@ -17,17 +17,17 @@ final readonly class HomePageQuery
         private PostRepository $posts,
         private CategoryRepository $categories,
         private TagRepository $tags,
-        private AphorismQuery $aphorisms
+        private AphorismQuery $aphorisms,
     ) {
     }
 
     /**
-     * @return array{posts: list<Post>, categories: list<array{0: Category, posts_count: string|int}>, featuredPosts: list<Post>, recentPosts: list<Post>}
+     * @return array{posts: list<Post>, categories: list<array{0: Category, posts_count: int|string}>, featuredPosts: list<Post>, recentPosts: list<Post>}
      */
     public function getIndexViewData(
         int $postLimit = 20,
         int $featuredLimit = 3,
-        int $recentLimit = 4
+        int $recentLimit = 4,
     ): array {
         return [
             'posts' => $this->posts->findPublishedLatest($postLimit),
@@ -64,6 +64,11 @@ final readonly class HomePageQuery
     public function findPostForShow(string $slug): ?Post
     {
         return $this->posts->findPublishedBySlug($slug);
+    }
+
+    public function findPostBySlug(string $slug): ?Post
+    {
+        return $this->posts->findOneBy(['slug' => $slug]);
     }
 
     public function findCategoryBySlug(string $slug): ?Category
@@ -117,13 +122,13 @@ final readonly class HomePageQuery
     }
 
     /**
-     * @return array{post: Post, featuredPosts: list<Post>, recentPosts: list<Post>, categories: list<array{0: Category, posts_count: string|int}>}
+     * @return array{post: Post, featuredPosts: list<Post>, recentPosts: list<Post>, categories: list<array{0: Category, posts_count: int|string}>}
      */
     public function getShowViewData(
         Post $post,
         int $featuredLimit = 3,
         int $recentLimit = 4,
-        int $minCategoryCount = 2
+        int $minCategoryCount = 2,
     ): array {
         return [
             'post' => $post,

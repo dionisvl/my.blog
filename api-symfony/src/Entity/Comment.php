@@ -53,12 +53,17 @@ class Comment
 
     public function getAuthorName(): string
     {
+        if (!isset($this->authorName) || '' === $this->authorName) {
+            return 'anon';
+        }
+
         return $this->authorName;
     }
 
     public function setAuthorName(string $authorName): self
     {
         $this->authorName = $authorName;
+
         return $this;
     }
 
@@ -70,6 +75,7 @@ class Comment
     public function setText(string $text): self
     {
         $this->text = $text;
+
         return $this;
     }
 
@@ -81,6 +87,7 @@ class Comment
     public function setPost(Post $post): self
     {
         $this->post = $post;
+
         return $this;
     }
 
@@ -92,6 +99,7 @@ class Comment
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
         return $this;
     }
 
@@ -103,13 +111,15 @@ class Comment
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
     public function toggleStatus(): void
     {
-        if ($this->status == 1) {
+        if (1 === $this->status) {
             $this->disallow();
+
             return;
         }
 
@@ -138,7 +148,7 @@ class Comment
 
     public function getAuthorImage(): string
     {
-        if ($this->author === null) {
+        if (null === $this->author) {
             return '/storage/blog_images/no-image.png';
         }
 
@@ -153,15 +163,19 @@ class Comment
         if ($diff->y > 0) {
             return $diff->y . ' year' . ($diff->y > 1 ? 's' : '') . ' ago';
         }
+
         if ($diff->m > 0) {
             return $diff->m . ' month' . ($diff->m > 1 ? 's' : '') . ' ago';
         }
+
         if ($diff->d > 0) {
             return $diff->d . ' day' . ($diff->d > 1 ? 's' : '') . ' ago';
         }
+
         if ($diff->h > 0) {
             return $diff->h . ' hour' . ($diff->h > 1 ? 's' : '') . ' ago';
         }
+
         if ($diff->i > 0) {
             return $diff->i . ' minute' . ($diff->i > 1 ? 's' : '') . ' ago';
         }

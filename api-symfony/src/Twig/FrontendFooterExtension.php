@@ -19,14 +19,15 @@ final class FrontendFooterExtension extends AbstractExtension implements Globals
     public function __construct(
         private readonly PostRepository $posts,
         private readonly CacheInterface $cache,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
     ) {
     }
 
     public function getGlobals(): array
     {
         $request = $this->requestStack->getCurrentRequest();
-        if ($request === null || str_starts_with($request->getPathInfo(), '/admin')) {
+
+        if (null === $request || str_starts_with($request->getPathInfo(), '/admin')) {
             return [
                 'customCategoryPost' => null,
             ];
@@ -38,14 +39,15 @@ final class FrontendFooterExtension extends AbstractExtension implements Globals
             return $this->posts->findRandomPublishedId();
         });
 
-        if ($postId === null) {
+        if (null === $postId) {
             return [
                 'customCategoryPost' => null,
             ];
         }
 
         $post = $this->posts->findPublishedById($postId);
-        if ($post === null) {
+
+        if (null === $post) {
             $this->cache->delete(self::CACHE_KEY);
         }
 

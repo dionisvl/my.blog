@@ -82,6 +82,7 @@ class Order
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -93,6 +94,7 @@ class Order
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -104,6 +106,7 @@ class Order
     public function setPrice(?int $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -115,6 +118,7 @@ class Order
     public function setCustomer(?User $customer): self
     {
         $this->customer = $customer;
+
         return $this;
     }
 
@@ -126,6 +130,7 @@ class Order
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
         return $this;
     }
 
@@ -137,6 +142,7 @@ class Order
     public function setAddress(?string $address): self
     {
         $this->address = $address;
+
         return $this;
     }
 
@@ -148,6 +154,7 @@ class Order
     public function setNotes(?string $notes): self
     {
         $this->notes = $notes;
+
         return $this;
     }
 
@@ -159,6 +166,7 @@ class Order
     public function setContents(?string $contents): self
     {
         $this->contents = $contents;
+
         return $this;
     }
 
@@ -170,6 +178,7 @@ class Order
     public function setContentsJson(?string $contentsJson): self
     {
         $this->contentsJson = $contentsJson;
+
         return $this;
     }
 
@@ -181,6 +190,7 @@ class Order
     public function setManager(?string $manager): self
     {
         $this->manager = $manager;
+
         return $this;
     }
 
@@ -192,6 +202,7 @@ class Order
     public function setManagerId(?int $managerId): self
     {
         $this->managerId = $managerId;
+
         return $this;
     }
 
@@ -203,6 +214,7 @@ class Order
     public function setStatus(?int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -214,6 +226,7 @@ class Order
     public function setStatusDate(?\DateTimeInterface $statusDate): self
     {
         $this->statusDate = $statusDate;
+
         return $this;
     }
 

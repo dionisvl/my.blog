@@ -14,7 +14,7 @@ final readonly class CommentManager
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private UserRepository $users
+        private UserRepository $users,
     ) {
     }
 
@@ -29,6 +29,7 @@ final readonly class CommentManager
             $comment->setAuthorName($user->getName());
         } else {
             $anonymousUser = $this->users->find(777);
+
             if ($anonymousUser instanceof User) {
                 $comment->setAuthor($anonymousUser);
             }

@@ -26,7 +26,7 @@ final class AdminPostPayload
         public string|bool $isFeatured = false,
         #[SerializedName('tags')]
         public array $tags = [],
-        public ?UploadedFile $image = null
+        public ?UploadedFile $image = null,
     ) {
     }
 }

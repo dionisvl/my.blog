@@ -15,12 +15,14 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
     public static function providePostFormData(): iterable
     {
         yield 'published featured' => ['0', '1', '2024-01-02'];
+
         yield 'draft not featured' => ['1', '0', '2023-12-31'];
     }
 
     public static function provideAdminViews(): iterable
     {
         yield 'create view' => ['/admin/posts/create', 'admin_posts_store'];
+
         yield 'edit view' => ['/admin/posts/%d/edit', 'admin_posts_update'];
     }
 
@@ -32,7 +34,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $post = $this->createPost($user, $category, 'Edit Me', 'edit-me', false);
 
         $path = str_contains($pathTemplate, '%d')
-            ? sprintf($pathTemplate, (int)$post->getId())
+            ? \sprintf($pathTemplate, (int)$post->getId())
             : $pathTemplate;
 
         $this->client->loginUser($user);
@@ -40,11 +42,11 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
-        $routeParams = $routeName === 'admin_posts_update' && $post->getId()
+        $routeParams = 'admin_posts_update' === $routeName && $post->getId()
             ? ['id' => $post->getId()]
             : [];
         $action = self::getContainer()->get('router')->generate($routeName, $routeParams);
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     private function createCategory(string $title, string $slug): Category
@@ -64,7 +66,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         Category $category,
         string $title,
         string $slug,
-        bool $published = false
+        bool $published = false,
     ): Post {
         $post = new Post();
         $post->setTitle($title);
@@ -109,12 +111,12 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $post = $this->em->getRepository(Post::class)->findOneBy(['title' => $title]);
 
-        $this->assertNotNull($post);
-        $this->assertSame($title, $post->getTitle());
-        $this->assertSame($date, $post->getCreatedAt()->format('Y-m-d'));
-        $this->assertSame((bool)filter_var($status, FILTER_VALIDATE_BOOLEAN), $post->getStatus());
-        $this->assertSame((bool)filter_var($isFeatured, FILTER_VALIDATE_BOOLEAN), $post->isFeatured());
-        $this->assertCount(1, $post->getTags());
+        self::assertNotNull($post);
+        self::assertSame($title, $post->getTitle());
+        self::assertSame($date, $post->getCreatedAt()->format('Y-m-d'));
+        self::assertSame((bool)filter_var($status, \FILTER_VALIDATE_BOOLEAN), $post->getStatus());
+        self::assertSame((bool)filter_var($isFeatured, \FILTER_VALIDATE_BOOLEAN), $post->isFeatured());
+        self::assertCount(1, $post->getTags());
     }
 
     private function createTag(string $title, string $slug): Tag
@@ -157,12 +159,12 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $updated = $this->em->getRepository(Post::class)->find($post->getId());
 
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
-        $this->assertSame($date, $updated->getCreatedAt()->format('Y-m-d'));
-        $this->assertSame((bool)filter_var($status, FILTER_VALIDATE_BOOLEAN), $updated->getStatus());
-        $this->assertSame((bool)filter_var($isFeatured, FILTER_VALIDATE_BOOLEAN), $updated->isFeatured());
-        $this->assertCount(1, $updated->getTags());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
+        self::assertSame($date, $updated->getCreatedAt()->format('Y-m-d'));
+        self::assertSame((bool)filter_var($status, \FILTER_VALIDATE_BOOLEAN), $updated->getStatus());
+        self::assertSame((bool)filter_var($isFeatured, \FILTER_VALIDATE_BOOLEAN), $updated->isFeatured());
+        self::assertCount(1, $updated->getTags());
     }
 
     public function testOpenPostPage(): void
@@ -174,7 +176,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/post/' . $post->getSlug());
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Public Post', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Public Post', $this->client->getResponse()->getContent());
     }
 
     public function testDeletePostViaAdminForm(): void
@@ -184,7 +186,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $post = $this->createPost($user, $category, 'To Delete', 'to-delete');
         $postId = $post->getId();
 
-        $this->assertNotNull($postId);
+        self::assertNotNull($postId);
         $this->client->loginUser($user);
 
         $this->client->request('POST', '/admin/posts/' . $postId . '/delete');
@@ -193,7 +195,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Post::class)->find($postId);
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testEditedPostAppearsOnHomeAndShowPages(): void
@@ -217,10 +219,10 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $post = $this->em->getRepository(Post::class)->findOneBy(['title' => 'Original Title']);
-        $this->assertNotNull($post);
+        self::assertNotNull($post);
 
         $postId = $post->getId();
-        $this->assertNotNull($postId);
+        self::assertNotNull($postId);
 
         $this->client->request('POST', '/admin/posts/' . $postId . '/update', [
             'title' => 'Updated Title',
@@ -236,14 +238,14 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(Post::class)->find($postId);
-        $this->assertNotNull($updated);
+        self::assertNotNull($updated);
 
         $this->client->request('GET', '/');
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Updated Title', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Updated Title', $this->client->getResponse()->getContent());
 
         $this->client->request('GET', '/post/' . $updated->getSlug());
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Updated Title', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Updated Title', $this->client->getResponse()->getContent());
     }
 }

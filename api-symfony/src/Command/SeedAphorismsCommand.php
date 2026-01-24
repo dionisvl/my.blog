@@ -15,14 +15,14 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsCommand(
     name: 'app:seed-aphorisms',
-    description: 'Seeds sample aphorisms for local development.'
+    description: 'Seeds sample aphorisms for local development.',
 )]
 final class SeedAphorismsCommand extends Command
 {
     public function __construct(
         private readonly Connection $connection,
         #[Autowire('%kernel.environment%')]
-        private readonly string $environment
+        private readonly string $environment,
     ) {
         parent::__construct();
     }
@@ -40,6 +40,7 @@ final class SeedAphorismsCommand extends Command
 
         if (!\in_array($this->environment, ['dev', 'test'], true) && !$input->getOption('force')) {
             $io->error('Seeding is only allowed in dev/test. Use --force to override.');
+
             return Command::FAILURE;
         }
 
@@ -47,7 +48,8 @@ final class SeedAphorismsCommand extends Command
         $currentCount = (int)$this->connection->fetchOne('SELECT COUNT(id) FROM aphorism');
 
         if ($currentCount >= $targetCount) {
-            $io->success(sprintf('Aphorisms already present: %d.', $currentCount));
+            $io->success(\sprintf('Aphorisms already present: %d.', $currentCount));
+
             return Command::SUCCESS;
         }
 
@@ -78,11 +80,12 @@ final class SeedAphorismsCommand extends Command
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
-            $currentCount++;
-            $inserted++;
+            ++$currentCount;
+            ++$inserted;
         }
 
-        $io->success(sprintf('Inserted %d aphorism(s).', $inserted));
+        $io->success(\sprintf('Inserted %d aphorism(s).', $inserted));
+
         return Command::SUCCESS;
     }
 }

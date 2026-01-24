@@ -54,6 +54,7 @@ class Category
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -65,6 +66,7 @@ class Category
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -76,6 +78,7 @@ class Category
     public function setPreviewText(?string $previewText): self
     {
         $this->previewText = $previewText;
+
         return $this;
     }
 
@@ -87,6 +90,31 @@ class Category
     public function setDetailText(?string $detailText): self
     {
         $this->detailText = $detailText;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
         return $this;
     }
 }

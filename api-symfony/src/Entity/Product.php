@@ -113,6 +113,7 @@ class Product
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -124,6 +125,7 @@ class Product
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -135,6 +137,7 @@ class Product
     public function setPrice(int $price): self
     {
         $this->price = $price;
+
         return $this;
     }
 
@@ -146,6 +149,7 @@ class Product
     public function setBalance(int $balance): self
     {
         $this->balance = $balance;
+
         return $this;
     }
 
@@ -157,6 +161,7 @@ class Product
     public function setDetailText(?string $detailText): self
     {
         $this->detailText = $detailText;
+
         return $this;
     }
 
@@ -168,6 +173,7 @@ class Product
     public function setPreviewText(?string $previewText): self
     {
         $this->previewText = $previewText;
+
         return $this;
     }
 
@@ -179,6 +185,7 @@ class Product
     public function setComposition(?string $composition): self
     {
         $this->composition = $composition;
+
         return $this;
     }
 
@@ -190,6 +197,7 @@ class Product
     public function setFeatures(?string $features): self
     {
         $this->features = $features;
+
         return $this;
     }
 
@@ -201,6 +209,7 @@ class Product
     public function setSize(?string $size): self
     {
         $this->size = $size;
+
         return $this;
     }
 
@@ -212,6 +221,7 @@ class Product
     public function setManufacturer(?string $manufacturer): self
     {
         $this->manufacturer = $manufacturer;
+
         return $this;
     }
 
@@ -223,6 +233,7 @@ class Product
     public function setManufacturerId(?int $manufacturerId): self
     {
         $this->manufacturerId = $manufacturerId;
+
         return $this;
     }
 
@@ -234,6 +245,7 @@ class Product
     public function setDelivery(?string $delivery): self
     {
         $this->delivery = $delivery;
+
         return $this;
     }
 
@@ -245,6 +257,7 @@ class Product
     public function setDeliveryId(?int $deliveryId): self
     {
         $this->deliveryId = $deliveryId;
+
         return $this;
     }
 
@@ -256,6 +269,7 @@ class Product
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
         return $this;
     }
 
@@ -267,6 +281,7 @@ class Product
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
         return $this;
     }
 
@@ -278,6 +293,7 @@ class Product
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -289,6 +305,7 @@ class Product
     public function setViews(int $views): self
     {
         $this->views = $views;
+
         return $this;
     }
 
@@ -300,6 +317,7 @@ class Product
     public function setIsFeatured(int $isFeatured): self
     {
         $this->isFeatured = $isFeatured;
+
         return $this;
     }
 
@@ -311,6 +329,7 @@ class Product
     public function setViewsCount(int $viewsCount): self
     {
         $this->viewsCount = $viewsCount;
+
         return $this;
     }
 
@@ -322,6 +341,7 @@ class Product
     public function setStars(float $stars): self
     {
         $this->stars = $stars;
+
         return $this;
     }
 
@@ -333,6 +353,7 @@ class Product
     public function setPreviewPicture(?string $previewPicture): self
     {
         $this->previewPicture = $previewPicture;
+
         return $this;
     }
 
@@ -344,6 +365,7 @@ class Product
     public function setDetailPicture(?string $detailPicture): self
     {
         $this->detailPicture = $detailPicture;
+
         return $this;
     }
 
@@ -355,6 +377,7 @@ class Product
     public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
+
         return $this;
     }
 
@@ -370,8 +393,9 @@ class Product
 
     public function getImage(string $type): string
     {
-        $value = $type === 'detail_picture' ? $this->detailPicture : $this->previewPicture;
-        if ($value === null) {
+        $value = 'detail_picture' === $type ? $this->detailPicture : $this->previewPicture;
+
+        if (null === $value) {
             return '/storage/shop_uploads/no-image.png';
         }
 
@@ -381,7 +405,7 @@ class Product
     public function uploadImage(
         \Symfony\Component\HttpFoundation\File\UploadedFile $imageFile,
         string $type,
-        string $uploadDir
+        string $uploadDir,
     ): void {
         $timestamp = (new \DateTime())->format('Y-m-d_H-i-s');
         $randomString = bin2hex(random_bytes(2));
@@ -390,7 +414,7 @@ class Product
 
         $imageFile->move($uploadDir, $filename);
 
-        if ($type === 'detail_picture') {
+        if ('detail_picture' === $type) {
             $this->detailPicture = $filename;
         } else {
             $this->previewPicture = $filename;
@@ -399,12 +423,14 @@ class Product
 
     public function removeImage(string $type, string $uploadDir): void
     {
-        $value = $type === 'detail_picture' ? $this->detailPicture : $this->previewPicture;
-        if ($value === null) {
+        $value = 'detail_picture' === $type ? $this->detailPicture : $this->previewPicture;
+
+        if (null === $value) {
             return;
         }
 
         $filepath = $uploadDir . '/' . $value;
+
         if (file_exists($filepath)) {
             unlink($filepath);
         }

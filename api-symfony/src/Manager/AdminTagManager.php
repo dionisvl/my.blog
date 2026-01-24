@@ -15,7 +15,7 @@ final readonly class AdminTagManager
     public function __construct(
         private EntityManagerInterface $entityManager,
         private TagRepository $tagRepository,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
     ) {
     }
 
@@ -39,7 +39,7 @@ final readonly class AdminTagManager
 
         while ($this->tagRepository->findOneBy(['slug' => $slug])) {
             $slug = $base . '-' . $suffix;
-            $suffix++;
+            ++$suffix;
         }
 
         return $slug;
@@ -49,7 +49,7 @@ final readonly class AdminTagManager
     {
         $tag->setTitle($payload->title);
 
-        if ($tag->getSlug() === '') {
+        if ('' === $tag->getSlug()) {
             $tag->setSlug($this->generateUniqueSlug($payload->title));
         }
 

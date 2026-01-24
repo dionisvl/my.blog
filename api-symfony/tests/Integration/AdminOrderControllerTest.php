@@ -12,6 +12,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
     public static function provideOrderPayloads(): iterable
     {
         yield 'basic order' => ['Order One', 1200, 'Contents'];
+
         yield 'another order' => ['Order Two', 500, 'Another content'];
     }
 
@@ -32,8 +33,8 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $order = $this->em->getRepository(Order::class)->findOneBy(['title' => $title]);
-        $this->assertNotNull($order);
-        $this->assertSame($price, $order->getPrice());
+        self::assertNotNull($order);
+        self::assertSame($price, $order->getPrice());
 
         $newTitle = $title . ' Updated';
         $this->client->request('POST', '/admin/orders/' . $order->getId() . '/update', [
@@ -47,15 +48,15 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(Order::class)->find($order->getId());
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
 
         $this->client->request('POST', '/admin/orders/' . $order->getId() . '/delete');
         $this->assertResponseRedirects('/admin/orders/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Order::class)->find($order->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testOrderIndexView(): void
@@ -71,7 +72,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/orders/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Index Order', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Index Order', $this->client->getResponse()->getContent());
     }
 
     public function testOrderCreateView(): void
@@ -82,7 +83,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_orders_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testOrderEditView(): void
@@ -99,7 +100,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_orders_update', ['id' => $order->getId()]);
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testOrderValidationErrorsReturnJson(): void
@@ -112,7 +113,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
     }
 }

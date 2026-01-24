@@ -31,7 +31,7 @@ final readonly class PostLikeManager
         $postLike = new PostLike();
         $postLike->setPost($post);
 
-        if ($deviceMemory !== null) {
+        if (null !== $deviceMemory) {
             $postLike->setDeviceMemory($deviceMemory);
         }
 

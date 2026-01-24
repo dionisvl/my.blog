@@ -12,6 +12,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
     public static function provideUserUpdates(): iterable
     {
         yield 'no password change' => ['New Name', 'new@example.com', '', '1', '1'];
+
         yield 'with password change' => ['New Name 2', 'new2@example.com', 'secret123', '0', '0'];
     }
 
@@ -37,18 +38,18 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $this->em->clear();
         $updated = $this->em->getRepository(User::class)->find($user->getId());
 
-        $this->assertNotNull($updated);
-        $this->assertSame($name, $updated->getName());
-        $this->assertSame($email, $updated->getEmail());
+        self::assertNotNull($updated);
+        self::assertSame($name, $updated->getName());
+        self::assertSame($email, $updated->getEmail());
 
-        if ($password === '') {
-            $this->assertSame('oldhash', $updated->getPassword());
+        if ('' === $password) {
+            self::assertSame('oldhash', $updated->getPassword());
         } else {
-            $this->assertNotSame('oldhash', $updated->getPassword());
+            self::assertNotSame('oldhash', $updated->getPassword());
         }
 
-        $this->assertSame((bool)filter_var($isAdmin, FILTER_VALIDATE_BOOLEAN), $updated->isAdmin());
-        $this->assertSame((bool)filter_var($status, FILTER_VALIDATE_BOOLEAN) ? 1 : 0, $updated->getStatus());
+        self::assertSame((bool)filter_var($isAdmin, \FILTER_VALIDATE_BOOLEAN), $updated->isAdmin());
+        self::assertSame((bool)filter_var($status, \FILTER_VALIDATE_BOOLEAN) ? 1 : 0, $updated->getStatus());
     }
 
     private function createUser(string $name, string $email, string $password): User
@@ -75,7 +76,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/users/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('viewer@example.com', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('viewer@example.com', $this->client->getResponse()->getContent());
     }
 
     public function testUserEditView(): void
@@ -88,7 +89,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_users_update', ['id' => $user->getId()]);
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testUserDelete(): void
@@ -104,7 +105,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $deleted = $this->em->getRepository(User::class)->find($userId);
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testUserValidationErrorsReturnJson(): void
@@ -120,8 +121,8 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('email', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('email', $this->client->getResponse()->getContent());
     }
 
     public function testUserEmailMustBeUnique(): void
@@ -138,7 +139,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertStringContainsString('email', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('email', $this->client->getResponse()->getContent());
     }
 
     public function testCreateUser(): void
@@ -158,10 +159,10 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $created = $this->em->getRepository(User::class)->findOneBy(['email' => 'created@example.com']);
-        $this->assertNotNull($created);
-        $this->assertSame('Created User', $created->getName());
-        $this->assertTrue($created->isAdmin());
-        $this->assertSame(1, $created->getStatus());
+        self::assertNotNull($created);
+        self::assertSame('Created User', $created->getName());
+        self::assertTrue($created->isAdmin());
+        self::assertSame(1, $created->getStatus());
     }
 
     public function testCreateUserRequiresPassword(): void
@@ -175,7 +176,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('password', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('password', $this->client->getResponse()->getContent());
     }
 }

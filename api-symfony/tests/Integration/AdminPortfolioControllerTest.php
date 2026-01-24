@@ -12,6 +12,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
     public static function providePortfolioPayloads(): iterable
     {
         yield 'basic' => ['Portfolio One', 'Content', 'Description', true, false];
+
         yield 'featured draft' => ['Portfolio Two', null, null, false, true];
     }
 
@@ -21,7 +22,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         ?string $content,
         ?string $description,
         bool $status,
-        bool $featured
+        bool $featured,
     ): void {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
@@ -38,9 +39,9 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $portfolio = $this->em->getRepository(Portfolio::class)->findOneBy(['title' => $title]);
-        $this->assertNotNull($portfolio);
-        $this->assertSame($status ? 1 : 0, $portfolio->getStatus());
-        $this->assertSame($featured ? 1 : 0, $portfolio->getIsFeatured());
+        self::assertNotNull($portfolio);
+        self::assertSame($status ? 1 : 0, $portfolio->getStatus());
+        self::assertSame($featured ? 1 : 0, $portfolio->getIsFeatured());
 
         $newTitle = $title . ' Updated';
         $this->client->request('POST', '/admin/portfolios/' . $portfolio->getId() . '/update', [
@@ -55,15 +56,15 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(Portfolio::class)->find($portfolio->getId());
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
 
         $this->client->request('POST', '/admin/portfolios/' . $portfolio->getId() . '/delete');
         $this->assertResponseRedirects('/admin/portfolios/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Portfolio::class)->find($portfolio->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testPortfolioIndexView(): void
@@ -79,7 +80,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/portfolios/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Index Portfolio', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Index Portfolio', $this->client->getResponse()->getContent());
     }
 
     public function testPortfolioCreateView(): void
@@ -90,7 +91,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_portfolios_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testPortfolioEditView(): void
@@ -106,9 +107,11 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/portfolios/' . $portfolio->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
-        $action = self::getContainer()->get('router')->generate('admin_portfolios_update', ['id' => $portfolio->getId()]
+        $action = self::getContainer()->get('router')->generate(
+            'admin_portfolios_update',
+            ['id' => $portfolio->getId()],
         );
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testPortfolioValidationErrorsReturnJson(): void
@@ -121,7 +124,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
     }
 }

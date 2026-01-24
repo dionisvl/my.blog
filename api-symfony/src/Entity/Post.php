@@ -94,6 +94,7 @@ class Post
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -105,6 +106,7 @@ class Post
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -116,6 +118,7 @@ class Post
     public function setContent(?string $content): self
     {
         $this->content = $content;
+
         return $this;
     }
 
@@ -127,20 +130,23 @@ class Post
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
     public function getImage(): string
     {
-        if ($this->image === null) {
+        if (null === $this->image) {
             return '/storage/blog_images/no-image.png';
         }
+
         return '/storage/uploads/' . $this->image;
     }
 
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
         return $this;
     }
 
@@ -152,6 +158,7 @@ class Post
     public function setIsFeatured(bool $isFeatured): self
     {
         $this->isFeatured = $isFeatured;
+
         return $this;
     }
 
@@ -162,7 +169,7 @@ class Post
 
     public function incrementViewsCount(): void
     {
-        $this->viewsCount++;
+        ++$this->viewsCount;
     }
 
     public function getCreatedAt(): \DateTimeInterface
@@ -173,6 +180,7 @@ class Post
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
@@ -194,6 +202,7 @@ class Post
     public function setAuthor(User $author): self
     {
         $this->author = $author;
+
         return $this;
     }
 
@@ -205,6 +214,7 @@ class Post
     public function setCategory(?Category $category): self
     {
         $this->category = $category;
+
         return $this;
     }
 
@@ -239,12 +249,13 @@ class Post
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 
     public function getComments(): Collection
     {
-        return $this->comments->filter(fn($comment) => $comment->getStatus() === 1);
+        return $this->comments->filter(static fn($comment) => 1 === $comment->getStatus());
     }
 
     public function getStatus(): bool
@@ -255,12 +266,13 @@ class Post
     public function setStatus(bool $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
     public function uploadImage($imageFile, string $uploadDir): void
     {
-        if ($imageFile === null) {
+        if (null === $imageFile) {
             return;
         }
 
@@ -277,8 +289,9 @@ class Post
 
     public function removeImage(string $uploadDir): void
     {
-        if ($this->image !== null) {
+        if (null !== $this->image) {
             $filepath = $uploadDir . '/' . $this->image;
+
             if (file_exists($filepath)) {
                 unlink($filepath);
             }

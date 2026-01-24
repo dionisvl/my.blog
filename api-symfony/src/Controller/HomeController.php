@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Manager\PostViewManager;
 use App\Service\HomePageQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,7 +17,9 @@ final class HomeController extends AbstractController
 {
     public function __construct(
         private readonly HomePageQuery $homePageQuery,
-        private readonly PostViewManager $postViewManager
+        private readonly PostViewManager $postViewManager,
+        #[Autowire('%app.secure_cookies%')]
+        private readonly bool $secureCookies,
     ) {
     }
 
@@ -42,7 +45,11 @@ final class HomeController extends AbstractController
     #[Route('/post/{slug}', name: 'post_show')]
     public function show(string $slug, Request $request): Response
     {
-        $post = $this->homePageQuery->findPostForShow($slug);
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $post = $this->homePageQuery->findPostBySlug($slug);
+        } else {
+            $post = $this->homePageQuery->findPostForShow($slug);
+        }
 
         if (!$post) {
             throw $this->createNotFoundException('Post not found');
@@ -62,7 +69,7 @@ final class HomeController extends AbstractController
                 ->withValue((new \DateTime())->format('Y-m-d H:i:s'))
                 ->withExpires(time() + 60 * 60 * 24)
                 ->withPath('/')
-                ->withSecure(false)
+                ->withSecure($this->secureCookies)
                 ->withHttpOnly(true);
 
             $response->headers->setCookie($cookie);
@@ -80,10 +87,15 @@ final class HomeController extends AbstractController
     #[Route('/search', name: 'search', methods: ['GET', 'POST'])]
     public function search(Request $request): Response
     {
-        $query = trim((string)$request->get('q', ''));
+        $query = $request->query->get('q');
+
+        if (null === $query) {
+            $query = $request->request->get('q', '');
+        }
+        $query = trim((string)$query);
         $posts = [];
 
-        if ($query !== '') {
+        if ('' !== $query) {
             $posts = $this->homePageQuery->searchPosts($query, 20, $this->isGranted('ROLE_ADMIN'));
         }
 

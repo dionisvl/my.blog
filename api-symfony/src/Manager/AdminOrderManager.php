@@ -15,13 +15,14 @@ final readonly class AdminOrderManager
     public function __construct(
         private EntityManagerInterface $entityManager,
         private OrderRepository $orderRepository,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
     ) {
     }
 
     public function create(AdminOrderPayload $payload): Order
     {
         $order = new Order();
+
         return $this->applyPayload($order, $payload);
     }
 
@@ -52,7 +53,7 @@ final readonly class AdminOrderManager
 
         while ($this->slugExists($slug, $current)) {
             $slug = $base . '-' . $suffix;
-            $suffix++;
+            ++$suffix;
         }
 
         return $slug;
@@ -61,11 +62,12 @@ final readonly class AdminOrderManager
     private function slugExists(string $slug, ?Order $current): bool
     {
         $existing = $this->orderRepository->findOneBy(['slug' => $slug]);
-        if ($existing === null) {
+
+        if (null === $existing) {
             return false;
         }
 
-        if ($current === null || $current->getId() === null) {
+        if (null === $current || null === $current->getId()) {
             return true;
         }
 

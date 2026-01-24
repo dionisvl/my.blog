@@ -26,11 +26,13 @@ final readonly class OrdersListPresenter
     public function getExcelOrdersList(): Spreadsheet
     {
         $orders = $this->orderRepository->findAllOrderedByUpdatedAtDesc();
-        if ($orders === []) {
+
+        if ([] === $orders) {
             return new Spreadsheet();
         }
 
         $rows = [];
+
         foreach ($orders as $order) {
             $rows[] = [
                 'id' => $order->getId(),

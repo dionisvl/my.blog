@@ -15,13 +15,14 @@ final readonly class AdminFrontPartManager
     public function __construct(
         private EntityManagerInterface $entityManager,
         private FrontPartRepository $frontPartRepository,
-        private SluggerInterface $slugger
+        private SluggerInterface $slugger,
     ) {
     }
 
     public function create(AdminFrontPartPayload $payload): FrontPart
     {
         $frontPart = new FrontPart();
+
         return $this->applyPayload($frontPart, $payload);
     }
 
@@ -35,9 +36,9 @@ final readonly class AdminFrontPartManager
         $frontPart->setDetailText($payload->detailText);
         $frontPart->setUrl($payload->url);
 
-        $status = is_bool($payload->status)
+        $status = \is_bool($payload->status)
             ? $payload->status
-            : filter_var($payload->status, FILTER_VALIDATE_BOOLEAN);
+            : filter_var($payload->status, \FILTER_VALIDATE_BOOLEAN);
         $frontPart->setStatus($status ? '1' : '0');
 
         $this->entityManager->persist($frontPart);
@@ -54,7 +55,7 @@ final readonly class AdminFrontPartManager
 
         while ($this->slugExists($slug, $current)) {
             $slug = $base . '-' . $suffix;
-            $suffix++;
+            ++$suffix;
         }
 
         return $slug;
@@ -63,11 +64,12 @@ final readonly class AdminFrontPartManager
     private function slugExists(string $slug, ?FrontPart $current): bool
     {
         $existing = $this->frontPartRepository->findOneBy(['slug' => $slug]);
-        if ($existing === null) {
+
+        if (null === $existing) {
             return false;
         }
 
-        if ($current === null || $current->getId() === null) {
+        if (null === $current || null === $current->getId()) {
             return true;
         }
 

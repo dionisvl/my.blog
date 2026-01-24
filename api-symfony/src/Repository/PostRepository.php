@@ -159,7 +159,7 @@ final class PostRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
 
-        if ($count === 0) {
+        if (0 === $count) {
             return null;
         }
 
@@ -259,11 +259,13 @@ final class PostRepository extends ServiceEntityRepository
      */
     public function searchPosts(string $query, int $limit, bool $includeDrafts = false): array
     {
+        $escapedQuery = $this->escapeLikePattern($query);
         $builder = $this->createQueryBuilder('p')
-            ->where('p.title LIKE :query')
-            ->orWhere('p.description LIKE :query')
-            ->orWhere('p.content LIKE :query')
-            ->setParameter('query', '%' . $query . '%')
+            ->where('p.title LIKE :query ESCAPE :escape')
+            ->orWhere('p.description LIKE :query ESCAPE :escape')
+            ->orWhere('p.content LIKE :query ESCAPE :escape')
+            ->setParameter('query', '%' . $escapedQuery . '%')
+            ->setParameter('escape', '\\')
             ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults($limit);
 
@@ -276,6 +278,11 @@ final class PostRepository extends ServiceEntityRepository
         $rows = $builder->getQuery()->getResult();
 
         return $rows;
+    }
+
+    private function escapeLikePattern(string $pattern): string
+    {
+        return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $pattern);
     }
 
     /**

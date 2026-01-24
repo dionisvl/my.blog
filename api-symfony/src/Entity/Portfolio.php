@@ -73,6 +73,7 @@ class Portfolio
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -84,6 +85,7 @@ class Portfolio
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -95,12 +97,13 @@ class Portfolio
     public function setContent(?string $content): self
     {
         $this->content = $content;
+
         return $this;
     }
 
     public function getImagePath(): string
     {
-        if ($this->image === null) {
+        if (null === $this->image) {
             return '/storage/blog_images/no-image.png';
         }
 
@@ -115,6 +118,7 @@ class Portfolio
     public function setImage(?string $image): self
     {
         $this->image = $image;
+
         return $this;
     }
 
@@ -126,6 +130,7 @@ class Portfolio
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
@@ -137,6 +142,7 @@ class Portfolio
     public function setCategoryId(?int $categoryId): self
     {
         $this->categoryId = $categoryId;
+
         return $this;
     }
 
@@ -148,6 +154,7 @@ class Portfolio
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
         return $this;
     }
 
@@ -159,6 +166,7 @@ class Portfolio
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -170,6 +178,7 @@ class Portfolio
     public function setViews(int $views): self
     {
         $this->views = $views;
+
         return $this;
     }
 
@@ -181,6 +190,7 @@ class Portfolio
     public function setIsFeatured(int $isFeatured): self
     {
         $this->isFeatured = $isFeatured;
+
         return $this;
     }
 
@@ -207,11 +217,12 @@ class Portfolio
 
     public function removeImage(string $uploadDir): void
     {
-        if ($this->image === null) {
+        if (null === $this->image) {
             return;
         }
 
         $filepath = $uploadDir . '/' . $this->image;
+
         if (file_exists($filepath)) {
             unlink($filepath);
         }

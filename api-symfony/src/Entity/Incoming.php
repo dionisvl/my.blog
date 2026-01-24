@@ -57,6 +57,7 @@ class Incoming
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
 
@@ -68,6 +69,7 @@ class Incoming
     public function setEmail(?string $email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -79,6 +81,7 @@ class Incoming
     public function setPhone(?string $phone): self
     {
         $this->phone = $phone;
+
         return $this;
     }
 
@@ -90,6 +93,7 @@ class Incoming
     public function setMessage(string $message): self
     {
         $this->message = $message;
+
         return $this;
     }
 
@@ -101,6 +105,7 @@ class Incoming
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 

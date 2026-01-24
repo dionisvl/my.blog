@@ -66,6 +66,7 @@ class FrontPart
     public function setTitle(string $title): self
     {
         $this->title = $title;
+
         return $this;
     }
 
@@ -77,6 +78,7 @@ class FrontPart
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
@@ -88,6 +90,7 @@ class FrontPart
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
         return $this;
     }
 
@@ -99,6 +102,7 @@ class FrontPart
     public function setType(?string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -110,6 +114,7 @@ class FrontPart
     public function setCategoryName(?string $categoryName): self
     {
         $this->categoryName = $categoryName;
+
         return $this;
     }
 
@@ -121,6 +126,7 @@ class FrontPart
     public function setUrl(?string $url): self
     {
         $this->url = $url;
+
         return $this;
     }
 
@@ -132,6 +138,7 @@ class FrontPart
     public function setDetailText(?string $detailText): self
     {
         $this->detailText = $detailText;
+
         return $this;
     }
 
@@ -143,6 +150,7 @@ class FrontPart
     public function setPreviewText(?string $previewText): self
     {
         $this->previewText = $previewText;
+
         return $this;
     }
 

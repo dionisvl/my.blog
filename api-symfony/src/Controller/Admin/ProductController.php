@@ -23,7 +23,7 @@ final class ProductController extends AbstractController
     public function __construct(
         private readonly ProductRepository $productRepository,
         private readonly CategoryRepository $categoryRepository,
-        private readonly AdminProductManager $productManager
+        private readonly AdminProductManager $productManager,
     ) {
     }
 
@@ -62,10 +62,11 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'admin_products_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_products_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $product = $this->productRepository->find($id);
+
         if (!$product) {
             throw $this->createNotFoundException('Product not found');
         }
@@ -78,7 +79,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_products_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_products_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(
         int $id,
         #[MapRequestPayload] AdminProductPayload $payload,
@@ -86,6 +87,7 @@ final class ProductController extends AbstractController
         #[MapUploadedFile(name: 'detail_picture')] ?UploadedFile $detailPicture = null,
     ): Response {
         $product = $this->productRepository->find($id);
+
         if (!$product) {
             throw $this->createNotFoundException('Product not found');
         }
@@ -99,10 +101,11 @@ final class ProductController extends AbstractController
         return $this->redirectToRoute('admin_products_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_products_delete', requirements: ['id' => '\\d+'], methods: ['POST', 'DELETE'])]
+    #[Route('/{id}/delete', name: 'admin_products_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
     public function delete(int $id): Response
     {
         $product = $this->productRepository->find($id);
+
         if (!$product) {
             throw $this->createNotFoundException('Product not found');
         }

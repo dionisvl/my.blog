@@ -17,11 +17,11 @@ final class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{0: Category, posts_count: string|int}>
+     * @return list<array{0: Category, posts_count: int|string}>
      */
     public function findWithPostCounts(): array
     {
-        /** @var list<array{0: Category, posts_count: string|int}> $rows */
+        /** @var list<array{0: Category, posts_count: int|string}> $rows */
         $rows = $this->createQueryBuilder('c')
             ->select('c', 'COUNT(p.id) as posts_count')
             ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c.id AND p.status = false')
@@ -35,11 +35,11 @@ final class CategoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return list<array{0: Category, posts_count: string|int}>
+     * @return list<array{0: Category, posts_count: int|string}>
      */
     public function findPopularWithPostCounts(int $minCount = 2): array
     {
-        /** @var list<array{0: Category, posts_count: string|int}> $rows */
+        /** @var list<array{0: Category, posts_count: int|string}> $rows */
         $rows = $this->createQueryBuilder('c')
             ->select('c', 'COUNT(p.id) as posts_count')
             ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c.id AND p.status = false')

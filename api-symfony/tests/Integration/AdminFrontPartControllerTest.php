@@ -12,6 +12,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
     public static function provideFrontPartPayloads(): iterable
     {
         yield 'simple component' => ['Hero Banner', 'UI', 'JS', 'Preview text', 'Detail text', '1'];
+
         yield 'css snippet' => ['Buttons', 'UI', 'CSS', null, null, '0'];
     }
 
@@ -22,7 +23,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         ?string $type,
         ?string $previewText,
         ?string $detailText,
-        string $status
+        string $status,
     ): void {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
@@ -40,8 +41,8 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $frontPart = $this->em->getRepository(FrontPart::class)->findOneBy(['title' => $title]);
-        $this->assertNotNull($frontPart);
-        $this->assertSame($status === '1' ? '1' : '0', $frontPart->getStatus());
+        self::assertNotNull($frontPart);
+        self::assertSame('1' === $status ? '1' : '0', $frontPart->getStatus());
 
         $newTitle = $title . ' Updated';
         $this->client->request('POST', '/admin/frontparts/' . $frontPart->getId() . '/update', [
@@ -57,15 +58,15 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $updated = $this->em->getRepository(FrontPart::class)->find($frontPart->getId());
-        $this->assertNotNull($updated);
-        $this->assertSame($newTitle, $updated->getTitle());
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
 
         $this->client->request('POST', '/admin/frontparts/' . $frontPart->getId() . '/delete');
         $this->assertResponseRedirects('/admin/frontparts/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(FrontPart::class)->find($frontPart->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testFrontPartsIndexView(): void
@@ -81,7 +82,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/frontparts/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('Index Component', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('Index Component', $this->client->getResponse()->getContent());
     }
 
     public function testFrontPartCreateView(): void
@@ -92,7 +93,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_frontparts_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testFrontPartEditView(): void
@@ -108,9 +109,11 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/frontparts/' . $frontPart->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
-        $action = self::getContainer()->get('router')->generate('admin_frontparts_update', ['id' => $frontPart->getId()]
+        $action = self::getContainer()->get('router')->generate(
+            'admin_frontparts_update',
+            ['id' => $frontPart->getId()],
         );
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testFrontPartValidationErrorsReturnJson(): void
@@ -123,7 +126,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('title', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
     }
 }

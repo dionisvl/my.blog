@@ -48,6 +48,7 @@ class Subscription
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
         return $this;
     }
 
@@ -59,6 +60,7 @@ class Subscription
     public function setToken(?string $token): self
     {
         $this->token = $token;
+
         return $this;
     }
 
@@ -70,6 +72,7 @@ class Subscription
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
@@ -81,6 +84,7 @@ class Subscription
     public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 }

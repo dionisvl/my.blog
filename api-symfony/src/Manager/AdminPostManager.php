@@ -22,7 +22,7 @@ final readonly class AdminPostManager
         private TagRepository $tagRepository,
         private SluggerInterface $slugger,
         private TokenStorageInterface $tokenStorage,
-        #[Autowire('%kernel.project_dir%')] private string $projectDir
+        #[Autowire('%kernel.project_dir%')] private string $projectDir,
     ) {
     }
 
@@ -31,6 +31,7 @@ final readonly class AdminPostManager
         $post = new Post();
         $token = $this->tokenStorage->getToken();
         $user = $token?->getUser();
+
         if ($user instanceof User) {
             $post->setAuthor($user);
         }
@@ -46,32 +47,37 @@ final readonly class AdminPostManager
         $post->setSlug($slug);
         $post->setContent($payload->content);
         $post->setDescription($payload->description);
-        if ($payload->date !== null && $payload->date !== '') {
+
+        if (null !== $payload->date && '' !== $payload->date) {
             $createdAt = \DateTime::createFromFormat('Y-m-d', $payload->date);
-            if ($createdAt instanceof \DateTime) {
-                $post->setCreatedAt($createdAt);
+
+            if (false === $createdAt) {
+                throw new \InvalidArgumentException(\sprintf('Invalid date format: %s', $payload->date));
             }
+            $post->setCreatedAt($createdAt);
         }
-        $status = is_bool($payload->status)
+
+        $status = \is_bool($payload->status)
             ? $payload->status
-            : filter_var($payload->status, FILTER_VALIDATE_BOOLEAN);
-        $isFeatured = is_bool($payload->isFeatured)
+            : filter_var($payload->status, \FILTER_VALIDATE_BOOLEAN);
+        $isFeatured = \is_bool($payload->isFeatured)
             ? $payload->isFeatured
-            : filter_var($payload->isFeatured, FILTER_VALIDATE_BOOLEAN);
+            : filter_var($payload->isFeatured, \FILTER_VALIDATE_BOOLEAN);
 
         $post->setStatus($status);
         $post->setIsFeatured($isFeatured);
 
-        if ($payload->categoryId !== null) {
+        if (null !== $payload->categoryId) {
             $category = $this->categoryRepository->find($payload->categoryId);
+
             if ($category) {
                 $post->setCategory($category);
             }
         }
 
-        if ($payload->tags !== []) {
-            $tagIds = array_values(array_filter($payload->tags, static fn($id) => $id !== null && $id !== ''));
-            $tags = $tagIds === [] ? [] : $this->tagRepository->findBy(['id' => $tagIds]);
+        if ([] !== $payload->tags) {
+            $tagIds = array_values(array_filter($payload->tags, static fn($id) => null !== $id && '' !== $id));
+            $tags = [] === $tagIds ? [] : $this->tagRepository->findBy(['id' => $tagIds]);
             $post->setTags($tags);
         } else {
             $post->setTags([]);
@@ -81,7 +87,7 @@ final readonly class AdminPostManager
             $uploadDir = $this->projectDir . '/public/storage/uploads';
 
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
+                mkdir($uploadDir, 0755, true);
             }
 
             $post->uploadImage($payload->image, $uploadDir);

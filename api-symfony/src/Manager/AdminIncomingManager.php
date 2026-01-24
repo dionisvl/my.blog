@@ -15,7 +15,7 @@ final readonly class AdminIncomingManager
 
     public function toggleStatus(Incoming $incoming): Incoming
     {
-        $incoming->setStatus($incoming->getStatus() === 1 ? 0 : 1);
+        $incoming->setStatus(1 === $incoming->getStatus() ? 0 : 1);
         $this->entityManager->flush();
 
         return $incoming;

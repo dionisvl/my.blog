@@ -19,7 +19,7 @@ final class SubscriberController extends AbstractController
 {
     public function __construct(
         private readonly SubscriptionRepository $subscriptionRepository,
-        private readonly AdminSubscriberManager $subscriberManager
+        private readonly AdminSubscriberManager $subscriberManager,
     ) {
     }
 
@@ -48,13 +48,14 @@ final class SubscriberController extends AbstractController
         return $this->render('admin/subscribers/create.html.twig');
     }
 
-    #[Route('/{id}/delete', name: 'admin_subscribers_delete', requirements: ['id' => '\\d+'], methods: [
+    #[Route('/{id}/delete', name: 'admin_subscribers_delete', requirements: ['id' => '\d+'], methods: [
         'POST',
-        'DELETE'
+        'DELETE',
     ])]
     public function delete(int $id): Response
     {
         $subscriber = $this->subscriptionRepository->find($id);
+
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found');
         }

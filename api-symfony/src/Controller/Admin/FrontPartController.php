@@ -19,7 +19,7 @@ final class FrontPartController extends AbstractController
 {
     public function __construct(
         private readonly FrontPartRepository $frontPartRepository,
-        private readonly AdminFrontPartManager $frontPartManager
+        private readonly AdminFrontPartManager $frontPartManager,
     ) {
     }
 
@@ -48,10 +48,11 @@ final class FrontPartController extends AbstractController
         return $this->render('admin/frontparts/create.html.twig');
     }
 
-    #[Route('/{id}/edit', name: 'admin_frontparts_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_frontparts_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $frontpart = $this->frontPartRepository->find($id);
+
         if (!$frontpart) {
             throw $this->createNotFoundException('Front part not found');
         }
@@ -61,10 +62,11 @@ final class FrontPartController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_frontparts_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_frontparts_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(int $id, #[MapRequestPayload] AdminFrontPartPayload $payload): Response
     {
         $frontpart = $this->frontPartRepository->find($id);
+
         if (!$frontpart) {
             throw $this->createNotFoundException('Front part not found');
         }
@@ -75,13 +77,14 @@ final class FrontPartController extends AbstractController
         return $this->redirectToRoute('admin_frontparts_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_frontparts_delete', requirements: ['id' => '\\d+'], methods: [
+    #[Route('/{id}/delete', name: 'admin_frontparts_delete', requirements: ['id' => '\d+'], methods: [
         'POST',
-        'DELETE'
+        'DELETE',
     ])]
     public function delete(int $id): Response
     {
         $frontpart = $this->frontPartRepository->find($id);
+
         if (!$frontpart) {
             throw $this->createNotFoundException('Front part not found');
         }

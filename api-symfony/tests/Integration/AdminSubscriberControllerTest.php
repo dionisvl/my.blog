@@ -12,6 +12,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
     public static function provideSubscriberEmails(): iterable
     {
         yield 'simple email' => ['alpha@example.com'];
+
         yield 'long email' => ['team+news@example.com'];
     }
 
@@ -29,14 +30,14 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
 
         $this->em->clear();
         $subscriber = $this->em->getRepository(Subscription::class)->findOneBy(['email' => $email]);
-        $this->assertNotNull($subscriber);
+        self::assertNotNull($subscriber);
 
         $this->client->request('POST', '/admin/subscribers/' . $subscriber->getId() . '/delete');
         $this->assertResponseRedirects('/admin/subscribers/');
 
         $this->em->clear();
         $deleted = $this->em->getRepository(Subscription::class)->find($subscriber->getId());
-        $this->assertNull($deleted);
+        self::assertNull($deleted);
     }
 
     public function testSubscriberIndexView(): void
@@ -51,7 +52,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         $this->client->request('GET', '/admin/subscribers/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertStringContainsString('list@example.com', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('list@example.com', $this->client->getResponse()->getContent());
     }
 
     public function testSubscriberCreateView(): void
@@ -62,7 +63,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_subscribers_store');
-        $this->assertSelectorExists(sprintf('form[action="%s"]', $action));
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
     }
 
     public function testSubscriberValidationErrorsReturnJson(): void
@@ -75,8 +76,8 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         ]);
 
         $this->assertResponseStatusCodeSame(422);
-        $this->assertJson($this->client->getResponse()->getContent());
-        $this->assertStringContainsString('email', $this->client->getResponse()->getContent());
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('email', $this->client->getResponse()->getContent());
     }
 
     public function testSubscriberEmailIsUnique(): void
@@ -93,6 +94,6 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
             'email' => 'unique@example.com',
         ]);
         $this->assertResponseStatusCodeSame(422);
-        $this->assertStringContainsString('email', $this->client->getResponse()->getContent());
+        self::assertStringContainsString('email', $this->client->getResponse()->getContent());
     }
 }

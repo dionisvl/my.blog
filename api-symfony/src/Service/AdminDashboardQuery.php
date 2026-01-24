@@ -14,7 +14,7 @@ final readonly class AdminDashboardQuery
     public function __construct(
         private PostRepository $posts,
         private CategoryRepository $categories,
-        private UserRepository $users
+        private UserRepository $users,
     ) {
     }
 

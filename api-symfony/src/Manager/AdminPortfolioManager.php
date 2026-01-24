@@ -20,7 +20,7 @@ final readonly class AdminPortfolioManager
         private PortfolioRepository $portfolioRepository,
         private SluggerInterface $slugger,
         private TokenStorageInterface $tokenStorage,
-        #[Autowire('%kernel.project_dir%')] private string $projectDir
+        #[Autowire('%kernel.project_dir%')] private string $projectDir,
     ) {
     }
 
@@ -29,6 +29,7 @@ final readonly class AdminPortfolioManager
         $portfolio = new Portfolio();
         $token = $this->tokenStorage->getToken();
         $user = $token?->getUser();
+
         if ($user instanceof User) {
             $portfolio->setAuthor($user);
         }
@@ -43,20 +44,21 @@ final readonly class AdminPortfolioManager
         $portfolio->setContent($payload->content);
         $portfolio->setDescription($payload->description);
 
-        $status = is_bool($payload->status)
+        $status = \is_bool($payload->status)
             ? $payload->status
-            : filter_var($payload->status, FILTER_VALIDATE_BOOLEAN);
-        $isFeatured = is_bool($payload->isFeatured)
+            : filter_var($payload->status, \FILTER_VALIDATE_BOOLEAN);
+        $isFeatured = \is_bool($payload->isFeatured)
             ? $payload->isFeatured
-            : filter_var($payload->isFeatured, FILTER_VALIDATE_BOOLEAN);
+            : filter_var($payload->isFeatured, \FILTER_VALIDATE_BOOLEAN);
 
         $portfolio->setStatus($status ? 1 : 0);
         $portfolio->setIsFeatured($isFeatured ? 1 : 0);
 
-        if ($payload->image !== null) {
+        if (null !== $payload->image) {
             $uploadDir = $this->projectDir . '/public/storage/uploads/portfolio';
+
             if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
+                mkdir($uploadDir, 0755, true);
             }
 
             $portfolio->removeImage($uploadDir);
@@ -77,7 +79,7 @@ final readonly class AdminPortfolioManager
 
         while ($this->slugExists($slug, $current)) {
             $slug = $base . '-' . $suffix;
-            $suffix++;
+            ++$suffix;
         }
 
         return $slug;
@@ -86,11 +88,12 @@ final readonly class AdminPortfolioManager
     private function slugExists(string $slug, ?Portfolio $current): bool
     {
         $existing = $this->portfolioRepository->findOneBy(['slug' => $slug]);
-        if ($existing === null) {
+
+        if (null === $existing) {
             return false;
         }
 
-        if ($current === null || $current->getId() === null) {
+        if (null === $current || null === $current->getId()) {
             return true;
         }
 
@@ -104,7 +107,7 @@ final readonly class AdminPortfolioManager
 
     public function delete(Portfolio $portfolio): void
     {
-        if ($portfolio->getImage() !== null) {
+        if (null !== $portfolio->getImage()) {
             $uploadDir = $this->projectDir . '/public/storage/uploads/portfolio';
             $portfolio->removeImage($uploadDir);
         }

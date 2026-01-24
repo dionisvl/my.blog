@@ -15,14 +15,15 @@ final class AdminSidebarExtension extends AbstractExtension implements GlobalsIn
     public function __construct(
         private readonly CommentRepository $commentRepository,
         private readonly OrderRepository $orderRepository,
-        private readonly RequestStack $requestStack
+        private readonly RequestStack $requestStack,
     ) {
     }
 
     public function getGlobals(): array
     {
         $request = $this->requestStack->getCurrentRequest();
-        if ($request === null || !str_starts_with($request->getPathInfo(), '/admin')) {
+
+        if (null === $request || !str_starts_with($request->getPathInfo(), '/admin')) {
             return [
                 'newCommentsCount' => 0,
                 'newOrdersCount' => 0,

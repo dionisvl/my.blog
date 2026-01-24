@@ -51,6 +51,7 @@ class PostLike
     public function setPost(Post $post): self
     {
         $this->post = $post;
+
         return $this;
     }
 
@@ -62,6 +63,7 @@ class PostLike
     public function setIp(?string $ip): self
     {
         $this->ip = $ip;
+
         return $this;
     }
 
@@ -73,6 +75,7 @@ class PostLike
     public function setDeviceMemory(?int $deviceMemory): self
     {
         $this->deviceMemory = $deviceMemory;
+
         return $this;
     }
 
@@ -84,6 +87,7 @@ class PostLike
     public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 }

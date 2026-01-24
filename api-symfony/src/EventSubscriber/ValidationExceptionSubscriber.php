@@ -30,11 +30,13 @@ final class ValidationExceptionSubscriber implements EventSubscriberInterface
         }
 
         $previous = $exception->getPrevious();
+
         if (!$previous instanceof ValidationFailedException) {
             return;
         }
 
         $path = $request->getPathInfo();
+
         if (!str_starts_with($path, '/admin/posts')
             && !str_starts_with($path, '/admin/categories')
             && !str_starts_with($path, '/admin/tags')
@@ -49,6 +51,7 @@ final class ValidationExceptionSubscriber implements EventSubscriberInterface
         }
 
         $errors = [];
+
         foreach ($previous->getViolations() as $violation) {
             $errors[] = [
                 'field' => $violation->getPropertyPath(),

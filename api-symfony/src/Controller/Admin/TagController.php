@@ -19,7 +19,7 @@ final class TagController extends AbstractController
 {
     public function __construct(
         private readonly TagRepository $tagRepository,
-        private readonly AdminTagManager $tagManager
+        private readonly AdminTagManager $tagManager,
     ) {
     }
 
@@ -48,7 +48,7 @@ final class TagController extends AbstractController
         return $this->render('admin/tags/create.html.twig');
     }
 
-    #[Route('/{id}/edit', name: 'admin_tags_edit', requirements: ['id' => '\\d+'])]
+    #[Route('/{id}/edit', name: 'admin_tags_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $tag = $this->tagRepository->find($id);
@@ -62,7 +62,7 @@ final class TagController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_tags_update', requirements: ['id' => '\\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/{id}/update', name: 'admin_tags_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
     public function update(int $id, #[MapRequestPayload] AdminTagPayload $payload): Response
     {
         $tag = $this->tagRepository->find($id);
@@ -77,7 +77,7 @@ final class TagController extends AbstractController
         return $this->redirectToRoute('admin_tags_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_tags_delete', requirements: ['id' => '\\d+'], methods: ['POST', 'DELETE'])]
+    #[Route('/{id}/delete', name: 'admin_tags_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
     public function delete(int $id): Response
     {
         $tag = $this->tagRepository->find($id);
