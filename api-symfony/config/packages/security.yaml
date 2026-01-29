@@ -25,6 +25,9 @@ security:
             logout:
                 path: app_logout
                 target: home
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }

@@ -63,7 +63,7 @@ final class PostLikeController extends AbstractController
 
         $post = $this->postRepository->find($postId);
 
-        if (!$post) {
+        if (null === $post) {
             return $this->json([
                 'status' => 'error',
                 'data' => 'post not found',

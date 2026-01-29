@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Category;
 use App\Entity\Product;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminProductControllerTest extends DatabaseWebTestCase
 {
@@ -24,12 +25,13 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $category = new Category();
         $category->setTitle('Shop Category');
         $category->setSlug('shop-category');
+
         $this->em->persist($category);
         $this->em->flush();
 
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/products/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/products/store', [
             'title' => $title,
             'detail_text' => $detailText,
             'price' => $price,
@@ -52,7 +54,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         self::assertSame($price, $product->getPrice());
 
         $newTitle = $title . ' Updated';
-        $this->client->request('POST', '/admin/products/' . $product->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/products/' . $product->getId() . '/update', [
             'title' => $newTitle,
             'detail_text' => $detailText,
             'price' => $price,
@@ -67,7 +69,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
 
-        $this->client->request('POST', '/admin/products/' . $product->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/products/' . $product->getId() . '/delete');
         $this->assertResponseRedirects('/admin/products/');
 
         $this->em->clear();
@@ -81,11 +83,12 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $product = new Product();
         $product->setTitle('Index Product');
         $product->setSlug('index-product');
+
         $this->em->persist($product);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/products/');
+        $this->client->request(Request::METHOD_GET, '/admin/products/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Index Product', $this->client->getResponse()->getContent());
@@ -95,7 +98,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/products/create');
+        $this->client->request(Request::METHOD_GET, '/admin/products/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_products_store');
@@ -108,11 +111,12 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $product = new Product();
         $product->setTitle('Edit Product');
         $product->setSlug('edit-product');
+
         $this->em->persist($product);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/products/' . $product->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/products/' . $product->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_products_update', ['id' => $product->getId()]);
@@ -124,7 +128,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/products/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/products/store', [
             'title' => '',
             'detail_text' => '',
         ]);

@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Dto\AdminProductPayload;
+use App\Entity\Product;
 use App\Manager\AdminProductManager;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/products')]
 #[IsGranted('ROLE_ADMIN')]
 final class ProductController extends AbstractController
 {
@@ -27,7 +28,7 @@ final class ProductController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'admin_products_index')]
+    #[Route('/admin/products/', name: 'admin_products_index')]
     public function index(): Response
     {
         $products = $this->productRepository->findAllOrderedByUpdatedAtDesc();
@@ -37,12 +38,13 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/store', name: 'admin_products_store', methods: ['POST'])]
+    #[Route('/admin/products/store', name: 'admin_products_store', methods: ['POST'])]
     public function store(
         #[MapRequestPayload] AdminProductPayload $payload,
         #[MapUploadedFile(name: 'preview_picture')] ?UploadedFile $previewPicture = null,
         #[MapUploadedFile(name: 'detail_picture')] ?UploadedFile $detailPicture = null,
-    ): Response {
+    ): RedirectResponse
+    {
         $payload->previewPicture = $previewPicture;
         $payload->detailPicture = $detailPicture;
 
@@ -52,7 +54,7 @@ final class ProductController extends AbstractController
         return $this->redirectToRoute('admin_products_index');
     }
 
-    #[Route('/create', name: 'admin_products_create')]
+    #[Route('/admin/products/create', name: 'admin_products_create')]
     public function create(): Response
     {
         $categories = $this->categoryRepository->findAll();
@@ -62,12 +64,12 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'admin_products_edit', requirements: ['id' => '\d+'])]
+    #[Route('/admin/products/{id}/edit', name: 'admin_products_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $product = $this->productRepository->find($id);
 
-        if (!$product) {
+        if (!$product instanceof Product) {
             throw $this->createNotFoundException('Product not found');
         }
 
@@ -79,16 +81,20 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_products_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/admin/products/{id}/update', name: 'admin_products_update', requirements: ['id' => '\d+'], methods: [
+        'POST',
+        'PUT'
+    ])]
     public function update(
         int $id,
         #[MapRequestPayload] AdminProductPayload $payload,
         #[MapUploadedFile(name: 'preview_picture')] ?UploadedFile $previewPicture = null,
         #[MapUploadedFile(name: 'detail_picture')] ?UploadedFile $detailPicture = null,
-    ): Response {
+    ): RedirectResponse
+    {
         $product = $this->productRepository->find($id);
 
-        if (!$product) {
+        if (!$product instanceof Product) {
             throw $this->createNotFoundException('Product not found');
         }
 
@@ -101,12 +107,15 @@ final class ProductController extends AbstractController
         return $this->redirectToRoute('admin_products_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_products_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
-    public function delete(int $id): Response
+    #[Route('/admin/products/{id}/delete', name: 'admin_products_delete', requirements: ['id' => '\d+'], methods: [
+        'POST',
+        'DELETE'
+    ])]
+    public function delete(int $id): RedirectResponse
     {
         $product = $this->productRepository->find($id);
 
-        if (!$product) {
+        if (!$product instanceof Product) {
             throw $this->createNotFoundException('Product not found');
         }
 

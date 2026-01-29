@@ -34,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
     private int $status = 0;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, name: 'created_at')]
+    #[ORM\Column(name: 'created_at', type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

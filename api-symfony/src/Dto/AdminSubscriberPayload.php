@@ -8,7 +8,7 @@ use App\Entity\Subscription;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[UniqueEntity(fields: ['email'], entityClass: Subscription::class, errorPath: 'email', identifierFieldNames: ['id'], message: 'This email is already subscribed.')]
+#[UniqueEntity(fields: ['email'], message: 'This email is already subscribed.', entityClass: Subscription::class, errorPath: 'email', identifierFieldNames: ['id'])]
 final class AdminSubscriberPayload
 {
     public function __construct(

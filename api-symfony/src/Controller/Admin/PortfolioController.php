@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Dto\AdminPortfolioPayload;
+use App\Entity\Portfolio;
 use App\Manager\AdminPortfolioManager;
 use App\Repository\PortfolioRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/portfolios')]
 #[IsGranted('ROLE_ADMIN')]
 final class PortfolioController extends AbstractController
 {
@@ -25,7 +26,7 @@ final class PortfolioController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'admin_portfolios_index')]
+    #[Route('/admin/portfolios/', name: 'admin_portfolios_index')]
     public function index(): Response
     {
         $portfolios = $this->portfolioRepository->findAllOrderedByUpdatedAtDesc();
@@ -35,11 +36,12 @@ final class PortfolioController extends AbstractController
         ]);
     }
 
-    #[Route('/store', name: 'admin_portfolios_store', methods: ['POST'])]
+    #[Route('/admin/portfolios/store', name: 'admin_portfolios_store', methods: ['POST'])]
     public function store(
         #[MapRequestPayload] AdminPortfolioPayload $payload,
         #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null,
-    ): Response {
+    ): RedirectResponse
+    {
         $payload->image = $image;
 
         $this->portfolioManager->create($payload);
@@ -48,18 +50,18 @@ final class PortfolioController extends AbstractController
         return $this->redirectToRoute('admin_portfolios_index');
     }
 
-    #[Route('/create', name: 'admin_portfolios_create')]
+    #[Route('/admin/portfolios/create', name: 'admin_portfolios_create')]
     public function create(): Response
     {
         return $this->render('admin/portfolios/create.html.twig');
     }
 
-    #[Route('/{id}/edit', name: 'admin_portfolios_edit', requirements: ['id' => '\d+'])]
+    #[Route('/admin/portfolios/{id}/edit', name: 'admin_portfolios_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $portfolio = $this->portfolioRepository->find($id);
 
-        if (!$portfolio) {
+        if (!$portfolio instanceof Portfolio) {
             throw $this->createNotFoundException('Portfolio not found');
         }
 
@@ -68,15 +70,19 @@ final class PortfolioController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_portfolios_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/admin/portfolios/{id}/update', name: 'admin_portfolios_update', requirements: ['id' => '\d+'], methods: [
+        'POST',
+        'PUT'
+    ])]
     public function update(
         int $id,
         #[MapRequestPayload] AdminPortfolioPayload $payload,
         #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null,
-    ): Response {
+    ): RedirectResponse
+    {
         $portfolio = $this->portfolioRepository->find($id);
 
-        if (!$portfolio) {
+        if (!$portfolio instanceof Portfolio) {
             throw $this->createNotFoundException('Portfolio not found');
         }
 
@@ -87,15 +93,15 @@ final class PortfolioController extends AbstractController
         return $this->redirectToRoute('admin_portfolios_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_portfolios_delete', requirements: ['id' => '\d+'], methods: [
+    #[Route('/admin/portfolios/{id}/delete', name: 'admin_portfolios_delete', requirements: ['id' => '\d+'], methods: [
         'POST',
         'DELETE',
     ])]
-    public function delete(int $id): Response
+    public function delete(int $id): RedirectResponse
     {
         $portfolio = $this->portfolioRepository->find($id);
 
-        if (!$portfolio) {
+        if (!$portfolio instanceof Portfolio) {
             throw $this->createNotFoundException('Portfolio not found');
         }
 

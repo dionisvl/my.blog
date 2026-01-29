@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Incoming;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminIncomingControllerTest extends DatabaseWebTestCase
 {
@@ -26,11 +27,12 @@ final class AdminIncomingControllerTest extends DatabaseWebTestCase
         $incoming->setPhone('123');
         $incoming->setMessage('Hello');
         $incoming->setStatus($status);
+
         $this->em->persist($incoming);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/incomings/' . $incoming->getId() . '/toggle');
+        $this->client->request(Request::METHOD_GET, '/admin/incomings/' . $incoming->getId() . '/toggle');
 
         $this->assertResponseRedirects('/admin/incomings/');
 
@@ -39,7 +41,7 @@ final class AdminIncomingControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame(1 === $status ? 0 : 1, $updated->getStatus());
 
-        $this->client->request('POST', '/admin/incomings/' . $incoming->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/incomings/' . $incoming->getId() . '/delete');
         $this->assertResponseRedirects('/admin/incomings/');
 
         $this->em->clear();
@@ -53,11 +55,12 @@ final class AdminIncomingControllerTest extends DatabaseWebTestCase
         $incoming = new Incoming();
         $incoming->setName('Bob');
         $incoming->setMessage('Need help');
+
         $this->em->persist($incoming);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/incomings/');
+        $this->client->request(Request::METHOD_GET, '/admin/incomings/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Need help', $this->client->getResponse()->getContent());

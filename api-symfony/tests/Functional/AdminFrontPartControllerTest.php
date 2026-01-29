@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\FrontPart;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminFrontPartControllerTest extends DatabaseWebTestCase
 {
@@ -28,7 +29,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/frontparts/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/frontparts/store', [
             'title' => $title,
             'category_name' => $categoryName,
             'type' => $type,
@@ -45,7 +46,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         self::assertSame('1' === $status ? '1' : '0', $frontPart->getStatus());
 
         $newTitle = $title . ' Updated';
-        $this->client->request('POST', '/admin/frontparts/' . $frontPart->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/frontparts/' . $frontPart->getId() . '/update', [
             'title' => $newTitle,
             'category_name' => $categoryName,
             'type' => $type,
@@ -61,7 +62,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
 
-        $this->client->request('POST', '/admin/frontparts/' . $frontPart->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/frontparts/' . $frontPart->getId() . '/delete');
         $this->assertResponseRedirects('/admin/frontparts/');
 
         $this->em->clear();
@@ -75,11 +76,12 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         $frontPart = new FrontPart();
         $frontPart->setTitle('Index Component');
         $frontPart->setSlug('index-component');
+
         $this->em->persist($frontPart);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/frontparts/');
+        $this->client->request(Request::METHOD_GET, '/admin/frontparts/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Index Component', $this->client->getResponse()->getContent());
@@ -89,7 +91,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/frontparts/create');
+        $this->client->request(Request::METHOD_GET, '/admin/frontparts/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_frontparts_store');
@@ -102,11 +104,12 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         $frontPart = new FrontPart();
         $frontPart->setTitle('Edit Component');
         $frontPart->setSlug('edit-component');
+
         $this->em->persist($frontPart);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/frontparts/' . $frontPart->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/frontparts/' . $frontPart->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate(
@@ -121,7 +124,7 @@ final class AdminFrontPartControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/frontparts/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/frontparts/store', [
             'title' => '',
         ]);
 

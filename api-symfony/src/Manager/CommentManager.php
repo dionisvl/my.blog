@@ -33,6 +33,7 @@ final readonly class CommentManager
             if ($anonymousUser instanceof User) {
                 $comment->setAuthor($anonymousUser);
             }
+
             $comment->setAuthorName('anon');
         }
 

@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
+use App\Entity\Comment;
 use App\Manager\AdminCommentManager;
 use App\Repository\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/comments')]
 #[IsGranted('ROLE_ADMIN')]
 final class CommentController extends AbstractController
 {
@@ -21,7 +22,7 @@ final class CommentController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'admin_comments_index')]
+    #[Route('/admin/comments/', name: 'admin_comments_index')]
     public function index(): Response
     {
         $comments = $this->commentRepository->findAllOrderedByCreatedAtDesc();
@@ -31,12 +32,12 @@ final class CommentController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/toggle', name: 'admin_comments_toggle', requirements: ['id' => '\d+'])]
-    public function toggle(int $id): Response
+    #[Route('/admin/comments/{id}/toggle', name: 'admin_comments_toggle', requirements: ['id' => '\d+'])]
+    public function toggle(int $id): RedirectResponse
     {
         $comment = $this->commentRepository->find($id);
 
-        if (!$comment) {
+        if (!$comment instanceof Comment) {
             throw $this->createNotFoundException('Comment not found');
         }
 
@@ -45,12 +46,15 @@ final class CommentController extends AbstractController
         return $this->redirectToRoute('admin_comments_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_comments_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
-    public function delete(int $id): Response
+    #[Route('/admin/comments/{id}/delete', name: 'admin_comments_delete', requirements: ['id' => '\d+'], methods: [
+        'POST',
+        'DELETE'
+    ])]
+    public function delete(int $id): RedirectResponse
     {
         $comment = $this->commentRepository->find($id);
 
-        if (!$comment) {
+        if (!$comment instanceof Comment) {
             throw $this->createNotFoundException('Comment not found');
         }
 

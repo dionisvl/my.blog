@@ -9,8 +9,11 @@ use App\Entity\Post;
 use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\TagRepository;
+use App\Service\FileNameGenerator;
+use App\Service\FileValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -22,6 +25,8 @@ final readonly class AdminPostManager
         private TagRepository $tagRepository,
         private SluggerInterface $slugger,
         private TokenStorageInterface $tokenStorage,
+        private FileValidator $fileValidator,
+        private FileNameGenerator $fileNameGenerator,
         #[Autowire('%kernel.project_dir%')] private string $projectDir,
     ) {
     }
@@ -54,6 +59,7 @@ final readonly class AdminPostManager
             if (false === $createdAt) {
                 throw new \InvalidArgumentException(\sprintf('Invalid date format: %s', $payload->date));
             }
+
             $post->setCreatedAt($createdAt);
         }
 
@@ -70,27 +76,27 @@ final readonly class AdminPostManager
         if (null !== $payload->categoryId) {
             $category = $this->categoryRepository->find($payload->categoryId);
 
-            if ($category) {
+            if (null !== $category) {
                 $post->setCategory($category);
             }
         }
 
         if ([] !== $payload->tags) {
-            $tagIds = array_values(array_filter($payload->tags, static fn($id) => null !== $id && '' !== $id));
+            $tagIds = array_values(array_filter($payload->tags, static fn($id): bool => null !== $id && '' !== $id));
             $tags = [] === $tagIds ? [] : $this->tagRepository->findBy(['id' => $tagIds]);
             $post->setTags($tags);
         } else {
             $post->setTags([]);
         }
 
-        if ($payload->image) {
+        if ($payload->image instanceof UploadedFile) {
             $uploadDir = $this->projectDir . '/public/storage/uploads';
 
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
 
-            $post->uploadImage($payload->image, $uploadDir);
+            $post->uploadImage($payload->image, $uploadDir, $this->fileValidator, $this->fileNameGenerator);
         }
 
         $this->entityManager->persist($post);

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Category;
+use App\Entity\Post;
+use App\Entity\Tag;
 use App\Manager\PostViewManager;
 use App\Service\HomePageQuery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,7 +54,7 @@ final class HomeController extends AbstractController
             $post = $this->homePageQuery->findPostForShow($slug);
         }
 
-        if (!$post) {
+        if (!$post instanceof Post) {
             throw $this->createNotFoundException('Post not found');
         }
 
@@ -66,7 +69,7 @@ final class HomeController extends AbstractController
 
         if (!$isViewed) {
             $cookie = Cookie::create($cookieName)
-                ->withValue((new \DateTime())->format('Y-m-d H:i:s'))
+                ->withValue(new \DateTime()->format('Y-m-d H:i:s'))
                 ->withExpires(time() + 60 * 60 * 24)
                 ->withPath('/')
                 ->withSecure($this->secureCookies)
@@ -92,6 +95,7 @@ final class HomeController extends AbstractController
         if (null === $query) {
             $query = $request->request->get('q', '');
         }
+
         $query = trim((string)$query);
         $posts = [];
 
@@ -111,7 +115,7 @@ final class HomeController extends AbstractController
     {
         $tag = $this->homePageQuery->findTagBySlug($slug);
 
-        if (!$tag) {
+        if (!$tag instanceof Tag) {
             throw $this->createNotFoundException('Tag not found');
         }
 
@@ -132,7 +136,7 @@ final class HomeController extends AbstractController
     {
         $category = $this->homePageQuery->findCategoryBySlug($slug);
 
-        if (!$category) {
+        if (!$category instanceof Category) {
             throw $this->createNotFoundException('Category not found');
         }
 

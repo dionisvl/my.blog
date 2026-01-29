@@ -148,7 +148,7 @@ class Comment
 
     public function getAuthorImage(): string
     {
-        if (null === $this->author) {
+        if (!$this->author instanceof User) {
             return '/storage/blog_images/no-image.png';
         }
 

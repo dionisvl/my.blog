@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Comment;
 use App\Entity\Post;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminCommentControllerTest extends DatabaseWebTestCase
 {
@@ -26,6 +27,7 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
         $post->setSlug('comment-post');
         $post->setStatus(true);
         $post->setAuthor($user);
+
         $this->em->persist($post);
 
         $comment = new Comment();
@@ -34,11 +36,12 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
         $comment->setPost($post);
         $comment->setAuthor($user);
         $comment->setStatus($status);
+
         $this->em->persist($comment);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/comments/' . $comment->getId() . '/toggle');
+        $this->client->request(Request::METHOD_GET, '/admin/comments/' . $comment->getId() . '/toggle');
 
         $this->assertResponseRedirects('/admin/comments/');
 
@@ -47,7 +50,7 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame(1 === $status ? 0 : 1, $updated->getStatus());
 
-        $this->client->request('POST', '/admin/comments/' . $comment->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/comments/' . $comment->getId() . '/delete');
         $this->assertResponseRedirects('/admin/comments/');
 
         $this->em->clear();
@@ -63,6 +66,7 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
         $post->setSlug('another-post');
         $post->setStatus(true);
         $post->setAuthor($user);
+
         $this->em->persist($post);
 
         $comment = new Comment();
@@ -71,11 +75,12 @@ final class AdminCommentControllerTest extends DatabaseWebTestCase
         $comment->setPost($post);
         $comment->setAuthor($user);
         $comment->setStatus(1);
+
         $this->em->persist($comment);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/comments/');
+        $this->client->request(Request::METHOD_GET, '/admin/comments/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Hello!', $this->client->getResponse()->getContent());

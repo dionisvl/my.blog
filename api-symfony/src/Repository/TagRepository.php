@@ -8,6 +8,9 @@ use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Tag>
+ */
 final class TagRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

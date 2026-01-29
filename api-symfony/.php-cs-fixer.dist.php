@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-$finder = PhpCsFixer\Finder::create()
+use PhpCsFixer\Config;
+use PhpCsFixer\Finder;
+use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
+
+$finder = Finder::create()
     ->in([
         __DIR__ . '/src',
         __DIR__ . '/tests',
@@ -12,8 +16,9 @@ $finder = PhpCsFixer\Finder::create()
     ->notPath('.symfony')
     ->notPath('migrations');
 
-return (new PhpCsFixer\Config())
+return new Config()
     ->setRiskyAllowed(true)
+    ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,

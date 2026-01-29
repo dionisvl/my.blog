@@ -8,6 +8,9 @@ use App\Entity\Order;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Order>
+ */
 final class OrderRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

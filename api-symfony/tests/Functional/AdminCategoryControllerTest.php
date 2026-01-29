@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Category;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminCategoryControllerTest extends DatabaseWebTestCase
 {
@@ -22,7 +23,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/categories/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
             'title' => $title,
             'detail_text' => $detail,
             'preview_text' => $preview,
@@ -39,7 +40,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
 
         $newTitle = $title . ' Updated';
 
-        $this->client->request('POST', '/admin/categories/' . $category->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/categories/' . $category->getId() . '/update', [
             'id' => $category->getId(),
             'title' => $newTitle,
             'detail_text' => $detail,
@@ -54,7 +55,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
 
-        $this->client->request('POST', '/admin/categories/' . $category->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/categories/' . $category->getId() . '/delete');
 
         $this->assertResponseRedirects('/admin/categories/');
 
@@ -69,11 +70,12 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $category = new Category();
         $category->setTitle('Python');
         $category->setSlug('python');
+
         $this->em->persist($category);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/categories/');
+        $this->client->request(Request::METHOD_GET, '/admin/categories/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Python', $this->client->getResponse()->getContent());
@@ -83,7 +85,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/categories/create');
+        $this->client->request(Request::METHOD_GET, '/admin/categories/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_categories_store');
@@ -96,11 +98,12 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $category = new Category();
         $category->setTitle('Frontend');
         $category->setSlug('frontend');
+
         $this->em->persist($category);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/categories/' . $category->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/categories/' . $category->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate(
@@ -115,7 +118,7 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/categories/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
             'title' => '',
         ]);
 
@@ -129,12 +132,12 @@ final class AdminCategoryControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/categories/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
             'title' => 'Same Title',
         ]);
         $this->assertResponseRedirects('/admin/categories/');
 
-        $this->client->request('POST', '/admin/categories/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
             'title' => 'Same Title',
         ]);
         $this->assertResponseStatusCodeSame(422);

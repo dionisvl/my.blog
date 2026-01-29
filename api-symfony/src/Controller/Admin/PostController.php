@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace App\Controller\Admin;
 
 use App\Dto\AdminPostPayload;
+use App\Entity\Post;
 use App\Manager\AdminPostManager;
 use App\Repository\CategoryRepository;
 use App\Repository\PostRepository;
 use App\Repository\TagRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/posts')]
 #[IsGranted('ROLE_ADMIN')]
 final class PostController extends AbstractController
 {
@@ -29,7 +30,7 @@ final class PostController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'admin_posts_index')]
+    #[Route('/admin/posts/', name: 'admin_posts_index')]
     public function index(): Response
     {
         $posts = $this->postRepository->findAllOrderedByCreatedAtDesc();
@@ -39,12 +40,12 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'admin_posts_edit', requirements: ['id' => '\d+'])]
+    #[Route('/admin/posts/{id}/edit', name: 'admin_posts_edit', requirements: ['id' => '\d+'])]
     public function edit(int $id): Response
     {
         $post = $this->postRepository->find($id);
 
-        if (!$post) {
+        if (!$post instanceof Post) {
             throw $this->createNotFoundException('Post not found');
         }
 
@@ -64,15 +65,19 @@ final class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/update', name: 'admin_posts_update', requirements: ['id' => '\d+'], methods: ['POST', 'PUT'])]
+    #[Route('/admin/posts/{id}/update', name: 'admin_posts_update', requirements: ['id' => '\d+'], methods: [
+        'POST',
+        'PUT'
+    ])]
     public function update(
         int $id,
         #[MapRequestPayload] AdminPostPayload $payload,
         #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null,
-    ): Response {
+    ): RedirectResponse
+    {
         $post = $this->postRepository->find($id);
 
-        if (!$post) {
+        if (!$post instanceof Post) {
             throw $this->createNotFoundException('Post not found');
         }
 
@@ -84,12 +89,15 @@ final class PostController extends AbstractController
         return $this->redirectToRoute('admin_posts_index');
     }
 
-    #[Route('/{id}/delete', name: 'admin_posts_delete', requirements: ['id' => '\d+'], methods: ['POST', 'DELETE'])]
-    public function delete(int $id): Response
+    #[Route('/admin/posts/{id}/delete', name: 'admin_posts_delete', requirements: ['id' => '\d+'], methods: [
+        'POST',
+        'DELETE'
+    ])]
+    public function delete(int $id): RedirectResponse
     {
         $post = $this->postRepository->find($id);
 
-        if (!$post) {
+        if (!$post instanceof Post) {
             throw $this->createNotFoundException('Post not found');
         }
 
@@ -99,11 +107,12 @@ final class PostController extends AbstractController
         return $this->redirectToRoute('admin_posts_index');
     }
 
-    #[Route('/store', name: 'admin_posts_store', methods: ['POST'])]
+    #[Route('/admin/posts/store', name: 'admin_posts_store', methods: ['POST'])]
     public function store(
         #[MapRequestPayload] AdminPostPayload $payload,
         #[MapUploadedFile(name: 'image')] ?UploadedFile $image = null,
-    ): Response {
+    ): RedirectResponse
+    {
         $payload->image = $image;
 
         $this->postManager->create($payload);
@@ -112,7 +121,7 @@ final class PostController extends AbstractController
         return $this->redirectToRoute('admin_posts_index');
     }
 
-    #[Route('/create', name: 'admin_posts_create')]
+    #[Route('/admin/posts/create', name: 'admin_posts_create')]
     public function create(): Response
     {
         $categories = $this->categoryRepository->findAll();

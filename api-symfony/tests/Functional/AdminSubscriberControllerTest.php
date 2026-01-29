@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Subscription;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminSubscriberControllerTest extends DatabaseWebTestCase
 {
@@ -22,7 +23,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/subscribers/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/subscribers/store', [
             'email' => $email,
         ]);
 
@@ -32,7 +33,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         $subscriber = $this->em->getRepository(Subscription::class)->findOneBy(['email' => $email]);
         self::assertNotNull($subscriber);
 
-        $this->client->request('POST', '/admin/subscribers/' . $subscriber->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/subscribers/' . $subscriber->getId() . '/delete');
         $this->assertResponseRedirects('/admin/subscribers/');
 
         $this->em->clear();
@@ -45,11 +46,12 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $subscription = new Subscription();
         $subscription->setEmail('list@example.com');
+
         $this->em->persist($subscription);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/subscribers/');
+        $this->client->request(Request::METHOD_GET, '/admin/subscribers/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('list@example.com', $this->client->getResponse()->getContent());
@@ -59,7 +61,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/subscribers/create');
+        $this->client->request(Request::METHOD_GET, '/admin/subscribers/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_subscribers_store');
@@ -71,7 +73,7 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/subscribers/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/subscribers/store', [
             'email' => 'not-an-email',
         ]);
 
@@ -85,12 +87,12 @@ final class AdminSubscriberControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/subscribers/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/subscribers/store', [
             'email' => 'unique@example.com',
         ]);
         $this->assertResponseRedirects('/admin/subscribers/');
 
-        $this->client->request('POST', '/admin/subscribers/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/subscribers/store', [
             'email' => 'unique@example.com',
         ]);
         $this->assertResponseStatusCodeSame(422);

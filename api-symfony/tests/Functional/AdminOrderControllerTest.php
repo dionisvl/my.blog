@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Order;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminOrderControllerTest extends DatabaseWebTestCase
 {
@@ -22,7 +23,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/orders/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/orders/store', [
             'title' => $title,
             'price' => $price,
             'contents' => $contents,
@@ -37,7 +38,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         self::assertSame($price, $order->getPrice());
 
         $newTitle = $title . ' Updated';
-        $this->client->request('POST', '/admin/orders/' . $order->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/orders/' . $order->getId() . '/update', [
             'title' => $newTitle,
             'price' => $price,
             'contents' => $contents,
@@ -51,7 +52,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
 
-        $this->client->request('POST', '/admin/orders/' . $order->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/orders/' . $order->getId() . '/delete');
         $this->assertResponseRedirects('/admin/orders/');
 
         $this->em->clear();
@@ -65,11 +66,12 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         $order = new Order();
         $order->setTitle('Index Order');
         $order->setSlug('index-order');
+
         $this->em->persist($order);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/orders/');
+        $this->client->request(Request::METHOD_GET, '/admin/orders/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Index Order', $this->client->getResponse()->getContent());
@@ -79,7 +81,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/orders/create');
+        $this->client->request(Request::METHOD_GET, '/admin/orders/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_orders_store');
@@ -92,11 +94,12 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         $order = new Order();
         $order->setTitle('Edit Order');
         $order->setSlug('edit-order');
+
         $this->em->persist($order);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/orders/' . $order->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/orders/' . $order->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_orders_update', ['id' => $order->getId()]);
@@ -108,7 +111,7 @@ final class AdminOrderControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/orders/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/orders/store', [
             'title' => '',
         ]);
 

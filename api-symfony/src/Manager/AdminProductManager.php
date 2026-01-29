@@ -11,6 +11,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -53,6 +54,7 @@ final readonly class AdminProductManager
         if (null !== $payload->balance) {
             $product->setBalance($payload->balance);
         }
+
         $product->setComposition($payload->composition);
         $product->setFeatures($payload->features);
         $product->setSize($payload->size);
@@ -69,13 +71,14 @@ final readonly class AdminProductManager
             if (false === $parsed) {
                 throw new \InvalidArgumentException(\sprintf('Invalid date format: %s', $payload->date));
             }
+
             $product->setDate($parsed);
         }
 
         if (null !== $payload->categoryId) {
             $category = $this->categoryRepository->find($payload->categoryId);
 
-            if ($category) {
+            if (null !== $category) {
                 $product->setCategory($category);
             }
         }
@@ -86,12 +89,12 @@ final readonly class AdminProductManager
             mkdir($uploadDir, 0755, true);
         }
 
-        if (null !== $payload->previewPicture) {
+        if ($payload->previewPicture instanceof UploadedFile) {
             $product->removeImage('preview_picture', $uploadDir);
             $product->uploadImage($payload->previewPicture, 'preview_picture', $uploadDir);
         }
 
-        if (null !== $payload->detailPicture) {
+        if ($payload->detailPicture instanceof UploadedFile) {
             $product->removeImage('detail_picture', $uploadDir);
             $product->uploadImage($payload->detailPicture, 'detail_picture', $uploadDir);
         }
@@ -124,7 +127,7 @@ final readonly class AdminProductManager
             return false;
         }
 
-        if (null === $current || null === $current->getId()) {
+        if (!$current instanceof Product || null === $current->getId()) {
             return true;
         }
 

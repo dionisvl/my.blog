@@ -7,12 +7,12 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "^3.2",
+        "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6.1",
-        "phpdocumentor/reflection-docblock": "^6.0",
+        "phpdocumentor/reflection-docblock": "^5.6.6",
         "phpoffice/phpspreadsheet": "^5.4",
-        "phpstan/phpdoc-parser": "^2.3.1",
+        "phpstan/phpdoc-parser": "^2.3.2",
         "symfony/asset": "7.4.*",
         "symfony/asset-mapper": "7.4.*",
         "symfony/console": "7.4.*",
@@ -31,6 +31,7 @@
         "symfony/process": "7.4.*",
         "symfony/property-access": "7.4.*",
         "symfony/property-info": "7.4.*",
+        "symfony/rate-limiter": "7.4.*",
         "symfony/runtime": "7.4.*",
         "symfony/security-bundle": "7.4.*",
         "symfony/serializer": "7.4.*",
@@ -42,8 +43,8 @@
         "symfony/validator": "7.4.*",
         "symfony/web-link": "7.4.*",
         "symfony/yaml": "7.4.*",
-        "twig/extra-bundle": "^2.12|^3.22.2",
-        "twig/twig": "^2.12|^3.22.2"
+        "twig/extra-bundle": "^2.12|^3.23.0",
+        "twig/twig": "^2.12|^3.23.0"
     },
     "config": {
         "allow-plugins": {
@@ -73,7 +74,8 @@
         "symfony/polyfill-php80": "*",
         "symfony/polyfill-php81": "*",
         "symfony/polyfill-php82": "*",
-        "symfony/polyfill-php83": "*"
+        "symfony/polyfill-php83": "*",
+        "symfony/polyfill-php84": "*"
     },
     "scripts": {
         "auto-scripts": {
@@ -98,8 +100,14 @@
         }
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.64.0",
-        "phpunit/phpunit": "^12.5.6",
+        "friendsofphp/php-cs-fixer": "^3.93.1",
+        "phpstan/phpstan": "^2.1.37",
+        "phpstan/phpstan-deprecation-rules": "^2.0.3",
+        "phpstan/phpstan-doctrine": "^2.0.14",
+        "phpstan/phpstan-strict-rules": "^2.0.8",
+        "phpstan/phpstan-symfony": "^2.0.12",
+        "phpunit/phpunit": "^12.5.8",
+        "rector/rector": "^2.3.5",
         "symfony/browser-kit": "7.4.*",
         "symfony/css-selector": "7.4.*",
         "symfony/debug-bundle": "7.4.*",

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Tag;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminTagControllerTest extends DatabaseWebTestCase
 {
@@ -22,7 +23,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/tags/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/tags/store', [
             'title' => $title,
         ]);
 
@@ -35,7 +36,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
 
         $newTitle = $title . ' Updated';
 
-        $this->client->request('POST', '/admin/tags/' . $tag->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/tags/' . $tag->getId() . '/update', [
             'id' => $tag->getId(),
             'title' => $newTitle,
         ]);
@@ -48,7 +49,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
 
-        $this->client->request('POST', '/admin/tags/' . $tag->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/tags/' . $tag->getId() . '/delete');
 
         $this->assertResponseRedirects('/admin/tags/');
 
@@ -63,11 +64,12 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $tag = new Tag();
         $tag->setTitle('Docker');
         $tag->setSlug('docker');
+
         $this->em->persist($tag);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/tags/');
+        $this->client->request(Request::METHOD_GET, '/admin/tags/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Docker', $this->client->getResponse()->getContent());
@@ -77,7 +79,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/tags/create');
+        $this->client->request(Request::METHOD_GET, '/admin/tags/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_tags_store');
@@ -90,11 +92,12 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $tag = new Tag();
         $tag->setTitle('Testing');
         $tag->setSlug('testing');
+
         $this->em->persist($tag);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/tags/' . $tag->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/tags/' . $tag->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_tags_update', ['id' => $tag->getId()]);
@@ -106,7 +109,7 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/tags/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/tags/store', [
             'title' => '',
         ]);
 
@@ -120,12 +123,12 @@ final class AdminTagControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/tags/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/tags/store', [
             'title' => 'Same Tag',
         ]);
         $this->assertResponseRedirects('/admin/tags/');
 
-        $this->client->request('POST', '/admin/tags/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/tags/store', [
             'title' => 'Same Tag',
         ]);
         $this->assertResponseStatusCodeSame(422);

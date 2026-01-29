@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 abstract class DatabaseWebTestCase extends WebTestCase
 {
     protected KernelBrowser $client;
+
     protected EntityManagerInterface $em;
 
     protected function setUp(): void
@@ -54,7 +55,6 @@ abstract class DatabaseWebTestCase extends WebTestCase
     protected function setPrivate(object $object, string $property, mixed $value): void
     {
         $ref = new \ReflectionProperty($object, $property);
-        $ref->setAccessible(true);
         $ref->setValue($object, $value);
     }
 }

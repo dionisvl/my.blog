@@ -5,16 +5,20 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use App\Service\FileNameGenerator;
+use App\Service\FileValidator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ORM\Table(name: 'posts')]
 class Post
 {
     public const int STATUS_PUBLISHED = 0;
+
     public const int STATUS_DRAFT = 1;
 
     #[ORM\Id]
@@ -218,6 +222,9 @@ class Post
         return $this;
     }
 
+    /**
+     * @return Collection<int, Tag>
+     */
     public function getTags(): Collection
     {
         return $this->tags;
@@ -255,7 +262,7 @@ class Post
 
     public function getComments(): Collection
     {
-        return $this->comments->filter(static fn($comment) => 1 === $comment->getStatus());
+        return $this->comments->filter(static fn($comment): bool => 1 === $comment->getStatus());
     }
 
     public function getStatus(): bool
@@ -270,19 +277,16 @@ class Post
         return $this;
     }
 
-    public function uploadImage($imageFile, string $uploadDir): void
-    {
-        if (null === $imageFile) {
-            return;
-        }
-
+    public function uploadImage(
+        UploadedFile $imageFile,
+        string $uploadDir,
+        FileValidator $fileValidator,
+        FileNameGenerator $fileNameGenerator,
+    ): void {
+        $fileValidator->validate($imageFile);
         $this->removeImage($uploadDir);
 
-        $timestamp = (new \DateTime())->format('Y-m-d_H-i-s');
-        $randomString = bin2hex(random_bytes(2));
-        $extension = $imageFile->guessExtension() ?? 'png';
-        $filename = $timestamp . '_' . $randomString . '.' . $extension;
-
+        $filename = $fileNameGenerator->generate($imageFile);
         $imageFile->move($uploadDir, $filename);
         $this->image = $filename;
     }

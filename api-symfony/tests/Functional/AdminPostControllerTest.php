@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Category;
 use App\Entity\Post;
 use App\Entity\Tag;
 use App\Entity\User;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminPostControllerTest extends DatabaseWebTestCase
 {
@@ -38,7 +39,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
             : $pathTemplate;
 
         $this->client->loginUser($user);
-        $this->client->request('GET', $path);
+        $this->client->request(Request::METHOD_GET, $path);
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
@@ -95,7 +96,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $title = 'New Post ' . $date;
 
-        $this->client->request('POST', '/admin/posts/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/posts/store', [
             'title' => $title,
             'content' => 'Body text',
             'description' => 'Short description',
@@ -114,8 +115,8 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         self::assertNotNull($post);
         self::assertSame($title, $post->getTitle());
         self::assertSame($date, $post->getCreatedAt()->format('Y-m-d'));
-        self::assertSame((bool)filter_var($status, \FILTER_VALIDATE_BOOLEAN), $post->getStatus());
-        self::assertSame((bool)filter_var($isFeatured, \FILTER_VALIDATE_BOOLEAN), $post->isFeatured());
+        self::assertSame(filter_var($status, \FILTER_VALIDATE_BOOLEAN), $post->getStatus());
+        self::assertSame(filter_var($isFeatured, \FILTER_VALIDATE_BOOLEAN), $post->isFeatured());
         self::assertCount(1, $post->getTags());
     }
 
@@ -143,7 +144,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $newTitle = 'Updated ' . $date;
 
-        $this->client->request('POST', '/admin/posts/' . $post->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/posts/' . $post->getId() . '/update', [
             'title' => $newTitle,
             'content' => 'Updated content',
             'description' => 'Updated description',
@@ -162,8 +163,8 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
         self::assertSame($date, $updated->getCreatedAt()->format('Y-m-d'));
-        self::assertSame((bool)filter_var($status, \FILTER_VALIDATE_BOOLEAN), $updated->getStatus());
-        self::assertSame((bool)filter_var($isFeatured, \FILTER_VALIDATE_BOOLEAN), $updated->isFeatured());
+        self::assertSame(filter_var($status, \FILTER_VALIDATE_BOOLEAN), $updated->getStatus());
+        self::assertSame(filter_var($isFeatured, \FILTER_VALIDATE_BOOLEAN), $updated->isFeatured());
         self::assertCount(1, $updated->getTags());
     }
 
@@ -173,7 +174,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $category = $this->createCategory('PHP', 'php');
         $post = $this->createPost($user, $category, 'Public Post', 'public-post', false);
 
-        $this->client->request('GET', '/post/' . $post->getSlug());
+        $this->client->request(Request::METHOD_GET, '/post/' . $post->getSlug());
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Public Post', $this->client->getResponse()->getContent());
@@ -189,7 +190,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         self::assertNotNull($postId);
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/posts/' . $postId . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/posts/' . $postId . '/delete');
 
         $this->assertResponseRedirects('/admin/posts/');
 
@@ -205,7 +206,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
 
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/posts/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/posts/store', [
             'title' => 'Original Title',
             'content' => 'Initial content',
             'description' => 'Initial description',
@@ -224,7 +225,7 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $postId = $post->getId();
         self::assertNotNull($postId);
 
-        $this->client->request('POST', '/admin/posts/' . $postId . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/posts/' . $postId . '/update', [
             'title' => 'Updated Title',
             'content' => 'Updated content',
             'description' => 'Updated description',
@@ -240,11 +241,11 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $updated = $this->em->getRepository(Post::class)->find($postId);
         self::assertNotNull($updated);
 
-        $this->client->request('GET', '/');
+        $this->client->request(Request::METHOD_GET, '/');
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Updated Title', $this->client->getResponse()->getContent());
 
-        $this->client->request('GET', '/post/' . $updated->getSlug());
+        $this->client->request(Request::METHOD_GET, '/post/' . $updated->getSlug());
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Updated Title', $this->client->getResponse()->getContent());
     }

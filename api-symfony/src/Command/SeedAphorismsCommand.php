@@ -70,7 +70,7 @@ final class SeedAphorismsCommand extends Command
             'Good logs make good sleep.',
         ];
 
-        $now = (new \DateTimeImmutable())->format('Y-m-d H:i:s');
+        $now = new \DateTimeImmutable()->format('Y-m-d H:i:s');
         $inserted = 0;
 
         while ($currentCount < $targetCount) {

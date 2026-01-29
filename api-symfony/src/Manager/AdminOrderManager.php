@@ -67,7 +67,7 @@ final readonly class AdminOrderManager
             return false;
         }
 
-        if (null === $current || null === $current->getId()) {
+        if (!$current instanceof Order || null === $current->getId()) {
             return true;
         }
 

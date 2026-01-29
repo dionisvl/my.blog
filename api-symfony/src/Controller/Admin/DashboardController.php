@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin')]
 #[IsGranted('ROLE_ADMIN')]
 final class DashboardController extends AbstractController
 {
@@ -18,7 +17,7 @@ final class DashboardController extends AbstractController
     {
     }
 
-    #[Route('/', name: 'admin_dashboard')]
+    #[Route('/admin/', name: 'admin_dashboard')]
     public function index(): Response
     {
         return $this->render('admin/dashboard/index.html.twig', $this->dashboardQuery->getDashboardData());

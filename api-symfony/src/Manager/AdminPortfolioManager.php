@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Repository\PortfolioRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -54,7 +55,7 @@ final readonly class AdminPortfolioManager
         $portfolio->setStatus($status ? 1 : 0);
         $portfolio->setIsFeatured($isFeatured ? 1 : 0);
 
-        if (null !== $payload->image) {
+        if ($payload->image instanceof UploadedFile) {
             $uploadDir = $this->projectDir . '/public/storage/uploads/portfolio';
 
             if (!is_dir($uploadDir)) {
@@ -93,7 +94,7 @@ final readonly class AdminPortfolioManager
             return false;
         }
 
-        if (null === $current || null === $current->getId()) {
+        if (!$current instanceof Portfolio || null === $current->getId()) {
             return true;
         }
 

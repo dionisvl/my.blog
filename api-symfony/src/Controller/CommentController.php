@@ -8,8 +8,8 @@ use App\Entity\User;
 use App\Manager\CommentManager;
 use App\Repository\PostRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/comment', name: 'comment_store', methods: ['POST'])]
@@ -21,7 +21,7 @@ final class CommentController extends AbstractController
     ) {
     }
 
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request): RedirectResponse
     {
         $message = $request->request->get('message');
         $postId = (int)$request->request->get('post_id');
@@ -49,7 +49,7 @@ final class CommentController extends AbstractController
 
         $post = $this->postRepository->find($postId);
 
-        if (!$post) {
+        if (null === $post) {
             $this->addFlash('error', 'Post not found');
 
             return $this->redirect($referer);

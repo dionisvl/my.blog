@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use App\Service\FileNameGenerator;
+use App\Service\FileValidator;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'products')]
@@ -403,15 +406,15 @@ class Product
     }
 
     public function uploadImage(
-        \Symfony\Component\HttpFoundation\File\UploadedFile $imageFile,
+        UploadedFile $imageFile,
         string $type,
         string $uploadDir,
+        FileValidator $fileValidator,
+        FileNameGenerator $fileNameGenerator,
     ): void {
-        $timestamp = (new \DateTime())->format('Y-m-d_H-i-s');
-        $randomString = bin2hex(random_bytes(2));
-        $extension = $imageFile->guessExtension() ?? 'png';
-        $filename = $timestamp . '_' . $randomString . '.' . $extension;
+        $fileValidator->validate($imageFile);
 
+        $filename = $fileNameGenerator->generate($imageFile);
         $imageFile->move($uploadDir, $filename);
 
         if ('detail_picture' === $type) {

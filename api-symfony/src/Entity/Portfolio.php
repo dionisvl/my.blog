@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\PortfolioRepository;
+use App\Service\FileNameGenerator;
+use App\Service\FileValidator;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: PortfolioRepository::class)]
 #[ORM\Table(name: 'portfolios')]
@@ -204,13 +207,15 @@ class Portfolio
         return $this->updatedAt;
     }
 
-    public function uploadImage(\Symfony\Component\HttpFoundation\File\UploadedFile $imageFile, string $uploadDir): void
-    {
-        $timestamp = (new \DateTime())->format('Y-m-d_H-i-s');
-        $randomString = bin2hex(random_bytes(2));
-        $extension = $imageFile->guessExtension() ?? 'png';
-        $filename = $timestamp . '_' . $randomString . '.' . $extension;
+    public function uploadImage(
+        UploadedFile $imageFile,
+        string $uploadDir,
+        FileValidator $fileValidator,
+        FileNameGenerator $fileNameGenerator,
+    ): void {
+        $fileValidator->validate($imageFile);
 
+        $filename = $fileNameGenerator->generate($imageFile);
         $imageFile->move($uploadDir, $filename);
         $this->image = $filename;
     }

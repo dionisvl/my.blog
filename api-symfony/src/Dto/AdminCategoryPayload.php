@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[UniqueEntity(fields: ['title'], entityClass: Category::class, errorPath: 'title', identifierFieldNames: ['id'], message: 'This title is already in use.')]
+#[UniqueEntity(fields: ['title'], message: 'This title is already in use.', entityClass: Category::class, errorPath: 'title', identifierFieldNames: ['id'])]
 final class AdminCategoryPayload
 {
     public function __construct(

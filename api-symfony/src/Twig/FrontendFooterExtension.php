@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Twig;
 
+use App\Entity\Post;
 use App\Repository\PostRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -14,6 +16,7 @@ use Twig\Extension\GlobalsInterface;
 final class FrontendFooterExtension extends AbstractExtension implements GlobalsInterface
 {
     private const string CACHE_KEY = 'frontend.custom_category_post_id';
+
     private const int CACHE_TTL = 5;
 
     public function __construct(
@@ -27,7 +30,7 @@ final class FrontendFooterExtension extends AbstractExtension implements Globals
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (null === $request || str_starts_with($request->getPathInfo(), '/admin')) {
+        if (!$request instanceof Request || str_starts_with($request->getPathInfo(), '/admin')) {
             return [
                 'customCategoryPost' => null,
             ];
@@ -47,7 +50,7 @@ final class FrontendFooterExtension extends AbstractExtension implements Globals
 
         $post = $this->posts->findPublishedById($postId);
 
-        if (null === $post) {
+        if (!$post instanceof Post) {
             $this->cache->delete(self::CACHE_KEY);
         }
 

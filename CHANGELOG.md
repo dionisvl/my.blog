@@ -5,6 +5,15 @@
 - Turbo pages export via API instead of RSS
 - Ajax full-text search
 
+### 2026-01-29
+
+- Draft/published posts system in Symfony migration
+- Random post selection with proper caching
+- OPcache configuration for production optimization
+- SEO improvements: canonical, hreflang, og:*, twitter:*, JSON-LD (Organization, WebSite, Article)
+- Fixed Doctrine deprecations and code style compliance
+- Added Aphorism entity with PHP-CS-Fixer configuration
+
 ### 2026-01-17
 
 - **Symfony 7.4 parallel clone application**

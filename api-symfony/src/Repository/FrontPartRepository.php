@@ -8,6 +8,9 @@ use App\Entity\FrontPart;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<FrontPart>
+ */
 final class FrontPartRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)

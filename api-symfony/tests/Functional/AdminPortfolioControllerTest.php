@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\Portfolio;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminPortfolioControllerTest extends DatabaseWebTestCase
 {
@@ -27,7 +28,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/portfolios/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/portfolios/store', [
             'title' => $title,
             'content' => $content,
             'description' => $description,
@@ -44,7 +45,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         self::assertSame($featured ? 1 : 0, $portfolio->getIsFeatured());
 
         $newTitle = $title . ' Updated';
-        $this->client->request('POST', '/admin/portfolios/' . $portfolio->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/portfolios/' . $portfolio->getId() . '/update', [
             'title' => $newTitle,
             'content' => $content,
             'description' => $description,
@@ -59,7 +60,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         self::assertNotNull($updated);
         self::assertSame($newTitle, $updated->getTitle());
 
-        $this->client->request('POST', '/admin/portfolios/' . $portfolio->getId() . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/portfolios/' . $portfolio->getId() . '/delete');
         $this->assertResponseRedirects('/admin/portfolios/');
 
         $this->em->clear();
@@ -73,11 +74,12 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $portfolio = new Portfolio();
         $portfolio->setTitle('Index Portfolio');
         $portfolio->setSlug('index-portfolio');
+
         $this->em->persist($portfolio);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/portfolios/');
+        $this->client->request(Request::METHOD_GET, '/admin/portfolios/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('Index Portfolio', $this->client->getResponse()->getContent());
@@ -87,7 +89,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
     {
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/portfolios/create');
+        $this->client->request(Request::METHOD_GET, '/admin/portfolios/create');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_portfolios_store');
@@ -100,11 +102,12 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $portfolio = new Portfolio();
         $portfolio->setTitle('Edit Portfolio');
         $portfolio->setSlug('edit-portfolio');
+
         $this->em->persist($portfolio);
         $this->em->flush();
 
         $this->client->loginUser($user);
-        $this->client->request('GET', '/admin/portfolios/' . $portfolio->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/portfolios/' . $portfolio->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate(
@@ -119,7 +122,7 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $user = $this->createAdminUser();
         $this->client->loginUser($user);
 
-        $this->client->request('POST', '/admin/portfolios/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/portfolios/store', [
             'title' => '',
         ]);
 

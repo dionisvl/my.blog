@@ -6,8 +6,12 @@ namespace App\Repository;
 
 use App\Entity\Post;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Post>
+ */
 final class PostRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -74,7 +78,7 @@ final class PostRepository extends ServiceEntityRepository
             ->setMaxResults($perPage)
             ->getQuery();
 
-        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+        $paginator = new Paginator($query);
 
         return [
             'items' => iterator_to_array($paginator),
@@ -93,7 +97,7 @@ final class PostRepository extends ServiceEntityRepository
             ->setMaxResults($perPage)
             ->getQuery();
 
-        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+        $paginator = new Paginator($query);
 
         return [
             'items' => iterator_to_array($paginator),
@@ -227,7 +231,7 @@ final class PostRepository extends ServiceEntityRepository
             ->setMaxResults($perPage)
             ->getQuery();
 
-        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+        $paginator = new Paginator($query);
 
         return [
             'items' => iterator_to_array($paginator),
@@ -302,7 +306,7 @@ final class PostRepository extends ServiceEntityRepository
             ->setMaxResults($perPage)
             ->getQuery();
 
-        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query, true);
+        $paginator = new Paginator($query, true);
 
         return [
             'items' => iterator_to_array($paginator),

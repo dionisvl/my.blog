@@ -6,6 +6,7 @@ namespace App\Twig;
 
 use App\Repository\CommentRepository;
 use App\Repository\OrderRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\AbstractExtension;
 use Twig\Extension\GlobalsInterface;
@@ -23,7 +24,7 @@ final class AdminSidebarExtension extends AbstractExtension implements GlobalsIn
     {
         $request = $this->requestStack->getCurrentRequest();
 
-        if (null === $request || !str_starts_with($request->getPathInfo(), '/admin')) {
+        if (!$request instanceof Request || !str_starts_with($request->getPathInfo(), '/admin')) {
             return [
                 'newCommentsCount' => 0,
                 'newOrdersCount' => 0,

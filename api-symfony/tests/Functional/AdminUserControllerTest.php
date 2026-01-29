@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Functional;
 
 use App\Entity\User;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
 
 final class AdminUserControllerTest extends DatabaseWebTestCase
 {
@@ -24,7 +25,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
 
         $this->client->loginUser($admin);
 
-        $this->client->request('POST', '/admin/users/' . $user->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/users/' . $user->getId() . '/update', [
             'id' => $user->getId(),
             'name' => $name,
             'email' => $email,
@@ -48,8 +49,8 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
             self::assertNotSame('oldhash', $updated->getPassword());
         }
 
-        self::assertSame((bool)filter_var($isAdmin, \FILTER_VALIDATE_BOOLEAN), $updated->isAdmin());
-        self::assertSame((bool)filter_var($status, \FILTER_VALIDATE_BOOLEAN) ? 1 : 0, $updated->getStatus());
+        self::assertSame(filter_var($isAdmin, \FILTER_VALIDATE_BOOLEAN), $updated->isAdmin());
+        self::assertSame(filter_var($status, \FILTER_VALIDATE_BOOLEAN) ? 1 : 0, $updated->getStatus());
     }
 
     private function createUser(string $name, string $email, string $password): User
@@ -73,7 +74,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $this->createUser('Viewer', 'viewer@example.com', 'hash');
 
         $this->client->loginUser($admin);
-        $this->client->request('GET', '/admin/users/');
+        $this->client->request(Request::METHOD_GET, '/admin/users/');
 
         $this->assertResponseIsSuccessful();
         self::assertStringContainsString('viewer@example.com', $this->client->getResponse()->getContent());
@@ -85,7 +86,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $user = $this->createUser('Edit User', 'edit@example.com', 'hash');
 
         $this->client->loginUser($admin);
-        $this->client->request('GET', '/admin/users/' . $user->getId() . '/edit');
+        $this->client->request(Request::METHOD_GET, '/admin/users/' . $user->getId() . '/edit');
 
         $this->assertResponseIsSuccessful();
         $action = self::getContainer()->get('router')->generate('admin_users_update', ['id' => $user->getId()]);
@@ -99,7 +100,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $userId = $user->getId();
 
         $this->client->loginUser($admin);
-        $this->client->request('POST', '/admin/users/' . $userId . '/delete');
+        $this->client->request(Request::METHOD_POST, '/admin/users/' . $userId . '/delete');
 
         $this->assertResponseRedirects('/admin/users/');
 
@@ -114,7 +115,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $user = $this->createUser('Invalid User', 'invalid@example.com', 'hash');
 
         $this->client->loginUser($admin);
-        $this->client->request('POST', '/admin/users/' . $user->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/users/' . $user->getId() . '/update', [
             'id' => $user->getId(),
             'name' => '',
             'email' => 'not-an-email',
@@ -132,7 +133,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $this->createUser('Second', 'second@example.com', 'hash');
 
         $this->client->loginUser($admin);
-        $this->client->request('POST', '/admin/users/' . $user->getId() . '/update', [
+        $this->client->request(Request::METHOD_POST, '/admin/users/' . $user->getId() . '/update', [
             'id' => $user->getId(),
             'name' => 'First',
             'email' => 'second@example.com',
@@ -147,7 +148,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $admin = $this->createAdminUser();
         $this->client->loginUser($admin);
 
-        $this->client->request('POST', '/admin/users/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/users/store', [
             'name' => 'Created User',
             'email' => 'created@example.com',
             'password' => 'secret123',
@@ -170,7 +171,7 @@ final class AdminUserControllerTest extends DatabaseWebTestCase
         $admin = $this->createAdminUser();
         $this->client->loginUser($admin);
 
-        $this->client->request('POST', '/admin/users/store', [
+        $this->client->request(Request::METHOD_POST, '/admin/users/store', [
             'name' => 'No Pass',
             'email' => 'nopass@example.com',
         ]);

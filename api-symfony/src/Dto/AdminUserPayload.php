@@ -8,7 +8,7 @@ use App\Entity\User;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[UniqueEntity(fields: ['email'], entityClass: User::class, errorPath: 'email', identifierFieldNames: ['id'], message: 'This email is already in use.')]
+#[UniqueEntity(fields: ['email'], message: 'This email is already in use.', entityClass: User::class, errorPath: 'email', identifierFieldNames: ['id'])]
 final class AdminUserPayload
 {
     public function __construct(

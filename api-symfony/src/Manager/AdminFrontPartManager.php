@@ -69,7 +69,7 @@ final readonly class AdminFrontPartManager
             return false;
         }
 
-        if (null === $current || null === $current->getId()) {
+        if (!$current instanceof FrontPart || null === $current->getId()) {
             return true;
         }
 
