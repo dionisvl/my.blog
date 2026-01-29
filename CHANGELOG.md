@@ -13,6 +13,7 @@
 - SEO improvements: canonical, hreflang, og:*, twitter:*, JSON-LD (Organization, WebSite, Article)
 - Fixed Doctrine deprecations and code style compliance
 - Added Aphorism entity with PHP-CS-Fixer configuration
+- PHPStan analysis, Rector refactoring, and PHP-CS-Fixer style fixes
 
 ### 2026-01-17
 
