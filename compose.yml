@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.6.1
+    image: traefik:v3.6.7
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -20,33 +20,33 @@ services:
     networks:
       - app-network
 
-  laravel:
-    build:
-      context: ./app-laravel
-      dockerfile: ./Dockerfile
-    env_file:
-      - path: ./.env
-        required: true
-    environment:
-      PHP_IDE_CONFIG: serverName=${SERVER_NAME}
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${MYSQL_ROOT_USER}
-      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      DB_NAME: ${MYSQL_DATABASE}
-      SERVER_NAME: ":80"
-    expose:
-      - "80"
-      - "443"
-      - "443/udp"
-    volumes:
-      - ./app-laravel/api-laravel:/app:rw
-      - ./app-laravel/storage/public:/app/public/storage:rw
-      - ./app-laravel/Caddyfile:/etc/caddy/Caddyfile:ro
-    networks:
-      - app-network
-    restart: unless-stopped
-    depends_on:
-      - mysql
+#  laravel:
+#    build:
+#      context: ./app-laravel
+#      dockerfile: ./Dockerfile
+#    env_file:
+#      - path: ./.env
+#        required: true
+#    environment:
+#      PHP_IDE_CONFIG: serverName=${SERVER_NAME}
+#      DB_HOST: ${DB_HOST}
+#      DB_USER: ${MYSQL_ROOT_USER}
+#      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#      DB_NAME: ${MYSQL_DATABASE}
+#      SERVER_NAME: ":80"
+#    expose:
+#      - "80"
+#      - "443"
+#      - "443/udp"
+#    volumes:
+#      - ./app-laravel/api-laravel:/app:rw
+#      - ./app-laravel/storage/public:/app/public/storage:rw
+#      - ./app-laravel/Caddyfile:/etc/caddy/Caddyfile:ro
+#    networks:
+#      - app-network
+#    restart: unless-stopped
+#    depends_on:
+#      - mysql
 
   symfony:
     build:
@@ -83,12 +83,18 @@ services:
     restart: unless-stopped
     depends_on:
       - mysql
+      - victoria-logs
     healthcheck:
       test: [ "CMD-SHELL", "php -r 'exit(file_get_contents(\"http://127.0.0.1/health\") === \"OK\" ? 0 : 1);'" ]
       interval: 5s
       timeout: 3s
       retries: 6
       start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   pets-app:
     build:
@@ -121,6 +127,57 @@ services:
       - "8989:3306"
     networks:
       - app-network
+
+  victoria-logs:
+    image: victoriametrics/victoria-logs:v1.44.0
+    container_name: victoria-logs
+    expose:
+      - "9428"
+    volumes:
+      - "./data/victoria-logs:/victoria-logs-data"
+    command:
+      - -storageDataPath=/victoria-logs-data
+      - -retentionPeriod=30d
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  vector:
+    image: timberio/vector:nightly-2026-01-30-alpine
+    container_name: vector-collector
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./.devops/vmetrics/vector.toml:/etc/vector/vector.toml:ro
+    environment:
+      VICTORIA_LOGS_HOST: victoria-logs
+      VICTORIA_LOGS_PORT: "9428"
+    command: -c /etc/vector/vector.toml
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      - victoria-logs
+    labels:
+      - "traefik.enable=false"
+
+  vmauth:
+    image: victoriametrics/vmauth:v1.134.0
+    container_name: vmauth
+    expose:
+      - "8427"
+    volumes:
+      - ./.devops/vmetrics/vmauth-entrypoint.sh:/entrypoint.sh:ro
+    environment:
+      VMAUTH_ADMIN_USER: ${VMAUTH_ADMIN_USER}
+      VMAUTH_ADMIN_PASS: ${VMAUTH_ADMIN_PASS}
+      VMAUTH_READONLY_USER: ${VMAUTH_READONLY_USER}
+      VMAUTH_READONLY_PASS: ${VMAUTH_READONLY_PASS}
+    entrypoint: sh /entrypoint.sh
+    networks:
+      - app-network
+    restart: unless-stopped
+    depends_on:
+      - victoria-logs
 
 networks:
   app-network:

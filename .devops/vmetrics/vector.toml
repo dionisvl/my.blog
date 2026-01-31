@@ -1,0 +1,43 @@
+[sources.docker_logs]
+type = "docker_logs"
+docker_host = "unix:///var/run/docker.sock"
+exclude_containers = ["vector-collector", "victoria-logs", "vmauth"]
+
+[transforms.parse_json]
+type = "remap"
+inputs = ["docker_logs"]
+source = """
+original_message = .message
+structured, err = parse_json(.message)
+if err == null {
+  . = merge!(., structured)
+  if .msg == null {
+    .msg = .message
+  }
+}
+if .message == null && .msg != null {
+  .message = .msg
+}
+if .message == null {
+  .message = original_message
+}
+if .msg == null {
+  .msg = .message
+}
+.timestamp = now()
+"""
+
+[sinks.victoria_logs]
+type = "http"
+inputs = ["parse_json"]
+uri = "http://victoria-logs:9428/insert/jsonline?_stream_fields=container_name,service&_msg_field=message,msg&_time_field=timestamp"
+compression = "gzip"
+encoding.codec = "json"
+framing.method = "newline_delimited"
+
+[sinks.victoria_logs.buffer]
+type = "memory"
+max_events = 10000
+
+[sinks.victoria_logs.request]
+timeout_secs = 30

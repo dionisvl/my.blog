@@ -131,3 +131,16 @@ services:
 
       - "traefik.http.routers.symfony.service=symfony"
       - "traefik.http.services.symfony.loadbalancer.server.port=80"
+
+  vmauth:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.vmui-ratelimit.ratelimit.average=1"
+      - "traefik.http.middlewares.vmui-ratelimit.ratelimit.burst=1"
+      - "traefik.http.routers.vmui-http.rule=Host(`vmui.web3main.pro`)"
+      - "traefik.http.routers.vmui-http.entrypoints=web"
+      - "traefik.http.routers.vmui-https.rule=Host(`vmui.web3main.pro`)"
+      - "traefik.http.routers.vmui-https.entrypoints=websecure"
+      - "traefik.http.routers.vmui-https.tls.certresolver=myresolver"
+      - "traefik.http.routers.vmui-https.middlewares=vmui-ratelimit@docker"
+      - "traefik.http.services.vmui.loadbalancer.server.port=8427"
