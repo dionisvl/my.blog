@@ -5,8 +5,11 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
       - "--entrypoints.web.address=:80"
-      - "--tracing=true"
+      - "--tracing.otlp=true"
+      - "--tracing.otlp.http=true"
+      - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
       - "--tracing.serviceName=traefik"
+      - "--tracing.addInternals=true"
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
       - "--accesslog=true"
@@ -178,6 +181,21 @@ services:
     restart: unless-stopped
     depends_on:
       - victoria-logs
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    container_name: jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    expose:
+      - "4317"   # OTLP gRPC receiver
+      - "4318"   # OTLP HTTP receiver
+      - "16686"  # Query UI (web interface)
+    networks:
+      - app-network
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=false"
 
 networks:
   app-network:

@@ -5,6 +5,10 @@ services:
       - "--api.dashboard=true"
       - "--api.insecure=true"
       - "--entrypoints.web.address=:80"
+      - "--tracing.otlp=true"
+      - "--tracing.otlp.http=true"
+      - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
+      - "--tracing.addInternals=true"
     ports:
       - "80:80"
       - "8080:8080"
@@ -51,6 +55,13 @@ services:
       - "traefik.http.routers.vmui.rule=Host(`logs.localhost`)"
       - "traefik.http.services.vmui.loadbalancer.server.port=8427"
       - "traefik.http.routers.vmui.entrypoints=web"
+
+  jaeger:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaeger.rule=Host(`jaeger.localhost`)"
+      - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+      - "traefik.http.routers.jaeger.entrypoints=web"
 
 #  mailer:
 #    image: mailhog/mailhog
