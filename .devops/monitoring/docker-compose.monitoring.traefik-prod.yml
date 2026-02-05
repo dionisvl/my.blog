@@ -1,0 +1,27 @@
+services:
+  prometheus:
+    labels:
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus.web3main.pro`)"
+      - "traefik.http.routers.prometheus.tls=true"
+      - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
+      - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.middlewares.prometheus-auth.basicauth.users=${PROMETHEUS_AUTH}"
+
+  grafana:
+    labels:
+      - "traefik.http.routers.grafana.rule=Host(`grafana.web3main.pro`)"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=myresolver"
+      - "traefik.http.routers.grafana.middlewares=grafana-auth"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.grafana-auth.basicauth.users=${GRAFANA_AUTH}"
+
+  alertmanager:
+    labels:
+      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.web3main.pro`)"
+      - "traefik.http.routers.alertmanager.tls=true"
+      - "traefik.http.routers.alertmanager.tls.certresolver=myresolver"
+      - "traefik.http.routers.alertmanager.middlewares=alertmanager-auth"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+      - "traefik.http.middlewares.alertmanager-auth.basicauth.users=${ALERTMANAGER_AUTH}"

@@ -48,3 +48,6 @@ app.my.gochat
 
 # Docker
 compose.override.yaml
+/data/prometheus/
+/data/grafana/
+/data/alertmanager/

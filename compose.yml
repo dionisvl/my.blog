@@ -5,51 +5,30 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.metrics.address=:8082"
       - "--tracing.otlp=true"
       - "--tracing.otlp.http=true"
       - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
       - "--tracing.serviceName=traefik"
       - "--tracing.addInternals=true"
       - "--metrics.prometheus=true"
+      - "--metrics.prometheus.entryPoint=metrics"
+      - "--metrics.prometheus.addEntryPointsLabels=true"
+      - "--metrics.prometheus.addRoutersLabels=true"
+      - "--metrics.prometheus.addServicesLabels=true"
       - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
       - "--accesslog=true"
       - "--accesslog.filepath=/var/log/traefik/access.log"
       - "--accesslog.format=json"
     ports:
       - "80:80"
+    expose:
+      - "8082"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/var/log/traefik:/var/log/traefik"
     networks:
       - app-network
-
-#  laravel:
-#    build:
-#      context: ./app-laravel
-#      dockerfile: ./Dockerfile
-#    env_file:
-#      - path: ./.env
-#        required: true
-#    environment:
-#      PHP_IDE_CONFIG: serverName=${SERVER_NAME}
-#      DB_HOST: ${DB_HOST}
-#      DB_USER: ${MYSQL_ROOT_USER}
-#      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-#      DB_NAME: ${MYSQL_DATABASE}
-#      SERVER_NAME: ":80"
-#    expose:
-#      - "80"
-#      - "443"
-#      - "443/udp"
-#    volumes:
-#      - ./app-laravel/api-laravel:/app:rw
-#      - ./app-laravel/storage/public:/app/public/storage:rw
-#      - ./app-laravel/Caddyfile:/etc/caddy/Caddyfile:ro
-#    networks:
-#      - app-network
-#    restart: unless-stopped
-#    depends_on:
-#      - mysql
 
   symfony:
     build:

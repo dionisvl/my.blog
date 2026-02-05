@@ -41,15 +41,15 @@ final readonly class AdminPostManager
             $post->setAuthor($user);
         }
 
+        $slug = $this->slugger->slug($payload->title)->lower()->toString();
+        $post->setSlug($slug);
+
         return $this->applyPayload($post, $payload);
     }
 
     private function applyPayload(Post $post, AdminPostPayload $payload): Post
     {
-        $slug = $this->slugger->slug($payload->title)->lower()->toString();
-
         $post->setTitle($payload->title);
-        $post->setSlug($slug);
         $post->setContent($payload->content);
         $post->setDescription($payload->description);
 

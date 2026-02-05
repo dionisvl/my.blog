@@ -5,6 +5,14 @@
 - Turbo pages export via API instead of RSS
 - Ajax full-text search
 
+### 2026-02-01
+
+- Jaeger distributed tracing: OTLP from Traefik with internal spans
+- Jaeger UI with Basic Auth on production
+- Victoria Metrics: logs aggregation (Victoria Logs + VMUI dashboard)
+- Vector collector: Docker container logs → Victoria Logs
+- Symfony: Monolog configured for centralized logging
+
 ### 2026-01-29
 
 - Draft/published posts system in Symfony migration

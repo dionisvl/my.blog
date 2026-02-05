@@ -52,18 +52,6 @@ services:
       - "traefik.tcp.routers.ws-phpqa.service=ws-phpqa-service"
       - "traefik.tcp.services.ws-phpqa-service.loadbalancer.server.port=80"
 
-  laravel:
-    command: php artisan octane:frankenphp --host=0.0.0.0 --port=80 --max-requests=1000 --workers=4
-    profiles:
-      - legacy
-    volumes:
-      - ./app-laravel/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
-    labels:
-      - "traefik.enable=false"
-
-    networks:
-      - app-network
-
   pets-app:
     volumes:
       - /var/www/pets.phpqa.ru/app:/app:rw

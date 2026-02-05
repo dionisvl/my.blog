@@ -92,3 +92,13 @@ cache-clear:
 
 aphorizm:
 	docker compose exec symfony php bin/console app:seed-aphorisms
+
+# Monitoring Stack
+monitoring-up:
+	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-dev.yml up -d
+
+monitoring-up-prod:
+	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-prod.yml up -d
+
+monitoring-down:
+	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml down
