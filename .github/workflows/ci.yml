@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_ENV: test
+      DEFAULT_URI: http://localhost
     
     steps:
       - uses: actions/checkout@v4
