@@ -18,7 +18,7 @@ final readonly class PostLikeManager
     {
         $this->entityManager->createQueryBuilder()
             ->delete(PostLike::class, 'pl')
-            ->where('pl.post = :postId')
+            ->where('IDENTITY(pl.post) = :postId')
             ->andWhere('pl.createdAt = :createdAt')
             ->setParameter('postId', $postId)
             ->setParameter('createdAt', $createdAt)

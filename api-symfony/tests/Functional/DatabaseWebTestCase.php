@@ -55,6 +55,7 @@ abstract class DatabaseWebTestCase extends WebTestCase
     protected function setPrivate(object $object, string $property, mixed $value): void
     {
         $ref = new \ReflectionProperty($object, $property);
+        $ref->setAccessible(true);
         $ref->setValue($object, $value);
     }
 }

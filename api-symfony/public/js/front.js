@@ -60,7 +60,10 @@ function request(url, method, payload) {
         })
     })
         .then(r => r.json())
-        .catch(error => console.error(error))
+        .catch(error => {
+            console.error(error);
+            return {status: 'error', data: 'request failed'};
+        })
 }
 
 // Anti-bot counter

@@ -27,7 +27,7 @@ final class CategoryRepository extends ServiceEntityRepository
         /** @var list<array{0: Category, posts_count: int|string}> $rows */
         $rows = $this->createQueryBuilder('c')
             ->select('c', 'COUNT(p.id) as posts_count')
-            ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c.id AND p.status = false')
+            ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c AND p.status = false')
             ->groupBy('c.id')
             ->having('COUNT(p.id) > 0')
             ->orderBy('COUNT(p.id)', 'DESC')
@@ -45,7 +45,7 @@ final class CategoryRepository extends ServiceEntityRepository
         /** @var list<array{0: Category, posts_count: int|string}> $rows */
         $rows = $this->createQueryBuilder('c')
             ->select('c', 'COUNT(p.id) as posts_count')
-            ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c.id AND p.status = false')
+            ->leftJoin(Post::class, 'p', 'WITH', 'p.category = c AND p.status = false')
             ->groupBy('c.id')
             ->having('COUNT(p.id) >= :minCount')
             ->orderBy('COUNT(p.id)', 'DESC')
