@@ -98,7 +98,7 @@ monitoring-up:
 	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-dev.yml up -d
 
 monitoring-up-prod:
-	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-prod.yml up -d
+	docker compose -f compose.yml -f compose.override.prod.yaml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-prod.yml up -d
 
 monitoring-down:
 	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml down
