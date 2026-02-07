@@ -2,6 +2,7 @@ services:
   prometheus:
     labels:
       - "traefik.http.routers.prometheus.rule=Host(`prometheus.web3main.pro`)"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls=true"
       - "traefik.http.routers.prometheus.tls.certresolver=myresolver"
       - "traefik.http.routers.prometheus.middlewares=prometheus-auth"
@@ -11,6 +12,7 @@ services:
   grafana:
     labels:
       - "traefik.http.routers.grafana.rule=Host(`grafana.web3main.pro`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls=true"
       - "traefik.http.routers.grafana.tls.certresolver=myresolver"
       - "traefik.http.routers.grafana.middlewares=grafana-auth"
@@ -20,6 +22,7 @@ services:
   alertmanager:
     labels:
       - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.web3main.pro`)"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
       - "traefik.http.routers.alertmanager.tls=true"
       - "traefik.http.routers.alertmanager.tls.certresolver=myresolver"
       - "traefik.http.routers.alertmanager.middlewares=alertmanager-auth"

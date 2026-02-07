@@ -162,10 +162,11 @@ services:
       - victoria-logs
 
   jaeger:
-    image: jaegertracing/all-in-one:1.76.0
+    image: jaegertracing/jaeger:2.15.0
     container_name: jaeger
-    environment:
-      COLLECTOR_OTLP_ENABLED: "true"
+    command:
+      - "--set=receivers.otlp.protocols.grpc.endpoint=0.0.0.0:4317"
+      - "--set=receivers.otlp.protocols.http.endpoint=0.0.0.0:4318"
     expose:
       - "4317"   # OTLP gRPC receiver
       - "4318"   # OTLP HTTP receiver
@@ -173,8 +174,6 @@ services:
     networks:
       - app-network
     restart: unless-stopped
-    labels:
-      - "traefik.enable=false"
 
 networks:
   app-network:
