@@ -1,0 +1,117 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Posts Management{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Posts Management
+                <small>list of all posts</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('admin_dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Posts</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <!-- Default box -->
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Posts Listing</h3>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <a href="{{ path('admin_posts_create') }}" class="btn btn-success">Add New</a>
+                    </div>
+
+                    <table id="admin_data_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Tags</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for post in posts %}
+                            <tr>
+                                <td>{{ post.id }}</td>
+                                <td>
+                                    {{ post.title }}
+                                    {% if post.status %}
+                                        <span class="label label-warning" style="margin-left:6px;">Draft</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if post.category %}
+                                        {{ post.category.title }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if post.tags|length > 0 %}
+                                        {{ post.tags|map(t => t.title)|join(', ') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if post.image %}
+                                        <img src="{{ post.image }}" alt="" width="100">
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('admin_posts_edit', {id: post.id}) }}">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+
+                                    <form method="POST" action="{{ path('admin_posts_delete', {id: post.id}) }}"
+                                          style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ post.id) }}">
+                                        <button onclick="return confirm('Are you sure?')" type="submit" class="delete"
+                                                style="background:none;border:none;color:#337ab7;cursor:pointer;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+
+                                    <a target="_blank" href="{{ path('post_show', {slug: post.slug}) }}">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    No posts found. <a href="{{ path('admin_posts_create') }}">Create your first
+                                        post</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </section>
+        <!-- /.content -->
+    </div>
+{% endblock %}

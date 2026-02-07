@@ -1,0 +1,28 @@
+{
+    frankenphp {
+        php_ini memory_limit 256M
+        max_threads auto
+    }
+
+    order php_server before file_server
+}
+
+:80 {
+    root * /app/public
+    encode zstd gzip
+
+    log {
+        format json {
+            time_format iso8601
+        }
+        level info
+        output stdout
+    }
+
+    php_server {
+        worker {
+            file /app/public/index.php
+            num 3
+        }
+    }
+}

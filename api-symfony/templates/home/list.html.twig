@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Filtered Posts - Web3 Blog{% endblock %}
+{% set filterTitle = tag is defined ? tag.title : (category is defined ? category.title : 'Filtered Posts') %}
+{% set filterUrl = tag is defined ? path('tag_show', {slug: tag.slug}) : (category is defined ? path('category_show', {slug: category.slug}) : path('home')) %}
+{% block meta_title %}{{ filterTitle }} - Web3 Blog{% endblock %}
+{% block meta_description %}Browse posts in {{ filterTitle }}.{% endblock %}
+{% block og_type %}website{% endblock %}
+{% block head_extra %}
+    {% set siteUrl = app.request.schemeAndHttpHost %}
+    <script type="application/ld+json">
+        {{ {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            'itemListElement': [
+                {
+                    '@type': 'ListItem',
+                    'position': 1,
+                    'name': 'Homepage',
+                    'item': siteUrl ~ path('home')
+                },
+                {
+                    '@type': 'ListItem',
+                    'position': 2,
+                    'name': filterTitle,
+                    'item': siteUrl ~ filterUrl
+                }
+            ]
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="w-full md:w-3/4 pr-0 md:pr-6 space-y-3">
+        <div class="p-4 rounded-lg mb-6">
+            <h1 class="text-2xl font-semibold text-white mb-3">
+                {% if tag is defined %}
+                    {{ tag.title }}
+                {% elseif category is defined %}
+                    {{ category.title }}
+                {% endif %}
+            </h1>
+            <blockquote class="text-gray-300">
+                all posts by filter
+            </blockquote>
+        </div>
+
+        {% for post in posts %}
+            <article class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700">
+                <a href="{{ path('post_show', {slug: post.slug}) }}"
+                   class="flex flex-col transition-all duration-200 hover:bg-gray-700 hover:shadow-md">
+                    <div class="flex flex-row">
+                        <div class="flex-shrink-0 w-32 flex items-center justify-center p-1">
+                            <div class="h-12 w-full flex items-center justify-center overflow-hidden">
+                                <img src="{{ post.image }}" alt="{{ post.title }}"
+                                     width="100" height="50"
+                                     class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
+                                     loading="lazy">
+                            </div>
+                        </div>
+
+                        <header class="flex-grow flex items-center p-1 px-3">
+                            <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition">
+                                {{ post.title }}
+                            </h3>
+                        </header>
+                    </div>
+
+                    {% if post.description %}
+                        <div class="px-4 pb-4">
+                            <div
+                                class="prose max-w-none text-gray-300 text-sm line-clamp-2 hover:text-blue-400 transition-colors">
+                                {{ post.description|raw }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </a>
+
+                <div class="flex justify-between items-center text-sm text-gray-400 pl-4 p-1 border-t border-gray-700">
+                    <span>
+                        By <a href="#" class="hover:text-blue-400">{{ post.author.name }}</a>
+                        on {{ post.formattedDate }}
+                    </span>
+
+                    <div class="flex flex-wrap items-center space-x-0 sm:space-x-4 sm:mr-4">
+                        <span class="flex items-center w-full sm:w-auto">
+                            <i class="fas fa-eye mr-1"></i> {{ post.viewsCount }}
+                        </span>
+                    </div>
+                </div>
+            </article>
+        {% else %}
+            <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-6 text-gray-300">
+                No posts found for this filter.
+            </div>
+        {% endfor %}
+
+        {% if pagination is defined and pagination.totalPages > 1 %}
+            <div class="mt-8 flex justify-center">
+                <nav class="inline-flex items-center space-x-2 text-sm">
+                    {% if pagination.hasPrev %}
+                        <a href="{{ path(tag is defined ? 'tag_show' : 'category_show', {slug: tag is defined ? tag.slug : category.slug, page: pagination.prevPage}) }}"
+                           class="px-3 py-2 rounded border border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400 transition">
+                            Previous
+                        </a>
+                    {% endif %}
+
+                    {% for page in 1..pagination.totalPages %}
+                        <a href="{{ path(tag is defined ? 'tag_show' : 'category_show', {slug: tag is defined ? tag.slug : category.slug, page: page}) }}"
+                           class="px-3 py-2 rounded border border-gray-700 {{ page == pagination.currentPage ? 'bg-blue-600 text-white border-blue-600' : 'text-gray-300 hover:text-blue-400 hover:border-blue-400' }} transition">
+                            {{ page }}
+                        </a>
+                    {% endfor %}
+
+                    {% if pagination.hasNext %}
+                        <a href="{{ path(tag is defined ? 'tag_show' : 'category_show', {slug: tag is defined ? tag.slug : category.slug, page: pagination.nextPage}) }}"
+                           class="px-3 py-2 rounded border border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400 transition">
+                            Next
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        {% endif %}
+    </div>
+
+    {% include 'home/_sidebar.html.twig' %}
+{% endblock %}

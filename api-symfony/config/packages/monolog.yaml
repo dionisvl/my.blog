@@ -1,0 +1,68 @@
+monolog:
+    channels:
+        - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
+
+when@dev:
+    monolog:
+        handlers:
+            main:
+                type: stream
+                path: "php://stdout"
+                level: debug
+                formatter: monolog.formatter.json
+                channels: [ "!event", "!security" ]
+            security:
+                type: stream
+                path: "php://stdout"
+                level: info
+                formatter: monolog.formatter.json
+                channels: [ "security" ]
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: [ "!event", "!doctrine", "!console", "!security" ]
+
+when@test:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [ 404, 405 ]
+                channels: [ "!event" ]
+            nested:
+                type: stream
+                path: "%kernel.logs_dir%/%kernel.environment%.log"
+                level: debug
+
+when@prod:
+    monolog:
+        handlers:
+            main:
+                type: fingers_crossed
+                action_level: error
+                handler: nested
+                excluded_http_codes: [ 404, 405 ]
+                channels: [ "!deprecation", "!security" ]
+                buffer_size: 50
+            security:
+                type: stream
+                path: "php://stdout"
+                level: info
+                formatter: monolog.formatter.json
+                channels: [ "security" ]
+            nested:
+                type: stream
+                path: "php://stdout"
+                level: debug
+                formatter: monolog.formatter.json
+            console:
+                type: console
+                process_psr_3_messages: false
+                channels: [ "!event", "!doctrine" ]
+            deprecation:
+                type: stream
+                channels: [ deprecation ]
+                path: "php://stdout"
+                formatter: monolog.formatter.json

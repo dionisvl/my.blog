@@ -1,0 +1,39 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit Tag: {{ tag.title }}{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Edit Tag
+                <small>update existing tag</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <form action="{{ path('admin_tags_update', {id: tag.id}) }}" method="POST">
+                <input type="hidden" name="_token" value="{{ csrf_token('tag_edit_' ~ tag.id) }}">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="id" value="{{ tag.id }}">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Update Tag</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ tag.title }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a href="{{ path('admin_tags_index') }}" class="btn btn-default">Back</a>
+                        <button type="submit" class="btn btn-warning pull-right">Update</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

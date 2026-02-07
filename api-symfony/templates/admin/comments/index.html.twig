@@ -1,0 +1,68 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Comments{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Comments
+                <small>moderation</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Comments List</h3>
+                </div>
+                <div class="box-body">
+                    <table id="admin_data_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Author</th>
+                            <th>Text</th>
+                            <th>Post</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for comment in comments %}
+                            <tr>
+                                <td>{{ comment.id }}</td>
+                                <td>{{ comment.authorName }}</td>
+                                <td>{{ comment.text }}</td>
+                                <td>
+                                    <a href="{{ path('post_show', {slug: comment.post.slug}) }}" target="_blank">
+                                        {{ comment.post.id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ path('admin_comments_toggle', {id: comment.id}) }}">
+                                        {% if comment.status == 1 %}
+                                            <i class="fas fa-lock"></i>
+                                        {% else %}
+                                            <i class="fas fa-lock-open"></i>
+                                        {% endif %}
+                                    </a>
+                                    <form method="POST" action="{{ path('admin_comments_delete', {id: comment.id}) }}"
+                                          style="display: inline;">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ comment.id) }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button onclick="return confirm('Are you sure?')" type="submit" class="delete"
+                                                style="background:none;border:none;color:#337ab7;cursor:pointer;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

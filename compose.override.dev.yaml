@@ -2,11 +2,18 @@ services:
   traefik:
     command:
       - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
       - "--api.dashboard=true"
       - "--api.insecure=true"
       - "--entrypoints.web.address=:80"
+      - "--tracing.otlp=true"
+      - "--tracing.otlp.http=true"
+      - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
+      - "--tracing.serviceName=traefik"
+      - "--tracing.addInternals=true"
     ports:
       - "80:80"
+      - "8080:8080"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`)"
@@ -15,16 +22,10 @@ services:
     networks:
       - app-network
 
-  laravel:
-    command: php artisan octane:frankenphp --host=0.0.0.0 --port=80 --max-requests=1 --workers=1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.laravel.loadbalancer.server.port=80"
-      - "traefik.http.routers.laravel.entrypoints=web"
-      - "traefik.http.routers.laravel.rule=Host(`phpqa.local`)"
-    # Uncomment to enable xdebug config mount for local dev
-    # volumes:
-    #   - ./app-laravel/php/conf.d/50_xdebug.ini:/usr/local/etc/php/conf.d/50_xdebug.ini:rw
+  symfony:
+    volumes:
+      - ./api-symfony/Caddyfile.dev:/etc/caddy/Caddyfile:ro
+      - ./api-symfony/php/conf.d/opcache.dev.ini:/usr/local/etc/php/conf.d/opcache.dev.ini:ro
 
   pets-app:
     volumes:
@@ -48,6 +49,20 @@ services:
       - "traefik.http.services.sveltewar.loadbalancer.server.port=80"
     networks:
       - app-network
+
+  vmauth:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vmui.rule=Host(`logs.localhost`)"
+      - "traefik.http.services.vmui.loadbalancer.server.port=8427"
+      - "traefik.http.routers.vmui.entrypoints=web"
+
+  jaeger:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jaeger.rule=Host(`jaeger.localhost`)"
+      - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+      - "traefik.http.routers.jaeger.entrypoints=web"
 
 #  mailer:
 #    image: mailhog/mailhog

@@ -1,0 +1,128 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Welcome to Admin Panel
+                <small>control panel</small>
+            </h1>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+            <!-- Statistics Cards Row -->
+            <div class="row">
+                <div class="col-lg-4 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-aqua">
+                        <div class="inner">
+                            <h3>{{ posts_count }}</h3>
+                            <p>Posts</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <a href="{{ path('admin_posts_index') }}" class="small-box-footer">
+                            More info <i class="fa fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- ./col -->
+
+                <div class="col-lg-4 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-green">
+                        <div class="inner">
+                            <h3>{{ categories_count }}</h3>
+                            <p>Categories</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-list-ul"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            More info <i class="fa fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- ./col -->
+
+                <div class="col-lg-4 col-xs-6">
+                    <!-- small box -->
+                    <div class="small-box bg-yellow">
+                        <div class="inner">
+                            <h3>{{ users_count }}</h3>
+                            <p>Users</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-users"></i>
+                        </div>
+                        <a href="#" class="small-box-footer">
+                            More info <i class="fa fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <!-- ./col -->
+            </div>
+            <!-- /.row -->
+
+            <!-- Recent Posts Box -->
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Recent Posts</h3>
+                    <div class="box-tools pull-right">
+                        <a href="{{ path('admin_posts_index') }}" class="btn btn-sm btn-primary">
+                            All Posts <i class="fa fa-arrow-circle-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Views</th>
+                            <th>Date</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for post in recent_posts %}
+                            <tr>
+                                <td>{{ post.id }}</td>
+                                <td>
+                                    <a href="{{ path('admin_posts_edit', {id: post.id}) }}">
+                                        {{ post.title }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if post.status %}
+                                        <span class="label label-warning">Draft</span>
+                                    {% else %}
+                                        <span class="label label-success">Published</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ post.viewsCount }}</td>
+                                <td>{{ post.formattedDate }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No posts yet</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+
+        </section>
+        <!-- /.content -->
+    </div>
+{% endblock %}

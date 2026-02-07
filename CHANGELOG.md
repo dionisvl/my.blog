@@ -3,8 +3,36 @@
 ## Unreleased
 
 - Turbo pages export via API instead of RSS
-- Saving cookies in local storage
 - Ajax full-text search
+
+### 2026-02-01
+
+- Jaeger distributed tracing: OTLP from Traefik with internal spans
+- Jaeger UI with Basic Auth on production
+- Victoria Metrics: logs aggregation (Victoria Logs + VMUI dashboard)
+- Vector collector: Docker container logs → Victoria Logs
+- Symfony: Monolog configured for centralized logging
+
+### 2026-01-29
+
+- Draft/published posts system in Symfony migration
+- Random post selection with proper caching
+- OPcache configuration for production optimization
+- SEO improvements: canonical, hreflang, og:*, twitter:*, JSON-LD (Organization, WebSite, Article)
+- Fixed Doctrine deprecations and code style compliance
+- Added Aphorism entity with PHP-CS-Fixer configuration
+- PHPStan analysis, Rector refactoring, and PHP-CS-Fixer style fixes
+
+### 2026-01-17
+
+- **Symfony 7.4 parallel clone application**
+    - Homepage, post detail, contacts pages
+    - Likes system (cookie-based, no IP tracking for privacy)
+    - Comments system with anti-bot protection
+    - Admin panel (posts CRUD with image upload)
+    - Modern Symfony 7.4 features: Attributes, DTOs, Repositories, Managers
+    - Symfony: expanded admin (catalog, orders, frontparts, etc.), frontend search + pagination
+    - Prod routing: Symfony serves prod, Laravel disabled
 
 ### 2026-01-11
 

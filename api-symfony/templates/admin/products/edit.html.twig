@@ -1,0 +1,105 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Edit Product
+            </h1>
+        </section>
+
+        <section class="content">
+            <form method="POST" action="{{ path('admin_products_update', {id: product.id}) }}"
+                  enctype="multipart/form-data">
+                <input type="hidden" name="_token" value="{{ csrf_token('product_form') }}">
+                <input type="hidden" name="_method" value="PUT">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Update Product</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title"
+                                       value="{{ product.title }}">
+
+                                <label for="slug">Slug</label>
+                                <input type="text" class="form-control" id="slug" name="slug"
+                                       value="{{ product.slug }}">
+
+                                <label for="price">Price</label>
+                                <input type="number" name="price" id="price" class="form-control"
+                                       value="{{ product.price }}">
+
+                                <img src="{{ product.getImage('preview_picture') }}" alt="" class="img-responsive"
+                                     width="200">
+                                <label for="preview_picture">Preview Image</label>
+                                <input type="file" id="preview_picture" name="preview_picture">
+
+                                <img src="{{ product.getImage('detail_picture') }}" alt="" class="img-responsive"
+                                     width="200">
+                                <label for="detail_picture">Detail Image</label>
+                                <input type="file" id="detail_picture" name="detail_picture">
+
+                                <label>Category</label>
+                                <select name="category_id" class="form-control select2">
+                                    <option value="">Select category</option>
+                                    {% for category in categories %}
+                                        <option
+                                            value="{{ category.id }}" {{ product.category and product.category.id == category.id ? 'selected' : '' }}>{{ category.title }}</option>
+                                    {% endfor %}
+                                </select>
+
+                                <label>Date</label>
+                                <input type="date" class="form-control" name="date"
+                                       value="{{ product.date ? product.date|date('Y-m-d') : '' }}">
+
+                                <label for="balance">Balance</label>
+                                <input type="number" name="balance" id="balance" class="form-control"
+                                       value="{{ product.balance }}">
+
+                                <label for="size">Size</label>
+                                <input type="text" name="size" id="size" class="form-control"
+                                       value="{{ product.size }}">
+
+                                <label for="manufacturer">Manufacturer</label>
+                                <input type="text" name="manufacturer" id="manufacturer" class="form-control"
+                                       value="{{ product.manufacturer }}">
+
+                                <label for="stars">Stars</label>
+                                <input type="number" name="stars" id="stars" class="form-control"
+                                       value="{{ product.stars }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="detail_text">Detail Text</label>
+                                <textarea name="detail_text" id="detail_text" cols="30" rows="10"
+                                          class="form-control myeditable">{{ product.detailText }}</textarea>
+
+                                <label for="features">Features</label>
+                                <textarea name="features" id="features" cols="30" rows="4"
+                                          class="form-control myeditable">{{ product.features }}</textarea>
+
+                                <label for="delivery">Delivery</label>
+                                <textarea name="delivery" id="delivery" cols="30" rows="4"
+                                          class="form-control myeditable">{{ product.delivery }}</textarea>
+
+                                <label for="composition">Composition</label>
+                                <textarea name="composition" id="composition" cols="30" rows="4"
+                                          class="form-control">{{ product.composition }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-warning pull-right">Update Product</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

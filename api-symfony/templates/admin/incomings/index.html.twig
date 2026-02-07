@@ -1,0 +1,68 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Incoming Messages{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Incoming Messages
+                <small>contact form inbox</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Messages List</h3>
+                </div>
+                <div class="box-body">
+                    <table id="admin_data_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for incoming in incomings %}
+                            <tr>
+                                <td>{{ incoming.id }}</td>
+                                <td>{{ incoming.name }}</td>
+                                <td>{{ incoming.email }}</td>
+                                <td>{{ incoming.phone }}</td>
+                                <td>{{ incoming.message }}</td>
+                                <td>{{ incoming.createdAt|date('Y-m-d H:i') }}</td>
+                                <td>
+                                    <a href="{{ path('admin_incomings_toggle', {id: incoming.id}) }}">
+                                        {% if incoming.status == 1 %}
+                                            <i class="fas fa-lock"></i>
+                                        {% else %}
+                                            <i class="fas fa-thumbs-up"></i>
+                                        {% endif %}
+                                    </a>
+                                    <form method="POST" action="{{ path('admin_incomings_delete', {id: incoming.id}) }}"
+                                          style="display: inline;">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete' ~ incoming.id) }}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button onclick="return confirm('Are you sure?')" type="submit" class="delete"
+                                                style="background:none;border:none;color:#337ab7;cursor:pointer;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

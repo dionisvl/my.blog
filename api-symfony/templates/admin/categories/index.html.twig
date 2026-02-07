@@ -1,0 +1,78 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Categories Management{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Categories Management
+                <small>list of all categories</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="{{ path('admin_dashboard') }}"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">Categories</li>
+            </ol>
+        </section>
+
+        <section class="content">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Categories Listing</h3>
+                </div>
+                <div class="box-body">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            <p>{{ message }}</p>
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-group">
+                        <a href="{{ path('admin_categories_create') }}" class="btn btn-success">Add New</a>
+                    </div>
+
+                    <table id="admin_data_table" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td>{{ category.id }}</td>
+                                <td>{{ category.title }}</td>
+                                <td>
+                                    <a href="{{ path('admin_categories_edit', {id: category.id}) }}">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+                                    <form method="POST"
+                                          action="{{ path('admin_categories_delete', {id: category.id}) }}"
+                                          style="display: inline;">
+                                        <input type="hidden" name="_token"
+                                               value="{{ csrf_token('delete_category_' ~ category.id) }}">
+                                        <button onclick="return confirm('Are you sure?')" type="submit" class="delete"
+                                                style="background:none;border:none;color:#337ab7;cursor:pointer;">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">
+                                    No categories found. <a href="{{ path('admin_categories_create') }}">Create your
+                                        first category</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

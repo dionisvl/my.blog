@@ -2,12 +2,18 @@ services:
   traefik:
     command:
       - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
       - "--api.dashboard=true"
       - "--api.insecure=false"
       - "--log.level=WARN"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http3"
+      - "--tracing.otlp=true"
+      - "--tracing.otlp.http=true"
+      - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
+      - "--tracing.serviceName=traefik"
+      - "--tracing.addInternals=true"
       - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
@@ -46,43 +52,6 @@ services:
       - "traefik.tcp.routers.ws-phpqa.tls.certresolver=myresolver"
       - "traefik.tcp.routers.ws-phpqa.service=ws-phpqa-service"
       - "traefik.tcp.services.ws-phpqa-service.loadbalancer.server.port=80"
-
-  laravel:
-    command: php artisan octane:frankenphp --host=0.0.0.0 --port=80 --max-requests=1000 --workers=4
-    volumes:
-      - ./app-laravel/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
-    labels:
-      - "traefik.enable=true"
-
-      # Middleware: redirect from phpqa.ru to web3main.pro (301 permanent)
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.regex=^https?://phpqa\\.ru/(.*)"
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.replacement=https://web3main.pro/$${1}"
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.permanent=true"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.regex=^https?://www\\.phpqa\\.ru/(.*)"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.replacement=https://www.web3main.pro/$${1}"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.permanent=true"
-
-      # HTTP
-      - "traefik.http.routers.laravel-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
-      - "traefik.http.routers.laravel-http.entrypoints=web"
-      - "traefik.http.routers.laravel-http.service=laravel"
-      - "traefik.http.routers.laravel-http.middlewares=redirect-old-domain,redirect-old-domain-www"
-
-      # HTTPS
-      - "traefik.http.routers.laravel.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
-      - "traefik.http.routers.laravel.entrypoints=websecure"
-      - "traefik.http.routers.laravel.tls.certresolver=myresolver"
-      - "traefik.http.routers.laravel.middlewares=redirect-old-domain,redirect-old-domain-www,laravel-compress"
-
-      - "traefik.http.routers.laravel.service=laravel"
-      - "traefik.http.services.laravel.loadbalancer.server.port=80"
-
-      # Compress
-      - "traefik.http.middlewares.laravel-compress.compress=true"
-      - "traefik.http.middlewares.laravel-compress.compress.includedcontenttypes=text/html,text/plain,text/css,application/javascript,application/json"
-
-    networks:
-      - app-network
 
   pets-app:
     volumes:
@@ -124,3 +93,68 @@ services:
       - "traefik.http.services.sveltewar.loadbalancer.server.port=80"
     networks:
       - app-network
+
+  symfony:
+    image: 45.9.73.190:5000/phpqa-api:latest
+    #build:
+    #  target: prod
+    #    volumes:
+    #      - ./api-symfony/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
+    labels:
+      - "traefik.enable=true"
+
+      # Middleware: redirect from phpqa.ru to web3main.pro (301 permanent)
+      - "traefik.http.middlewares.redirect-old-domain.redirectregex.regex=^https?://phpqa\\.ru/(.*)"
+      - "traefik.http.middlewares.redirect-old-domain.redirectregex.replacement=https://web3main.pro/$${1}"
+      - "traefik.http.middlewares.redirect-old-domain.redirectregex.permanent=true"
+      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.regex=^https?://www\\.phpqa\\.ru/(.*)"
+      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.replacement=https://www.web3main.pro/$${1}"
+      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.permanent=true"
+
+      # HTTP
+      - "traefik.http.routers.symfony-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      - "traefik.http.routers.symfony-http.entrypoints=web"
+      - "traefik.http.routers.symfony-http.service=symfony"
+      - "traefik.http.routers.symfony-http.middlewares=redirect-old-domain,redirect-old-domain-www"
+
+      # HTTPS
+      - "traefik.http.routers.symfony.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      - "traefik.http.routers.symfony.entrypoints=websecure"
+      - "traefik.http.routers.symfony.tls.certresolver=myresolver"
+      - "traefik.http.routers.symfony.middlewares=redirect-old-domain,redirect-old-domain-www"
+
+      - "traefik.http.routers.symfony.service=symfony"
+      - "traefik.http.services.symfony.loadbalancer.server.port=80"
+
+  vmauth:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.vmui-ratelimit.ratelimit.average=50"
+      - "traefik.http.middlewares.vmui-ratelimit.ratelimit.burst=100"
+      # HTTP
+      - "traefik.http.routers.vmui-http.rule=Host(`vmui.web3main.pro`)"
+      - "traefik.http.routers.vmui-http.entrypoints=web"
+      - "traefik.http.routers.vmui-http.middlewares=vmui-ratelimit@docker"
+      # HTTPS
+      - "traefik.http.routers.vmui-https.rule=Host(`vmui.web3main.pro`)"
+      - "traefik.http.routers.vmui-https.entrypoints=websecure"
+      - "traefik.http.routers.vmui-https.tls.certresolver=myresolver"
+      - "traefik.http.routers.vmui-https.middlewares=vmui-ratelimit@docker"
+      - "traefik.http.services.vmui.loadbalancer.server.port=8427"
+
+  jaeger:
+    labels:
+      - "traefik.enable=true"
+      # Auth middleware
+      - "traefik.http.middlewares.jaeger-auth.basicauth.users=${JAEGER_AUTH}"
+      # HTTP
+      - "traefik.http.routers.jaeger-http.rule=Host(`jaeger.web3main.pro`)"
+      - "traefik.http.routers.jaeger-http.entrypoints=web"
+      - "traefik.http.routers.jaeger-http.service=jaeger"
+      # HTTPS
+      - "traefik.http.routers.jaeger-https.rule=Host(`jaeger.web3main.pro`)"
+      - "traefik.http.routers.jaeger-https.entrypoints=websecure"
+      - "traefik.http.routers.jaeger-https.tls.certresolver=myresolver"
+      - "traefik.http.routers.jaeger-https.service=jaeger"
+      - "traefik.http.routers.jaeger-https.middlewares=jaeger-auth@docker"
+      - "traefik.http.services.jaeger.loadbalancer.server.port=16686"

@@ -32,6 +32,7 @@ app-laravel/api-laravel/.phpunit.cache/*
 
 data/db/mysql/db_data
 data/db/pg/db_data
+/data/victoria-logs/
 storage/
 .env
 
@@ -47,3 +48,6 @@ app.my.gochat
 
 # Docker
 compose.override.yaml
+/data/prometheus/
+/data/grafana/
+/data/alertmanager/

@@ -1,0 +1,65 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Edit User: {{ user.name }}{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>
+                Edit User
+                <small>update existing user</small>
+            </h1>
+        </section>
+
+        <section class="content">
+            <form action="{{ path('admin_users_update', {id: user.id}) }}" method="POST">
+                <input type="hidden" name="_token" value="{{ csrf_token('user_edit_' ~ user.id) }}">
+                <input type="hidden" name="_method" value="PUT">
+                <input type="hidden" name="id" value="{{ user.id }}">
+
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Update User</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                       value="{{ user.email }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                       placeholder="">
+                                <p class="help-block">Leave blank to keep the current password.</p>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" class="minimal"
+                                           name="isAdmin" {{ user.isAdmin ? 'checked' : '' }}>
+                                </label>
+                                <label>Admin</label>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" class="minimal"
+                                           name="status" {{ user.status == 1 ? 'checked' : '' }}>
+                                </label>
+                                <label>Active</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a href="{{ path('admin_users_index') }}" class="btn btn-default">Back</a>
+                        <button type="submit" class="btn btn-warning pull-right">Update</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

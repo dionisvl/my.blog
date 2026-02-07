@@ -1,0 +1,151 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Functional;
+
+use App\Entity\Category;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\HttpFoundation\Request;
+
+final class AdminCategoryControllerTest extends DatabaseWebTestCase
+{
+    public static function provideCategoryPayloads(): iterable
+    {
+        yield 'simple content' => ['Backend', 'Detailed text', 'Preview text'];
+
+        yield 'empty descriptions' => ['DevOps', null, null];
+    }
+
+    #[DataProvider('provideCategoryPayloads')]
+    public function testCreateUpdateDeleteCategory(string $title, ?string $detail, ?string $preview): void
+    {
+        $user = $this->createAdminUser();
+        $this->client->loginUser($user);
+
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
+            'title' => $title,
+            'detail_text' => $detail,
+            'preview_text' => $preview,
+        ]);
+
+        $this->assertResponseRedirects('/admin/categories/');
+
+        $this->em->clear();
+        $category = $this->em->getRepository(Category::class)->findOneBy(['title' => $title]);
+
+        self::assertNotNull($category);
+        self::assertContains($category->getDetailText(), [$detail, '']);
+        self::assertContains($category->getPreviewText(), [$preview, '']);
+
+        $newTitle = $title . ' Updated';
+
+        $this->client->request(Request::METHOD_POST, '/admin/categories/' . $category->getId() . '/update', [
+            'id' => $category->getId(),
+            'title' => $newTitle,
+            'detail_text' => $detail,
+            'preview_text' => $preview,
+        ]);
+
+        $this->assertResponseRedirects('/admin/categories/');
+
+        $this->em->clear();
+        $updated = $this->em->getRepository(Category::class)->find($category->getId());
+
+        self::assertNotNull($updated);
+        self::assertSame($newTitle, $updated->getTitle());
+
+        $this->client->request(Request::METHOD_POST, '/admin/categories/' . $category->getId() . '/delete');
+
+        $this->assertResponseRedirects('/admin/categories/');
+
+        $this->em->clear();
+        $deleted = $this->em->getRepository(Category::class)->find($category->getId());
+        self::assertNull($deleted);
+    }
+
+    public function testCategoryIndexView(): void
+    {
+        $user = $this->createAdminUser();
+        $category = new Category();
+        $category->setTitle('Python');
+        $category->setSlug('python');
+
+        $this->em->persist($category);
+        $this->em->flush();
+
+        $this->client->loginUser($user);
+        $this->client->request(Request::METHOD_GET, '/admin/categories/');
+
+        $this->assertResponseIsSuccessful();
+        self::assertStringContainsString('Python', $this->client->getResponse()->getContent());
+    }
+
+    public function testCategoryCreateView(): void
+    {
+        $user = $this->createAdminUser();
+        $this->client->loginUser($user);
+        $this->client->request(Request::METHOD_GET, '/admin/categories/create');
+
+        $this->assertResponseIsSuccessful();
+        $action = self::getContainer()->get('router')->generate('admin_categories_store');
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
+    }
+
+    public function testCategoryEditView(): void
+    {
+        $user = $this->createAdminUser();
+        $category = new Category();
+        $category->setTitle('Frontend');
+        $category->setSlug('frontend');
+
+        $this->em->persist($category);
+        $this->em->flush();
+
+        $this->client->loginUser($user);
+        $this->client->request(Request::METHOD_GET, '/admin/categories/' . $category->getId() . '/edit');
+
+        $this->assertResponseIsSuccessful();
+        $action = self::getContainer()->get('router')->generate(
+            'admin_categories_update',
+            ['id' => $category->getId()],
+        );
+        $this->assertSelectorExists(\sprintf('form[action="%s"]', $action));
+    }
+
+    public function testCategoryValidationErrorsReturnJson(): void
+    {
+        $user = $this->createAdminUser();
+        $this->client->loginUser($user);
+
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
+            'title' => '',
+        ]);
+
+        $this->assertResponseStatusCodeSame(422);
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
+    }
+
+    public function testCategorySlugIsUnique(): void
+    {
+        $user = $this->createAdminUser();
+        $this->client->loginUser($user);
+
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
+            'title' => 'Same Title',
+        ]);
+        $this->assertResponseRedirects('/admin/categories/');
+
+        $this->client->request(Request::METHOD_POST, '/admin/categories/store', [
+            'title' => 'Same Title',
+        ]);
+        $this->assertResponseStatusCodeSame(422);
+        self::assertJson($this->client->getResponse()->getContent());
+        self::assertStringContainsString('title', $this->client->getResponse()->getContent());
+
+        $this->em->clear();
+        $categories = $this->em->getRepository(Category::class)->findBy(['title' => 'Same Title']);
+        self::assertCount(1, $categories);
+    }
+}

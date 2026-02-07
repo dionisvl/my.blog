@@ -1,0 +1,43 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Create Category{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>Add Category</h1>
+        </section>
+
+        <section class="content">
+            <form method="POST" action="{{ path('admin_categories_store') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('category_create') }}">
+
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Create Category</h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input type="text" class="form-control" id="title" name="title" placeholder="">
+
+                                <label for="detail_text">Detailed Description</label>
+                                <textarea name="detail_text" id="detail_text" cols="30" rows="10"
+                                          class="form-control myeditable"></textarea>
+
+                                <label for="preview_text">Short Description</label>
+                                <textarea name="preview_text" id="preview_text" cols="30" rows="10"
+                                          class="form-control myeditable"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box-footer">
+                        <a href="{{ path('admin_categories_index') }}" class="btn btn-default">Back</a>
+                        <button type="submit" class="btn btn-success pull-right">Add</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+{% endblock %}

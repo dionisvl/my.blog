@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block content %}
+    <div class="w-full md:w-3/4 pr-0 md:pr-6">
+        <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-8 text-center">
+            <h1 class="text-3xl font-bold text-white mb-4">404</h1>
+            <h2 class="text-xl font-semibold text-gray-100 mb-3">Page Not Found</h2>
+            <p class="text-gray-300 mb-6">
+                Sorry, the page you are looking for doesn't exist or has been moved.
+                Please try returning to our homepage or going back to the previous page.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="{{ path('home') }}"
+                   class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition duration-200 font-medium">
+                    Go to Homepage
+                </a>
+                <button onclick="history.back()"
+                        class="bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded-md transition duration-200 font-medium">
+                    Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}

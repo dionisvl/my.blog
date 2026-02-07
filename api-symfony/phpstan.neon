@@ -1,0 +1,21 @@
+parameters:
+    level: 5
+    parallel:
+        maximumNumberOfProcesses: 8
+    paths:
+        - config
+        - src
+        - tests
+    treatPhpDocTypesAsCertain: false
+    checkUninitializedProperties: true
+    checkBenevolentUnionTypes: true
+    checkMissingCallableSignature: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    symfony:
+        containerXmlPath: var/cache/test/App_KernelTestDebugContainer.xml
+        consoleApplicationLoader: console-application.php
+
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-symfony/rules.neon

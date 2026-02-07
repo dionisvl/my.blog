@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contacts - Web3 Blog{% endblock %}
+
+{% block content %}
+    <div class="w-full md:w-3/4 pr-0 md:pr-6">
+        <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-6">
+            <h1 class="text-2xl font-bold mb-6 text-white">Contacts</h1>
+
+            <div class="mb-6 text-gray-300">
+                <p class="mb-2"><span class="font-semibold text-white">Our address:</span> 10 Rustaveli Avenue, Tbilisi,
+                    Georgia</p>
+                <p class="mb-2">Mon-Fri 9.00 - 19.00</p>
+                <p>
+                    <span class="font-semibold text-white">E-mail:</span>
+                    <a href="mailto:info@{{ app.request.host }}" class="text-blue-400 hover:text-blue-300">
+                        info@{{ app.request.host }}
+                    </a>
+                </p>
+            </div>
+
+            <div id="map_container" class="w-full h-96 bg-gray-700 mb-6 relative bg-center bg-no-repeat rounded"
+                 style="background-image: url(/storage/uploads/common/ymap0.webp);">
+                <script id="ymap_lazy" data-skip-moving="true" async=""
+                        data-src="https://api-maps.yandex.com/services/constructor/1.0/js/?um=constructor%3A09fb52cdf1297e9cde612f27192a2ce7671dc4dc5ae01806ce6cf9a18b719793&amp;width=1280&amp;height=400&amp;lang=en_US&amp;scroll=true"></script>
+            </div>
+
+            <script>
+                let map_container = document.getElementById('map_container')
+                let options_map = {
+                    once: true,
+                    passive: true,
+                    capture: true
+                }
+                map_container.addEventListener('click', start_lazy_map, options_map)
+                map_container.addEventListener('mouseover', start_lazy_map, options_map)
+                map_container.addEventListener('touchstart', start_lazy_map, options_map)
+                map_container.addEventListener('touchmove', start_lazy_map, options_map)
+
+                let map_loaded = false
+
+                function start_lazy_map() {
+                    if (!map_loaded) {
+                        let map_block = document.getElementById('ymap_lazy')
+                        map_loaded = true
+                        map_block.setAttribute('src', map_block.getAttribute('data-src'))
+                        map_block.removeAttribute('data_src')
+                        console.log('YMAP LOADED')
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
+    <div class="w-full md:w-1/4">
+        <div class="sticky top-4 space-y-3">
+            <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
+                <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">Contact Information</h3>
+                <div class="text-gray-300 text-sm space-y-2">
+                    <p><i class="fas fa-map-marker-alt mr-2 text-blue-400"></i> Tbilisi, Georgia</p>
+                    <p><i class="fas fa-phone mr-2 text-blue-400"></i> +123 456 78900</p>
+                    <p><i class="fas fa-envelope mr-2 text-blue-400"></i> info@{{ app.request.host }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
