@@ -11,14 +11,17 @@
     root * /app/public
     encode zstd gzip
 
+    @health path /health
+
     log {
         format json {
             time_format iso8601
         }
         level debug
         output stdout
-        skip_paths /health
     }
+
+    log_skip @health
 
     php_server
 }
