@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'macros/lazy_image.html.twig' as lazy %}
 
 {% set defaultDescription = 'Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.' %}
 {% set rawDescription = post.description ? post.description|striptags : post.content|striptags %}
@@ -53,10 +54,8 @@
     <div class="w-full md:w-3/4 pr-0 md:pr-6">
         <article class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700">
             {% if post.image %}
-                <div class="w-full h-64 md:h-96 flex items-center justify-center bg-gray-700">
-                    <img src="{{ post.image }}" alt="{{ post.title }}"
-                         height="384"
-                         class="w-full h-full object-contain">
+                <div class="w-full h-64 md:h-96 flex items-center justify-center bg-gray-700 overflow-hidden [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+                    {{ lazy.lazy_img(post.image, post.title, 'w-full h-full object-contain', '', '384') }}
                 </div>
             {% endif %}
 

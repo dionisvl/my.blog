@@ -131,15 +131,20 @@ services:
       - "traefik.enable=true"
       - "traefik.http.middlewares.vmui-ratelimit.ratelimit.average=50"
       - "traefik.http.middlewares.vmui-ratelimit.ratelimit.burst=100"
+      # Redirect root to /select/vmui/
+      - "traefik.http.middlewares.vmui-redirect.redirectregex.regex=^https?://vmui\\.web3main\\.pro/?$$"
+      - "traefik.http.middlewares.vmui-redirect.redirectregex.replacement=https://vmui.web3main.pro/select/vmui/"
+      - "traefik.http.middlewares.vmui-redirect.redirectregex.permanent=false"
       # HTTP
       - "traefik.http.routers.vmui-http.rule=Host(`vmui.web3main.pro`)"
       - "traefik.http.routers.vmui-http.entrypoints=web"
-      - "traefik.http.routers.vmui-http.middlewares=vmui-ratelimit@docker"
+      - "traefik.http.routers.vmui-http.middlewares=vmui-redirect@docker,vmui-ratelimit@docker"
+      - "traefik.http.routers.vmui-http.service=vmui"
       # HTTPS
       - "traefik.http.routers.vmui-https.rule=Host(`vmui.web3main.pro`)"
       - "traefik.http.routers.vmui-https.entrypoints=websecure"
       - "traefik.http.routers.vmui-https.tls.certresolver=myresolver"
-      - "traefik.http.routers.vmui-https.middlewares=vmui-ratelimit@docker"
+      - "traefik.http.routers.vmui-https.middlewares=vmui-redirect@docker,vmui-ratelimit@docker"
       - "traefik.http.services.vmui.loadbalancer.server.port=8427"
 
   jaeger:

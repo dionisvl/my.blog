@@ -1,3 +1,4 @@
+{% import 'macros/lazy_image.html.twig' as lazy %}
 <div class="w-full md:w-1/4">
     <div class="sticky top-4 space-y-3">
 
@@ -26,12 +27,9 @@
             <div class="space-y-4">
                 {% for post in featuredPosts %}
                     <div class="flex space-x-3">
-                        <div class="flex-shrink-0 w-20 h-20 relative group">
-                            <a href="{{ path('post_show', {slug: post.slug}) }}" class="block w-full h-full">
-                                <img src="{{ post.image }}" alt="" loading="lazy"
-                                     class="w-full h-full object-cover rounded">
-                                <div
-                                    class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity rounded"></div>
+                        <div class="flex-shrink-0 w-20 h-20 relative group overflow-hidden rounded">
+                            <a href="{{ path('post_show', {slug: post.slug}) }}" class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+                                {{ lazy.lazy_img(post.image, '', 'w-full h-full object-cover group-hover:brightness-60 transition-all', '20', '20') }}
                             </a>
                         </div>
                         <div>
@@ -55,12 +53,9 @@
             <div class="space-y-4">
                 {% for post in recentPosts %}
                     <div class="flex space-x-3">
-                        <div class="flex-shrink-0 w-20 h-20 relative group">
-                            <a href="{{ path('post_show', {slug: post.slug}) }}" class="block w-full h-full">
-                                <img src="{{ post.image }}" alt="" loading="lazy"
-                                     class="w-full h-full object-cover rounded">
-                                <div
-                                    class="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity rounded"></div>
+                        <div class="flex-shrink-0 w-20 h-20 relative group overflow-hidden rounded">
+                            <a href="{{ path('post_show', {slug: post.slug}) }}" class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+                                {{ lazy.lazy_img(post.image, '', 'w-full h-full object-cover group-hover:brightness-60 transition-all', '20', '20') }}
                             </a>
                         </div>
                         <div>

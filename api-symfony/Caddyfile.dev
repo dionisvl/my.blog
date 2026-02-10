@@ -17,6 +17,7 @@
         }
         level debug
         output stdout
+        skip_paths /health
     }
 
     php_server

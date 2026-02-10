@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'macros/lazy_image.html.twig' as lazy %}
 
 {% block title %}Search - Web3 Blog{% endblock %}
 
@@ -26,8 +27,7 @@
                         <div class="flex flex-col md:flex-row">
                             <div class="flex-shrink-0 w-full md:w-32 flex items-center justify-center p-2">
                                 <div class="h-12 w-full flex items-center justify-center overflow-hidden">
-                                    <img src="{{ post.image }}" alt="{{ post.title }}"
-                                         class="h-12 w-auto object-contain" loading="lazy">
+                                    {{ lazy.lazy_img(post.image, post.title, 'h-12 w-auto object-contain') }}
                                 </div>
                             </div>
 

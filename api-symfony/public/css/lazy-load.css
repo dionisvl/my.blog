@@ -1,0 +1,30 @@
+.lazy-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.lazy-placeholder {
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+    border-radius: 0.375rem;
+    transition: opacity 0.6s ease-in-out;
+}
+
+.lazy-placeholder.fade-out {
+    opacity: 0;
+}
+
+.lazy-real {
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+}
+
+.lazy-real.loaded {
+    opacity: 1;
+}
+
+img.load-error {
+    opacity: 0.3;
+}

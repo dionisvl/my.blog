@@ -1,0 +1,15 @@
+{# Lazy load: gradient placeholder overlay, real image fades in over it #}
+{% macro lazy_img(src, alt='', class='', width='', height='', srcset='') %}
+    <span class="lazy-wrap">
+        <img
+            class="lazy-real {{ class }}"
+            src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+            data-src="{{ src }}"
+            {% if srcset %}data-srcset="{{ srcset }}"{% endif %}
+            alt="{{ alt }}"
+            {% if width %}width="{{ width }}"{% endif %}
+            {% if height %}height="{{ height }}"{% endif %}
+        />
+        <span class="lazy-placeholder" aria-hidden="true"></span>
+    </span>
+{% endmacro %}

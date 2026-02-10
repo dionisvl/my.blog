@@ -17,6 +17,7 @@
         }
         level info
         output stdout
+        skip_paths /health
     }
 
     php_server {

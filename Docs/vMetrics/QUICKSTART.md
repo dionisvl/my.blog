@@ -16,8 +16,10 @@ docker compose up -d
 
 ## Access VMUI
 
-**Development**: http://logs.localhost/select/vmui/
-**Production**: https://vmui.production-web.site/select/vmui/
+**Development**: http://logs.localhost/ (automatically redirects to `/select/vmui/`)
+**Production**: https://vmui.web3main.pro/ (automatically redirects to `/select/vmui/`)
+
+> **Note**: You can also access directly via `/select/vmui/` path if needed.
 
 Login with `VMAUTH_ADMIN_USER` and `VMAUTH_ADMIN_PASS`.
 

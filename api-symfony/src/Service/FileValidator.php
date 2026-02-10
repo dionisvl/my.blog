@@ -13,20 +13,43 @@ final readonly class FileValidator
         'image/png' => ['png'],
         'image/webp' => ['webp'],
         'image/gif' => ['gif'],
+        'image/avif' => ['avif'],
+        'image/svg+xml' => ['svg'],
+        'image/x-icon' => ['ico'],
+        'image/bmp' => ['bmp'],
+        'image/tiff' => ['tiff', 'tif'],
     ];
 
     private const int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
     public function validate(UploadedFile $file): void
     {
+        $this->validateFileExists($file);
         $this->validateMimeType($file);
         $this->validateSize($file);
         $this->validateContent($file);
     }
 
+    private function validateFileExists(UploadedFile $file): void
+    {
+        $tmpPath = $file->getRealPath();
+
+        if (false === $tmpPath || !file_exists($tmpPath)) {
+            throw new \RuntimeException(\sprintf(
+                'Uploaded file not found. Real path: %s, Exists: %s',
+                $tmpPath ?? 'NULL',
+                file_exists($tmpPath ?? '') ? 'yes' : 'no'
+            ));
+        }
+    }
+
     private function validateMimeType(UploadedFile $file): void
     {
-        $mimeType = $file->getMimeType();
+        try {
+            $mimeType = $file->getMimeType();
+        } catch (\Exception) {
+            throw new \InvalidArgumentException('Cannot determine file MIME type. File may be corrupted or not properly uploaded.');
+        }
 
         if (!$this->isAllowedMimeType($mimeType)) {
             throw new \InvalidArgumentException(\sprintf('File MIME type "%s" is not allowed.', $mimeType));
@@ -54,7 +77,12 @@ final readonly class FileValidator
     private function validateContent(UploadedFile $file): void
     {
         $extension = strtolower($file->guessExtension() ?? '');
-        $mimeType = $file->getMimeType();
+
+        try {
+            $mimeType = $file->getMimeType();
+        } catch (\Exception) {
+            throw new \InvalidArgumentException('Cannot determine file MIME type. File may be corrupted or not properly uploaded.');
+        }
 
         if (!isset(self::ALLOWED_MIME_TYPES[$mimeType])) {
             throw new \InvalidArgumentException('MIME type validation failed.');
@@ -75,8 +103,12 @@ final readonly class FileValidator
     {
         $tmpPath = $file->getRealPath();
 
-        if (false === $tmpPath || !file_exists($tmpPath)) {
-            throw new \RuntimeException('Cannot read uploaded file.');
+        if (false === $tmpPath) {
+            throw new \RuntimeException('Cannot get real path of uploaded file.');
+        }
+
+        if (!file_exists($tmpPath)) {
+            throw new \RuntimeException(\sprintf('Uploaded file does not exist at path: %s', $tmpPath));
         }
 
         $imageInfo = @getimagesize($tmpPath);
