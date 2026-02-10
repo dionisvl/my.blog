@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:php8.4 AS prod
+FROM dunglas/frankenphp:php8.4 AS base
 
 RUN install-php-extensions \
     pdo_mysql \
@@ -9,16 +9,16 @@ RUN install-php-extensions \
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
-WORKDIR /app
+FROM base AS prod
 
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 COPY . /app
 
-RUN composer install --no-dev --optimize-autoloader --no-scripts
-
 EXPOSE 80 443
-
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
 
-FROM prod AS dev
-
+FROM base AS dev
 RUN install-php-extensions xdebug
+WORKDIR /app
