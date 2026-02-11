@@ -60,7 +60,7 @@
                 'areaServed': 'Worldwide',
                 'availableLanguage': ['English']
             }]
-        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
 
     </script>
     <script type="application/ld+json">
@@ -83,7 +83,7 @@
                 'target': siteUrl ~ path('search') ~ '?q={search_term_string}',
                 'query-input': 'required name=search_term_string'
             }
-        }|json_encode(constant('JSON_UNESCAPED_SLASHES')) }}
+        }|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}
 
     </script>
 

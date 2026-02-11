@@ -104,26 +104,34 @@ services:
       - "traefik.enable=true"
 
       # Middleware: redirect from phpqa.ru to web3main.pro (301 permanent)
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.regex=^https?://phpqa\\.ru/(.*)"
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.replacement=https://web3main.pro/$${1}"
-      - "traefik.http.middlewares.redirect-old-domain.redirectregex.permanent=true"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.regex=^https?://www\\.phpqa\\.ru/(.*)"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.replacement=https://www.web3main.pro/$${1}"
-      - "traefik.http.middlewares.redirect-old-domain-www.redirectregex.permanent=true"
+      - "traefik.http.middlewares.redirect-to-web3main.redirectregex.regex=^https?://(www\\.)?phpqa\\.ru/(.*)"
+      - "traefik.http.middlewares.redirect-to-web3main.redirectregex.replacement=https://web3main.pro/$${2}"
+      - "traefik.http.middlewares.redirect-to-web3main.redirectregex.permanent=true"
 
-      # HTTP
-      - "traefik.http.routers.symfony-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      # OLD DOMAIN - HTTP - redirect to HTTPS
+      - "traefik.http.routers.symfony-old-http.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`)"
+      - "traefik.http.routers.symfony-old-http.entrypoints=web"
+      - "traefik.http.routers.symfony-old-http.middlewares=redirect-to-web3main"
+      - "traefik.http.routers.symfony-old-http.service=symfony"
+
+      # OLD DOMAIN - HTTPS - redirect to web3main.pro
+      - "traefik.http.routers.symfony-old-https.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`)"
+      - "traefik.http.routers.symfony-old-https.entrypoints=websecure"
+      - "traefik.http.routers.symfony-old-https.tls.certresolver=myresolver"
+      - "traefik.http.routers.symfony-old-https.middlewares=redirect-to-web3main"
+      - "traefik.http.routers.symfony-old-https.service=symfony"
+
+      # NEW DOMAIN - HTTP
+      - "traefik.http.routers.symfony-http.rule=Host(`web3main.pro`) || Host(`www.web3main.pro`)"
       - "traefik.http.routers.symfony-http.entrypoints=web"
       - "traefik.http.routers.symfony-http.service=symfony"
-      - "traefik.http.routers.symfony-http.middlewares=redirect-old-domain,redirect-old-domain-www"
 
-      # HTTPS
-      - "traefik.http.routers.symfony.rule=Host(`phpqa.ru`) || Host(`www.phpqa.ru`) || Host(`web3main.pro`) || Host(`www.web3main.pro`)"
+      # NEW DOMAIN - HTTPS (main)
+      - "traefik.http.routers.symfony.rule=Host(`web3main.pro`) || Host(`www.web3main.pro`)"
       - "traefik.http.routers.symfony.entrypoints=websecure"
       - "traefik.http.routers.symfony.tls.certresolver=myresolver"
-      - "traefik.http.routers.symfony.middlewares=redirect-old-domain,redirect-old-domain-www"
-
       - "traefik.http.routers.symfony.service=symfony"
+
       - "traefik.http.services.symfony.loadbalancer.server.port=80"
 
   vmauth:
