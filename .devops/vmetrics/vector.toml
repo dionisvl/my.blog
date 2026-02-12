@@ -7,23 +7,13 @@ exclude_containers = ["vector-collector", "victoria-logs", "vmauth"]
 type = "remap"
 inputs = ["docker_logs"]
 source = """
-original_message = .message
+original_message = to_string(.message) ?? ""
 structured, err = parse_json(.message)
 if err == null {
   . = merge!(., structured)
-  if .msg == null {
-    .msg = .message
-  }
 }
-if .message == null && .msg != null {
-  .message = .msg
-}
-if .message == null {
-  .message = original_message
-}
-if .msg == null {
-  .msg = .message
-}
+.message = to_string(.message) ?? to_string(.msg) ?? original_message
+.msg = .message
 .timestamp = now()
 """
 

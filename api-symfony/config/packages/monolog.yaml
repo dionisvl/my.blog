@@ -9,13 +9,11 @@ when@dev:
                 type: stream
                 path: "php://stdout"
                 level: debug
-                formatter: monolog.formatter.json
                 channels: [ "!event", "!security" ]
             security:
                 type: stream
                 path: "php://stdout"
                 level: info
-                formatter: monolog.formatter.json
                 channels: [ "security" ]
             console:
                 type: console

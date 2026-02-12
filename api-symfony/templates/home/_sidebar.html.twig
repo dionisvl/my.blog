@@ -13,7 +13,7 @@
                         <a href="/category/{{ category.slug }}"
                            class="text-gray-300 hover:text-blue-400 transition flex justify-between">
                             <span class="text-sm">{{ category.title }}</span>
-                            <span class="text-gray-500 text-sm">({{ posts_count }})</span>
+                            <span class="text-gray-400 text-sm">({{ posts_count }})</span>
                         </a>
                     </li>
                 {% endfor %}
@@ -28,8 +28,10 @@
                 {% for post in featuredPosts %}
                     <div class="flex space-x-3">
                         <div class="flex-shrink-0 w-20 h-20 relative group overflow-hidden rounded">
-                            <a href="{{ path('post_show', {slug: post.slug}) }}" class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
-                                {{ lazy.lazy_img(post.image, '', 'w-full h-full object-cover group-hover:brightness-60 transition-all', '20', '20') }}
+                            <a href="{{ path('post_show', {slug: post.slug}) }}"
+                               aria-label="{{ post.title }}"
+                               class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+                                {{ lazy.lazy_img(post.image, post.title, 'w-full h-full object-cover group-hover:brightness-60 transition-all', '20', '20') }}
                             </a>
                         </div>
                         <div>
@@ -54,8 +56,10 @@
                 {% for post in recentPosts %}
                     <div class="flex space-x-3">
                         <div class="flex-shrink-0 w-20 h-20 relative group overflow-hidden rounded">
-                            <a href="{{ path('post_show', {slug: post.slug}) }}" class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
-                                {{ lazy.lazy_img(post.image, '', 'w-full h-full object-cover group-hover:brightness-60 transition-all', '20', '20') }}
+                            <a href="{{ path('post_show', {slug: post.slug}) }}"
+                               aria-label="{{ post.title }}"
+                               class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+                                {{ lazy.lazy_img(post.image, post.title, 'w-full h-full object-cover group-hover:brightness-60 transition-all', '20', '20') }}
                             </a>
                         </div>
                         <div>

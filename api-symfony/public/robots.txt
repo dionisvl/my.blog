@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login/
+
+
+Sitemap: https://web3main.pro/sitemap.xml

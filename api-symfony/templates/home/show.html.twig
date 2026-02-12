@@ -11,7 +11,6 @@
     {% set shortDescription = defaultDescription %}
 {% endif %}
 {% set absoluteImage = app.request.schemeAndHttpHost ~ post.image %}
-{% set canonicalUrl = app.request.schemeAndHttpHost ~ app.request.requestUri %}
 {% set authorName = post.author ? post.author.name : 'Web3main LLC' %}
 
 {% block title %}{{ post.title }} - Web3 Blog{% endblock %}
@@ -42,7 +41,7 @@
             },
             'mainEntityOfPage': {
                 '@type': 'WebPage',
-                '@id': canonicalUrl
+                '@id': app.request.schemeAndHttpHost ~ app.request.requestUri
             },
             'inLanguage': 'en'
         }|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}

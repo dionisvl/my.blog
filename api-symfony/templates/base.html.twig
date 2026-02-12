@@ -11,7 +11,6 @@
     {% set orgEmail = 'info@' ~ siteHost %}
     {% set orgPhone = '+123 456 78900' %}
     {% set orgLogo = siteUrl ~ '/storage/blog_images/logo.png' %}
-    {% set canonicalUrl = siteUrl ~ app.request.requestUri %}
     {% set metaTitle %}{% block meta_title %}{{ block('title') }}{% endblock %}{% endset %}
     {% set metaDescription %}{% block meta_description %}Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.{% endblock %}{% endset %}
     {% set metaImage %}{% block meta_image %}{{ orgLogo }}{% endblock %}{% endset %}
@@ -25,15 +24,11 @@
 
     <title>{% block title %}Web3 Blog{% endblock %}</title>
 
-    <link rel="canonical" href="{{ canonicalUrl }}">
-    <link rel="alternate" hreflang="en" href="{{ canonicalUrl }}">
-    <link rel="alternate" hreflang="x-default" href="{{ canonicalUrl }}">
-
     <meta property="og:site_name" content="{{ siteName }}">
     <meta property="og:type" content="{{ ogType|trim }}">
     <meta property="og:title" content="{{ metaTitle|trim }}">
     <meta property="og:description" content="{{ metaDescription|trim }}">
-    <meta property="og:url" content="{{ canonicalUrl }}">
+    <meta property="og:url" content="{{ siteUrl ~ app.request.requestUri }}">
     <meta property="og:image" content="{{ metaImage|trim }}">
     <meta property="og:locale" content="en_US">
 
@@ -114,11 +109,12 @@
     <div class="container mx-auto px-4 py-2 relative flex items-center justify-between">
         <!-- Logo -->
         <a class="flex-shrink-0" href="/">
-            <img src="/storage/blog_images/logo.png" alt="Wiki BWP resource" loading="lazy" class="h-10">
+            <img src="/storage/blog_images/logo.png" alt="Wiki BWP resource" width="131" height="40" loading="lazy" class="h-10">
         </a>
 
         <!-- Burger button (mobile only) -->
-        <button class="md:hidden px-2 py-1 border border-gray-600 rounded text-gray-300 hover:bg-gray-700"
+        <button aria-label="Toggle navigation menu"
+                class="md:hidden px-2 py-1 border border-gray-600 rounded text-gray-300 hover:bg-gray-700"
                 type="button" onclick="toggleMenu()">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -167,13 +163,15 @@
 </nav>
 
 <!-- Main Content -->
-<div class="bg-gray-900 mt-6">
-    <div class="container mx-auto px-4 max-w-7xl">
-        <div class="flex flex-wrap">
-            {% block content %}{% endblock %}
+<main role="main">
+    <div class="bg-gray-900 mt-6">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="flex flex-wrap">
+                {% block content %}{% endblock %}
+            </div>
         </div>
     </div>
-</div>
+</main>
 
 <!-- Footer -->
 <footer class="bg-gray-800 text-white pt-12 mt-12 border-t border-gray-700">
@@ -182,7 +180,7 @@
             <!-- About Section -->
             <div>
                 <div class="mb-4">
-                    <img src="/storage/blog_images/footer-logo.png" alt="" loading="lazy" class="h-12">
+                    <img src="/storage/blog_images/footer-logo.png" alt="Web3 Blog" width="157" height="48" loading="lazy" class="h-12">
                 </div>
                 <p class="text-gray-300 mb-4">
                     Stay updated with the latest trends in Web3 development, software engineering tips, and best coding
