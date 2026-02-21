@@ -35,29 +35,10 @@ bash:
 sh:
 	docker compose exec symfony /bin/sh
 
-# HOST=185.255.132.6 PORT=2222 BUILD_NUMBER=1 KEY=provisioning/files/deploy_rsa make deploy
-deploy:
-	ssh deploy@${HOST} -p ${PORT} -i ${KEY} 'rm -rf site_${BUILD_NUMBER}'
-	ssh deploy@${HOST} -p ${PORT} -i ${KEY} 'mkdir site_${BUILD_NUMBER}'
-	scp -P ${PORT} -i ${KEY} docker-compose.yml deploy@${HOST}:site_${BUILD_NUMBER}/docker-compose.yml
-	ssh deploy@${HOST} -p ${PORT} -i ${KEY} 'cd site_${BUILD_NUMBER} && echo "COMPOSE_PROJECT_NAME=phpqa" >> .env'
-	ssh deploy@${HOST} -p ${PORT} -i ${KEY} 'cd site_${BUILD_NUMBER} && docker compose up --build --remove-orphans -d'
-	ssh deploy@${HOST} -p ${PORT} -i ${KEY} 'rm -f site'
-	ssh deploy@${HOST} -p ${PORT} -i ${KEY} 'ln -sr site_${BUILD_NUMBER} site'
-
-rollback:
-	ssh deploy@${HOST} -p ${PORT} 'cd site_${BUILD_NUMBER} && docker compose pull'
-	ssh deploy@${HOST} -p ${PORT} 'cd site_${BUILD_NUMBER} && docker compose up --build --remove-orphans -d'
-	ssh deploy@${HOST} -p ${PORT} 'rm -f site'
-	ssh deploy@${HOST} -p ${PORT} 'ln -sr site_${BUILD_NUMBER} site'
-
-a:
-	sudo chmod 777 -R ${APP_STORAGE_LOCATION}
-
 routes:
 	docker compose exec api bin/console debug:router
 
-# Testing commands
+# Testing
 test:
 	docker compose exec -e APP_ENV=test -e APP_DEBUG=1 symfony ./vendor/bin/phpunit
 

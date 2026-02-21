@@ -265,11 +265,10 @@ final class PostRepository extends ServiceEntityRepository
     {
         $escapedQuery = $this->escapeLikePattern($query);
         $builder = $this->createQueryBuilder('p')
-            ->where('p.title LIKE :query ESCAPE :escape')
-            ->orWhere('p.description LIKE :query ESCAPE :escape')
-            ->orWhere('p.content LIKE :query ESCAPE :escape')
+            ->where('p.title LIKE :query')
+            ->orWhere('p.description LIKE :query')
+            ->orWhere('p.content LIKE :query')
             ->setParameter('query', '%' . $escapedQuery . '%')
-            ->setParameter('escape', '\\')
             ->orderBy('p.createdAt', 'DESC')
             ->setMaxResults($limit);
 
