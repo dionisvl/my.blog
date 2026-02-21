@@ -5,22 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Functional;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\TooManyLoginAttemptsAuthenticationException;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 
-final class LoginThrottleTest extends WebTestCase
+final class LoginThrottleTest extends DatabaseWebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
-
     public function testLoginFormLoads(): void
     {
-        $client = self::createClient();
-        $client->request(Request::METHOD_GET, '/login');
+        $this->client->request(Request::METHOD_GET, '/login');
 
         $this->assertResponseIsSuccessful();
         $this->assertPageTitleContains('Login');
@@ -28,30 +21,29 @@ final class LoginThrottleTest extends WebTestCase
 
     public function testLoginThrottleAfterMaxAttempts(): void
     {
-        $client = self::createClient();
         $email = 'throttle-test-' . uniqid() . '@example.com';
 
         // Make exactly 5 failed attempts
         for ($i = 0; $i < 5; ++$i) {
-            $client->request(Request::METHOD_POST, '/login', [
+            $this->client->request(Request::METHOD_POST, '/login', [
                 '_username' => $email,
                 '_password' => 'wrong_password_' . $i,
-                '_csrf_token' => $this->getCsrfToken($client),
+                '_csrf_token' => $this->getCsrfToken($this->client),
             ]);
 
             // Each attempt should redirect back to login
             $this->assertResponseRedirects('/login');
         }
 
-        $client->request(Request::METHOD_POST, '/login', [
+        $this->client->request(Request::METHOD_POST, '/login', [
             '_username' => $email,
             '_password' => 'wrong_password_6',
-            '_csrf_token' => $this->getCsrfToken($client),
+            '_csrf_token' => $this->getCsrfToken($this->client),
         ]);
 
         $this->assertResponseRedirects('/login');
 
-        $session = $client->getRequest()->getSession();
+        $session = $this->client->getRequest()->getSession();
         $error = $session->get(SecurityRequestAttributes::AUTHENTICATION_ERROR);
 
         self::assertInstanceOf(TooManyLoginAttemptsAuthenticationException::class, $error);
@@ -59,23 +51,21 @@ final class LoginThrottleTest extends WebTestCase
 
     public function testMultipleUsersHaveIndependentLimits(): void
     {
-        $client = self::createClient();
-
         // User 1 makes some attempts
         $user1 = 'user1-' . uniqid() . '@example.com';
-        $client->request(Request::METHOD_POST, '/login', [
+        $this->client->request(Request::METHOD_POST, '/login', [
             '_username' => $user1,
             '_password' => 'wrong',
-            '_csrf_token' => $this->getCsrfToken($client),
+            '_csrf_token' => $this->getCsrfToken($this->client),
         ]);
         $this->assertResponseRedirects('/login');
 
         // User 2 should not be affected by user 1's attempts
         $user2 = 'user2-' . uniqid() . '@example.com';
-        $client->request(Request::METHOD_POST, '/login', [
+        $this->client->request(Request::METHOD_POST, '/login', [
             '_username' => $user2,
             '_password' => 'wrong',
-            '_csrf_token' => $this->getCsrfToken($client),
+            '_csrf_token' => $this->getCsrfToken($this->client),
         ]);
         $this->assertResponseRedirects('/login');
     }

@@ -1,10 +1,24 @@
 {% extends 'base.html.twig' %}
 {% import 'macros/lazy_image.html.twig' as lazy %}
 
-{% block title %}{{ category is defined ? category.title : (tag is defined ? tag.title : 'Filtered Posts') }} - Web3 Blog{% endblock %}
-{% set filterTitle = tag is defined ? tag.title : (category is defined ? category.title : 'Filtered Posts') %}
-{% set filterDescription = category is defined ? (category.previewText ?? 'Browse articles in ' ~ category.title ~ '. Explore our curated collection of posts on this topic.') : (tag is defined ? 'Browse articles tagged with ' ~ tag.title ~ '. Discover all posts related to this tag.' : '') %}
-{% set filterUrl = tag is defined ? path('tag_show', {slug: tag.slug}) : (category is defined ? path('category_show', {slug: category.slug}) : path('home')) %}
+{% block title %}
+    {{- category is defined ? category.title : (tag is defined ? tag.title : 'Filtered Posts') -}} - Web3 Blog
+{% endblock %}
+
+{% set filterTitle = tag is defined
+    ? tag.title
+    : (category is defined ? category.title : 'Filtered Posts')
+%}
+
+{% set filterDescription = category is defined
+    ? ((category.previewText) ?? ('Browse articles in ' ~ category.title ~ '. Explore our curated collection of posts on this topic.'))
+    : (tag is defined ? 'Browse articles tagged with ' ~ tag.title ~ '. Discover all posts related to this tag.' : '')
+%}
+
+{% set filterUrl = tag is defined
+    ? path('tag_show', {slug: tag.slug})
+    : (category is defined ? path('category_show', {slug: category.slug}) : path('home'))
+%}
 {% block meta_title %}{{ filterTitle }} - Web3 Blog{% endblock %}
 {% block meta_description %}{{ filterDescription }}{% endblock %}
 {% block og_type %}website{% endblock %}

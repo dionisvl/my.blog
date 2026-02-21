@@ -1,21 +1,1285 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://web3main.pro/</loc>
-    <lastmod>2026-02-11</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://web3main.pro/contacts/</loc>
-    <lastmod>2026-02-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
-    <loc>https://web3main.pro/search</loc>
-    <lastmod>2026-02-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<url>
+  <loc>https://web3main.pro/</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/search</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/contacts/</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/login</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/k8s-awesome-kubernetes-practical-cheat-sheet</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/centralized-logging-for-a-simple-web-app-2026-victorialogs-vmui-basic-auth-in-one-docker-compose</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/tracing-profiling-in-sentry-from-what-s-slow-to-why-2026-cloud</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/streisand-split-tunneling-domestic-sites-direct-everything-else-via-vpn</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-install-docker-on-linux-with-one-command</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/stop-gluing-contracts-to-code-the-go-interface-placement-youre-probably-getting-wrong</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/guard-clauses-flatten-your-code</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/boost-your-web-apps-with-out-of-band-oob-updates-in-htmx</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/messaging-queue-terminology-across-different-ecosystems</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/structuring-enterprise-python-projects-2025-flaskfastapi-with-clean-architecture-principles</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=3</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=4</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=5</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=6</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=7</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=8</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=9</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=10</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=11</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=12</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=13</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=14</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=15</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/?page=16</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/notes</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/backend</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/frontend</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/devops</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/common</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/laravel</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/sql</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/git</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/docker</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/windows</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/linux</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/biologiya</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/golang</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/prostye-modaly</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-devops</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-linux</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/cycleorm-ddd-example</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/devops</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/proxy</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/docker-compose</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/golang</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/backend</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/frontend</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/analiz-i-proektirovanie-sistem</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-create-and-use-polymorphic-relationships-in-laravel</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-transcribe-audio-using-faster-whisper-in-google-colab-complete-guide</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/go-122-a-new-era-of-routing-simplicity</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-download-4k-video-from-youtube</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/streaming-technology-list</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-install-peclpear-in-alpine</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/vector-search-in-postgresql-mongodb</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kompoziciya-vs-nasledovanie</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/strukturnaya-tipizaciya-i-utinaya-tipizaciya-v-go</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-cast-video-from-windows-to-tv</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/perexod-s-mysql-na-postgresql</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-proksirovat-odni-saity-i-zaxodit-napryamuyu-na-drugie</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/best-practices-for-structuring-backend-project-architectures</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/bounded-context-primer-na-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/tipicnye-big-o-klassifikacii-s-primerami</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/raznica-mezdu-ports-i-expose</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/windows-11-memory-integrity-error-with-e1g6032esys-intel-pro1000-adapter</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-make-outline-vpn-for-1eurmonth</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/importozameshhenie-terminov-iz-it-i-scrum</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/rekomendacii-po-stroitelstvu-castnogo-doma</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/otliciya-avtorizacii-ot-autentifikacii-i-ix-oboix-ot-identifikacii</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/iteraciya-elementov-javascript-na-primere-otpiski-ot-mailru</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/telegram-bots-awesome</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/stackoverflow-eto-roevoi-intellekt</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/sredstvo-prosmotra-fotografii-windows-ne-mozet-otobrazit-izobrazenie</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-clean-linux-from-trash</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-setup-your-personal-vps-for-1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/poleznye-jql-jira-zaprosy</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-podscitat-kolicestvo-strok-v-proekte</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/what-is-faster-null-or-exception-on-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/adding-a-trusted-ssl-cert-on-nginx</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/rabbitmq-php-quick-start</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/vyvod-teksta-iz-nginx-lua</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/russkie-bukvy-v-konsoli-na-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/nastroika-oblacnogo-servera-v-oracle</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/mastering-phpstorm</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/profailery-i-treisery</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/raznica-mezdu-self-i-this-v-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/xdebug-na-udalennom-servere-i-phpstorm</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/algorithm-to-get-the-excel-like-letter-from-a-number</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/php-blackfire-quick-start</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/java-script-awesome</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/floating-bottom-scrollbar</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/sql-highload-tricks</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/symfony-i-geksagonalnaya-arxitektura</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/machine-learning-awesome</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/github-does-not-provide-shell-access</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/mysql-function</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/solid-kiss-dry-yagni-ddd</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/laravel-awesome</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/generaciya-pdf-faila-s-pomoshhyu-dompdf-i-laravel</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/laravel-i-nginx-fastcgi-cache</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/cto-takoe-servisnyi-konteiner-freimvork-nezavisimoe-opredelenie</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/prostoi-recept-otvyazyvaniya-logiki-prilozeniya-ot-freimvorka</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/predotvrashhenie-spama-s-pomoshhyu-polya-primanki</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/elasticsearch-quick-start</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-deploy-cicd-compatible-and-production-ready-web-service</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-skopirovat-sait</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-dobavit-v-nginx-novyi-domen-na-vps</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/isklyucit-mnozestvo-direktorii-pri-sozdanii-arxiva</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/sozdat-lets-encrypt-sertifikat-dlya-saita</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/guzzle-multipartstream</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/laravel-56-to-7-upgrade-or-http-error-500</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-dobavit-ssh-dlya-gitlaba</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/sozdanie-polzovatelya-i-ssh-klyuchey</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/mysqldump-kopirovanie-baz</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-sozdat-poddomen-na-apache-servere</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/ocheredi-v-laravel</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/perenos-sertifikata-kriptopro</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/stored-procedures-while-and-repeat-in-sql</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/znakomstvo-s-docker</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-enable-amd-v-on-asrock-b450m-pro4-ryzen-2400g</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/analog-sprintf-v-vanilla-js-podstanovka-peremennyh-v-stroku</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/excel-zametki</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/nayti-fayly-vnutri-papki-po-date-i-po-spisku-csv-ili-excel-na-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/izvlech-parametr-iz-env-fayla</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-dobavit-podsvetku-koda-k-sebe-na-sayt</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/laravel-eloquent-one-to-many-relationship</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/integraciya-bitrix24-s-chertom-lysym</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-vypolnit-mysql-migraciyu-i-otsledit-rezultat-vypolneniya</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-git</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-sql</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-dobavit-kastomnyy-header-v-nginx</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-javascript</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/fetchapi</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-v-delphi-poluchit-pid-processa-po-zagolovku-ego-okna</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/emulyaciya-sayta-s-pomoshchyu-iframe</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/funkciya-dlya-opredeleniya-okonchaniya-slova-po-chislitelnomu-1-den-2-dnya-5-dney</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zametki-po-laravel</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/chto-delat-kogda-pis-ma-popadayut-v-spam</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/otlozhennaya-zagruzka-veb-shriftov</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/lazy-lenivaya-zagruzka-yandeks-karty</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/ajax-zagruzka-kontenta-po-trebovaniyu</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/url---friendly-shifrovanie-dannyh</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/samaya-luchshaya-forma-otpravki-s-ajax</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/testirovanie-s-pomosch-yu-codeception</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/ideal-naya-zaschita-ot-botov-bez-kapchi</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kastomizaciya-formy-avtorizaciy-i-registracii-vyzvannye-define-quot-need_auth-quot-true</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/oshibka-cors</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/klass-dlya-raboty-s-curl-na-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/poluchit-vcherashniy-den-na-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/bitriks-kompozit-inline-javascript-was-not-found-on-the-page</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/rabota-s-zakazom</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-sravnit-izobrazheniya-na-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-poluchit-vse-svoystva-elementa</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zapretit-dobavlyat-bolee-1-tovara-ili-polnaya-ochistka-korziny-pered-dobavleniem-tovara</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/modifikaciya-formy-avto-kalbaski-chtob-lyubaya-forma-na-sayte-mogla-zapustit-zvonok</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/import-dannyh-v-infoblok-n-yuansy</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/regulyarka-poluchit-cifry-ili-chislo-iz-stroki</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/nayti-blizhayshiy-podhodyaschiy-predok-jq</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/plavnoe-skrytie-raskrytie-bloka-s-lyubym-soderzhimym</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/poluchit-dostup-k-soderzhumomu-iframe</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/migraciya-sekciy-infobloka-v-hl-blok-ciblocksection-getlist</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-poluchit-imya-sekcii-v-bitrix</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/js-dobavit-element-v-massiv-s-proverkoy-nalichiya</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/vernut-kolichestvo-elementov-bitrix</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-otkryt-popap-magnific-bez-klika-po-knopke</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/ochistit-u-vseh-elementov-pole-naprimer-detail_text</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/proverit-podklyuchen-li-jquery</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/vyvesti-kartinki-elementa-iz-mnozhestvennogo-svoystva-34-privyazka-k-elementam-infobloka-34-so-szhatiem-na-storone-servera</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/znacheniya-spravochnika-ne-otobrazhayutsya-v-infobloke</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/vyvesti-svoystvo-elementa</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-lovit-celi-gugl-i-yandeks-metriki</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-zadat-fil-tr-pered-komponentom</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-poluchit-dostup-k-dinamicheski-zagruzhennym-elementam-ajax</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zadat-fil-tr-pered-komponentom-po-date-bol-she-segodnyashney</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-uznat-imya-razdela-po-ego-id-cherez-mysql</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zagolovok-stranicy-otlichnyy-ot-title</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/vyvesti-vse-rubriki-etogo-bloga-bitrix</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/ostanovit-vypolnenie-skriptov-i-aktivnost-stranicy-v-brauzere</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/how-to-enable-cron-on-reg-ru-hosting</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/php-how-to-debug-to-file</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/php-analog-komandy-dir-ls</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/migraciya-izobrazheniy-iz-svoystva-privyazka-elementov-v-vide-spiska-v-pole-tipa-fayl-mnozhestvennyy</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-vyvesti-dannye-v-pdf-iz-php</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/pravilnoe-sozdanie-tovara-v-infobloke-migraciya-cen-iz-svoystv-elementov-v-ceny-tipa-torgovogo-kataloga</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-sdelat-beskonechnuyu-prokrutku-novostey-v-vk-var-timerid-setinterval-function</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/rasparsit-nazvanie-elementa-na-parametry-obnovit-mnozhestvennye-znacheniya-parametrov-tipa-privyazka-k-elementam-i-spisok</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/nastraivaem-filtr-po-kategoriyam</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/kak-podklyuchit-sya-k-api-getresponse-dobavlenie-novogo-podpischika</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/zakryt-vse-otkrytye-modaly-bootrstap</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/post/samaya-umnaya-forma-maska-validacii-telefona-ajax-forms-and-bitrix-cache-friendly</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/notes?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/notes?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/notes?page=3</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/notes?page=4</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/notes?page=5</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/php?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/php?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/php?page=3</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/backend?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/backend?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/frontend?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/frontend?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/devops?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/devops?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/common?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/category/common?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/javascript</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/html</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/css</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/linux</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/devops?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/devops?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/devops?page=3</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=3</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=4</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=5</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=6</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/zametki?page=7</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/php?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/php?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/php?page=3</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/php?page=4</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/dev</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/proektirovanie-i-refaktoring</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/vpn</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/docker</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/vps</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/desevyi</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/nginx</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/queues</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/mysql-1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/git</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/laravel</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/apache</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/supervisor</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/bitrix</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/iframe</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/javascript?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/javascript?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/html?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/html?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/linux?page=1</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+<url>
+  <loc>https://web3main.pro/tag/linux?page=2</loc>
+  <lastmod>2026-02-17T14:01:42+00:00</lastmod>
+  <priority>0.51</priority>
+</url>
+
+
 </urlset>
