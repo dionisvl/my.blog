@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% set siteHost = app.request.server.get('HTTP_HOST') %}
-    {% set siteUrl = app.request.schemeAndHttpHost %}
+    {% set siteUrl = 'https://' ~ siteHost %}
     {% set siteName = 'Web3 Blog' %}
     {% set orgName = 'Web3main LLC' %}
     {% set orgEmail = 'info@' ~ siteHost %}
@@ -17,6 +17,7 @@
     {% set ogType %}{% block og_type %}website{% endblock %}{% endset %}
 
     <meta name="description" content="{{ metaDescription|trim }}">
+    <link rel="canonical" href="{{ siteUrl ~ app.request.requestUri }}">
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
     <meta name="author" content="{{ orgName }}">

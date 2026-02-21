@@ -11,6 +11,20 @@
     root * /app/public
     encode zstd gzip
 
+    # Canonical redirects for migration and SEO (served as explicit 301)
+    @old_domain host phpqa.ru www.phpqa.ru
+    redir @old_domain https://web3main.pro{uri} 301
+
+    @www_new_domain host www.web3main.pro
+    redir @www_new_domain https://web3main.pro{uri} 301
+
+    # Traefik terminates TLS and forwards X-Forwarded-Proto to Caddy.
+    @new_domain_http {
+        host web3main.pro
+        header X-Forwarded-Proto http
+    }
+    redir @new_domain_http https://web3main.pro{uri} 301
+
     @health path /health
 
     # Cache-Control for static assets (1 year, immutable)
