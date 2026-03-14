@@ -2,6 +2,7 @@ FROM dunglas/frankenphp:php8.4 AS base
 
 RUN install-php-extensions \
     pdo_mysql \
+    pdo_pgsql \
     intl \
     gd \
     zip \

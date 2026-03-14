@@ -36,20 +36,6 @@ services:
       - "traefik.http.routers.pets.entrypoints=web"
       - "traefik.http.services.pets.loadbalancer.server.port=80"
 
-  sveltewar-app:
-    build:
-      context: /var/www/my.fb.admin/var/www/sveltewar.phpqa.ru/html/
-      dockerfile: Dockerfile
-    volumes:
-      - /var/www/my.fb.admin/var/www/sveltewar.phpqa.ru/html/public:/usr/share/nginx/html/:rw
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sveltewar.rule=Host(`sveltewar.local`)"
-      - "traefik.http.routers.sveltewar.entrypoints=web"
-      - "traefik.http.services.sveltewar.loadbalancer.server.port=80"
-    networks:
-      - app-network
-
   vmauth:
     labels:
       - "traefik.enable=true"

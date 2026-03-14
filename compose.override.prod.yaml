@@ -54,6 +54,7 @@ services:
       - "traefik.tcp.services.ws-phpqa-service.loadbalancer.server.port=80"
 
   pets-app:
+    image: ${DOCKER_REGISTRY_SERVER}/pets-app:latest
     volumes:
       - /var/www/pets.phpqa.ru/app:/app:rw
     labels:
@@ -95,7 +96,7 @@ services:
       - app-network
 
   symfony:
-    image: 45.9.73.190:5000/phpqa-api:latest
+    image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:latest
     #build:
     #  target: prod
     #    volumes:

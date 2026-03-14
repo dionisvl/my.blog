@@ -69,7 +69,7 @@ cache-clear:
 	docker compose exec symfony php bin/console cache:clear
 	docker compose exec symfony sh -c "rm -rf var/cache/dev/* && php -r 'opcache_reset();'"
 	docker compose exec symfony php bin/console cache:warmup
-    #docker compose restart symfony
+	docker compose restart symfony
 
 aphorizm:
 	docker compose exec symfony php bin/console app:seed-aphorisms
