@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 {% import 'macros/lazy_image.html.twig' as lazy %}
 
-{% block title %}Web3 Blog - Homepage{% endblock %}
-{% block meta_title %}Web3 Blog - Homepage{% endblock %}
-{% block meta_description %}Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.{% endblock %}
+{% block title %}Web3 Blog - Homepage{{ pagination is defined and pagination.currentPage > 1 ? ', page ' ~ pagination.currentPage : '' }}{% endblock %}
+{% block meta_title %}Web3 Blog - Homepage{{ pagination is defined and pagination.currentPage > 1 ? ', page ' ~ pagination.currentPage : '' }}{% endblock %}
+{% block meta_description %}Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.{{ pagination is defined and pagination.currentPage > 1 ? ' Page ' ~ pagination.currentPage ~ '.' : '' }}{% endblock %}
 {% block og_type %}website{% endblock %}
 {% block head_extra %}
     {% set siteUrl = app.request.schemeAndHttpHost %}

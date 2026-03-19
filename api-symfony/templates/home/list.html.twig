@@ -2,7 +2,9 @@
 {% import 'macros/lazy_image.html.twig' as lazy %}
 
 {% block title %}
-    {{- category is defined ? category.title : (tag is defined ? tag.title : 'Filtered Posts') -}} - Web3 Blog
+    {{- category is defined ? category.title : (tag is defined ? tag.title : 'Filtered Posts') -}}
+    {{- pagination is defined and pagination.currentPage > 1 ? ', page ' ~ pagination.currentPage : '' -}}
+    {{- ' - Web3 Blog' -}}
 {% endblock %}
 
 {% set filterTitle = tag is defined
@@ -19,8 +21,8 @@
     ? path('tag_show', {slug: tag.slug})
     : (category is defined ? path('category_show', {slug: category.slug}) : path('home'))
 %}
-{% block meta_title %}{{ filterTitle }} - Web3 Blog{% endblock %}
-{% block meta_description %}{{ filterDescription }}{% endblock %}
+{% block meta_title %}{{ filterTitle }}{{ pagination is defined and pagination.currentPage > 1 ? ', page ' ~ pagination.currentPage : '' }} - Web3 Blog{% endblock %}
+{% block meta_description %}{{ filterDescription }}{{ pagination is defined and pagination.currentPage > 1 ? ' Page ' ~ pagination.currentPage ~ '.' : '' }}{% endblock %}
 {% block og_type %}website{% endblock %}
 {% block head_extra %}
     {% set siteUrl = app.request.schemeAndHttpHost %}
