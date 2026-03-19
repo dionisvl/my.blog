@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        canonical_domain: '%env(string:CANONICAL_DOMAIN)%'
 
 when@test:
     twig:

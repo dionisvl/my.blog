@@ -12,9 +12,6 @@
     encode zstd gzip
 
     # Canonical redirects for migration and SEO (served as explicit 301)
-    @old_domain host phpqa.ru www.phpqa.ru
-    redir @old_domain https://web3main.pro{uri} 301
-
     @www_new_domain host www.web3main.pro
     redir @www_new_domain https://web3main.pro{uri} 301
 
