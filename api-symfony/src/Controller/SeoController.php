@@ -31,6 +31,7 @@ final class SeoController extends AbstractController
 
     private function seoFile(string $host, string $type, string $ext, string $contentType): Response
     {
+        $host = preg_replace('/^www\./i', '', $host);
         $path = $this->getParameter('kernel.project_dir') . '/public/seo/' . $type . '-' . $host . '.' . $ext;
 
         if (!file_exists($path)) {
