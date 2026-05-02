@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Privacy Policy - Web3 Blog{% endblock %}
+{% block meta_title %}Privacy Policy - Web3 Blog{% endblock %}
+{% block meta_description %}Privacy Policy for {{ app.request.host }}{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-2xl mx-auto py-8">
+    <div class="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-8">
+
+        <h1 class="text-2xl font-bold mb-2 text-white">Privacy Policy</h1>
+        <p class="text-gray-500 text-sm mb-6">Last updated: May 1, 2026</p>
+
+        <div class="text-gray-300 space-y-4 leading-relaxed">
+
+            <p>
+                This site does not intentionally collect personal information and has no registration or contact forms.
+                By using <strong>{{ app.request.host }}</strong> you agree that we may process
+                technical data strictly necessary for site operation: server logs (IP address,
+                browser, requested page) retained for up to 90 days, and short-lived technical
+                cookies for site operation retained for up to 24 hours.
+            </p>
+
+            <p>
+                Third-party CDN services deliver static assets and may
+                receive your IP address as part of the HTTP request. Maps on the Contacts
+                page loads only when you interact with it.
+            </p>
+
+            <p>
+                Questions or requests:
+                <a href="mailto:info@{{ app.request.host }}" class="text-blue-400 hover:text-blue-300">info@{{ app.request.host }}</a>
+            </p>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

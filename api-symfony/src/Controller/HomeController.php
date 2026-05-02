@@ -87,6 +87,12 @@ final class HomeController extends AbstractController
         return $this->render('home/contacts.html.twig');
     }
 
+    #[Route('/privacy/', name: 'privacy')]
+    public function privacy(): Response
+    {
+        return $this->render('home/privacy.html.twig');
+    }
+
     #[Route('/search', name: 'search', methods: ['GET', 'POST'])]
     public function search(Request $request): Response
     {
