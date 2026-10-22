@@ -19,3 +19,5 @@ phpunit.dist.xml
 .php-cs-fixer.dist.php
 rector.php
 compose.yaml
+.env*
+**/.env*

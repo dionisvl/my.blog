@@ -40,7 +40,7 @@ services:
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
   pets-app:
-    image: ${DOCKER_REGISTRY_SERVER}/pets-app:latest
+    image: ${DOCKER_REGISTRY_SERVER}/pets-app:${PHP_VERSION}
     volumes:
       - /home/pets.my.blog:/app:rwte
     labels:
@@ -60,9 +60,13 @@ services:
       - app-network
 
   symfony:
-    image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:latest
-    #build:
-    #  target: prod
+    image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:${PHP_VERSION}
+    build:
+      context: ./api-symfony
+      dockerfile: ./Dockerfile
+      target: prod
+      args:
+        PHP_VERSION: ${PHP_VERSION}
     #    volumes:
     #      - ./api-symfony/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
     labels:

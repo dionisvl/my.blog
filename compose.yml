@@ -50,6 +50,7 @@ services:
     volumes:
       - ./api-symfony/public/storage:/app/public/storage:rw
       - ./api-symfony/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./api-symfony/.env:/app/.env:ro
     command: sh -c "php bin/console cache:warmup --no-interaction && frankenphp run --config /etc/caddy/Caddyfile"
     # Traefik routing for Symfony is defined per-environment in the override files
     # (compose.override.dev.yaml / compose.override.prod.yaml) so routes never clash.
@@ -109,6 +110,8 @@ services:
     build:
       context: ./.docker/php-simple
       dockerfile: ./Dockerfile
+      args:
+        PHP_VERSION: ${PHP_VERSION}
     env_file:
       - path: ./.env
         required: true

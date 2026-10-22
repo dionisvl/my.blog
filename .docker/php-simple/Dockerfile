@@ -1,13 +1,12 @@
-FROM php:8.3.19-fpm-alpine3.21
+ARG PHP_VERSION=8.4.27
+FROM php:${PHP_VERSION}-fpm-alpine3.23
 
 RUN apk add --no-cache nginx supervisor \
-    php83-gmp gmp \
+    gmp-dev \
     postgresql-dev
 
-RUN echo "extension=/usr/lib/php83/modules/gmp.so" > /usr/local/etc/php/conf.d/gmp.ini
-
-RUN docker-php-ext-install -j$(nproc) \
-    pdo_pgsql pgsql
+RUN docker-php-ext-install -j1 \
+    gmp pdo_pgsql pgsql
 
 WORKDIR /app
 
