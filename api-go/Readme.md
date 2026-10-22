@@ -18,9 +18,9 @@ Root-level endpoints (no auth):
 
 | Method | Path | Description |
 |--------|------|-------------|
-| GET | `/sitemap.xml` | Serves `public/seo/sitemap-{host}.xml`. Strips `www.` from host. |
-| GET | `/robots.txt` | Serves `public/seo/robots-{host}.txt`. |
-| GET | `/llms.txt` | Serves `public/seo/llms-{host}.txt`. |
+| GET | `/sitemap.xml` | Serves `public/seo/sitemap-{MAIN_HOST}.xml`. |
+| GET | `/robots.txt` | Serves `public/seo/robots-{MAIN_HOST}.txt`. |
+| GET | `/llms.txt` | Serves `public/seo/llms-{MAIN_HOST}.txt`. |
 | GET | `/storage/*` | Static file server for uploaded media (`public/storage/`). |
 
 API endpoints — all require `X-API-Key` header except `/api/health`:

@@ -42,7 +42,8 @@ type AuthConfig struct {
 }
 
 type AppConfig struct {
-	Env string `mapstructure:"env"`
+	Env      string `mapstructure:"env"`
+	MainHost string `mapstructure:"main_host"`
 }
 
 func Load() (*Config, error) {
@@ -71,6 +72,7 @@ func Load() (*Config, error) {
 	_ = v.BindEnv("database.url", "DATABASE_URL")
 	_ = v.BindEnv("auth.api_key", "API_KEY")
 	_ = v.BindEnv("app.env", "APP_ENV")
+	_ = v.BindEnv("app.main_host", "MAIN_HOST")
 	_ = v.BindEnv("server.cors_origins", "CORS_ALLOWED_ORIGINS")
 	_ = v.BindEnv("files.seo_dir", "SEO_DIR")
 	_ = v.BindEnv("files.storage_dir", "STORAGE_DIR")
@@ -95,6 +97,9 @@ func Load() (*Config, error) {
 func validate(cfg *Config) error {
 	if strings.TrimSpace(cfg.Auth.APIKey) == "" {
 		return errors.New("API_KEY must not be empty")
+	}
+	if strings.TrimSpace(cfg.App.MainHost) == "" {
+		return errors.New("MAIN_HOST must not be empty")
 	}
 
 	return nil

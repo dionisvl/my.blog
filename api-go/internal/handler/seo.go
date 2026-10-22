@@ -2,58 +2,31 @@ package handler
 
 import (
 	"log/slog"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-var allowedSEOHosts = map[string]bool{
-	"web3main.pro": true,
-	"phpqa.ru":     true,
-}
-
-const defaultSEOHost = "web3main.pro"
-
 type SEOHandler struct {
 	seoDir string
+	host   string
 	logger *slog.Logger
 }
 
-func NewSEOHandler(seoDir string, logger *slog.Logger) *SEOHandler {
-	return &SEOHandler{seoDir: seoDir, logger: logger}
-}
-
-func normalizeSEOHost(raw string) string {
-	if raw == "" {
-		return defaultSEOHost
-	}
-
-	host := strings.ToLower(raw)
-
-	if h, _, err := net.SplitHostPort(host); err == nil {
-		host = h
-	}
-
-	host = strings.TrimPrefix(host, "www.")
-
-	if !allowedSEOHosts[host] {
-		return defaultSEOHost
-	}
-
-	return host
+// NewSEOHandler serves per-host SEO files for the canonical host only;
+// Traefik redirects every other host to it.
+func NewSEOHandler(seoDir, host string, logger *slog.Logger) *SEOHandler {
+	return &SEOHandler{seoDir: seoDir, host: host, logger: logger}
 }
 
 func (h *SEOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	host := normalizeSEOHost(r.Host)
-
 	base := strings.TrimPrefix(r.URL.Path, "/")
 	ext := filepath.Ext(base)
 	fileType := strings.TrimSuffix(base, ext)
 	extNoDot := strings.TrimPrefix(ext, ".")
 
-	filename := fileType + "-" + host + "." + extNoDot
+	filename := fileType + "-" + h.host + "." + extNoDot
 	fullPath := filepath.Join(h.seoDir, filename)
 
 	data, err := os.ReadFile(fullPath)

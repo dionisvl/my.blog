@@ -14,6 +14,7 @@ func TestLoadRejectsEmptyAPIKey(t *testing.T) {
 	writeConfigFile(t, dir, "app:\n  env: prod\n")
 	chdir(t, dir)
 	t.Setenv("API_KEY", "")
+	t.Setenv("MAIN_HOST", "example.com")
 
 	cfg, err := Load()
 
@@ -27,6 +28,7 @@ func TestLoadAcceptsNonEmptyAPIKey(t *testing.T) {
 	writeConfigFile(t, dir, "app:\n  env: prod\n")
 	chdir(t, dir)
 	t.Setenv("API_KEY", "secret")
+	t.Setenv("MAIN_HOST", "example.com")
 
 	cfg, err := Load()
 
@@ -34,6 +36,21 @@ func TestLoadAcceptsNonEmptyAPIKey(t *testing.T) {
 	require.NotNil(t, cfg)
 	assert.Equal(t, "secret", cfg.Auth.APIKey)
 	assert.Equal(t, "prod", cfg.App.Env)
+	assert.Equal(t, "example.com", cfg.App.MainHost)
+}
+
+func TestLoadRejectsEmptyMainHost(t *testing.T) {
+	dir := t.TempDir()
+	writeConfigFile(t, dir, "app:\n  env: prod\n")
+	chdir(t, dir)
+	t.Setenv("API_KEY", "secret")
+	t.Setenv("MAIN_HOST", "")
+
+	cfg, err := Load()
+
+	require.Error(t, err)
+	assert.Nil(t, cfg)
+	assert.EqualError(t, err, "MAIN_HOST must not be empty")
 }
 
 func writeConfigFile(t *testing.T, dir, content string) {
