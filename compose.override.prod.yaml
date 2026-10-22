@@ -32,12 +32,23 @@ services:
       - app-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.${OLD_HOST}`) || Host(`traefik.${MAIN_HOST}`)"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.${MAIN_HOST}`)"
       - "traefik.http.routers.dashboard.service=api@internal"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
       - "traefik.http.routers.dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=${DASHBOARD_AUTH}"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
+
+      # Canonical host: 301 www.MAIN_HOST and the retired OLD_HOST to https://MAIN_HOST, keeping path and query.
+      - "traefik.http.middlewares.to-main-host.redirectregex.regex=^https?://[^/]+/(.*)$$"
+      - "traefik.http.middlewares.to-main-host.redirectregex.replacement=https://${MAIN_HOST}/$${1}"
+      - "traefik.http.middlewares.to-main-host.redirectregex.permanent=true"
+      - "traefik.http.routers.to-main-host.rule=Host(`www.${MAIN_HOST}`) || Host(`${OLD_HOST}`) || Host(`www.${OLD_HOST}`)"
+      - "traefik.http.routers.to-main-host.entrypoints=websecure"
+      - "traefik.http.routers.to-main-host.priority=1000"
+      - "traefik.http.routers.to-main-host.tls.certresolver=myresolver"
+      - "traefik.http.routers.to-main-host.middlewares=to-main-host@docker"
+      - "traefik.http.routers.to-main-host.service=noop@internal"
 
   pets-app:
     image: ${DOCKER_REGISTRY_SERVER}/pets-app:${PHP_VERSION}
@@ -46,12 +57,12 @@ services:
     labels:
       - "traefik.enable=true"
       # HTTP to HTTPS redirect
-      - "traefik.http.routers.pets-http.rule=Host(`pets.${OLD_HOST}`) || Host(`pets.${MAIN_HOST}`)"
+      - "traefik.http.routers.pets-http.rule=Host(`pets.${MAIN_HOST}`)"
       - "traefik.http.routers.pets-http.entrypoints=web"
       #      - "traefik.http.routers.pets-http.middlewares=pets-https-redirect"
       #      - "traefik.http.middlewares.pets-https-redirect.redirectscheme.scheme=https"
       # HTTPS configuration
-      - "traefik.http.routers.pets-secure.rule=Host(`pets.${OLD_HOST}`) || Host(`pets.${MAIN_HOST}`)"
+      - "traefik.http.routers.pets-secure.rule=Host(`pets.${MAIN_HOST}`)"
       - "traefik.http.routers.pets-secure.entrypoints=websecure"
       - "traefik.http.routers.pets-secure.tls=true"
       - "traefik.http.routers.pets-secure.tls.certresolver=myresolver"
@@ -71,17 +82,6 @@ services:
     #      - ./api-symfony/php/conf.d/opcache.prod.ini:/usr/local/etc/php/conf.d/opcache.prod.ini:ro
     labels:
       - "traefik.enable=true"
-
-      # OLD DOMAIN - HTTP - redirect to HTTPS
-      - "traefik.http.routers.symfony-old-http.rule=Host(`${OLD_HOST}`) || Host(`www.${OLD_HOST}`)"
-      - "traefik.http.routers.symfony-old-http.entrypoints=web"
-      - "traefik.http.routers.symfony-old-http.service=symfony"
-
-      # OLD DOMAIN - HTTPS - redirect to MAIN_HOST
-      - "traefik.http.routers.symfony-old-https.rule=Host(`${OLD_HOST}`) || Host(`www.${OLD_HOST}`)"
-      - "traefik.http.routers.symfony-old-https.entrypoints=websecure"
-      - "traefik.http.routers.symfony-old-https.tls.certresolver=myresolver"
-      - "traefik.http.routers.symfony-old-https.service=symfony"
 
       # NEW DOMAIN - Symfony serves ONLY admin/login/logout; public front is Astro.
       # HTTP (admin area)
@@ -124,8 +124,8 @@ services:
       - "traefik.http.middlewares.vmui-ratelimit.ratelimit.average=50"
       - "traefik.http.middlewares.vmui-ratelimit.ratelimit.burst=100"
       # Redirect root to /select/vmui/
-      - "traefik.http.middlewares.vmui-redirect.redirectregex.regex=^https?://vmui\\.web3main\\.pro/?$$"
-      - "traefik.http.middlewares.vmui-redirect.redirectregex.replacement=https://vmui.web3main.pro/select/vmui/"
+      - "traefik.http.middlewares.vmui-redirect.redirectregex.regex=^https?://[^/]+/?$$"
+      - "traefik.http.middlewares.vmui-redirect.redirectregex.replacement=https://vmui.${MAIN_HOST}/select/vmui/"
       - "traefik.http.middlewares.vmui-redirect.redirectregex.permanent=false"
       # HTTP
       - "traefik.http.routers.vmui-http.rule=Host(`vmui.${MAIN_HOST}`)"
@@ -178,8 +178,8 @@ services:
       dockerfile: ./Dockerfile
       target: prod
       args:
-        PUBLIC_SITE_URL: https://web3main.pro
-        PUBLIC_SITE_TITLE: web3main.pro
+        PUBLIC_SITE_URL: https://${MAIN_HOST}
+        PUBLIC_SITE_TITLE: ${MAIN_HOST}
         PUBLIC_SITE_AUTHOR: Web3main LLC
         PUBLIC_SITE_DESC: Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.
         PUBLIC_GOOGLE_SITE_VERIFICATION: ${PUBLIC_GOOGLE_SITE_VERIFICATION:-}
@@ -206,11 +206,11 @@ services:
       # Auth middleware
       - "traefik.http.middlewares.jaeger-auth.basicauth.users=${JAEGER_AUTH}"
       # HTTP
-      - "traefik.http.routers.jaeger-http.rule=Host(`jaeger.web3main.pro`)"
+      - "traefik.http.routers.jaeger-http.rule=Host(`jaeger.${MAIN_HOST}`)"
       - "traefik.http.routers.jaeger-http.entrypoints=web"
       - "traefik.http.routers.jaeger-http.service=jaeger"
       # HTTPS
-      - "traefik.http.routers.jaeger-https.rule=Host(`jaeger.web3main.pro`)"
+      - "traefik.http.routers.jaeger-https.rule=Host(`jaeger.${MAIN_HOST}`)"
       - "traefik.http.routers.jaeger-https.entrypoints=websecure"
       - "traefik.http.routers.jaeger-https.tls.certresolver=myresolver"
       - "traefik.http.routers.jaeger-https.service=jaeger"
