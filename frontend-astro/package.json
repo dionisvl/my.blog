@@ -13,25 +13,25 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@astrojs/node": "^9.1.3",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.7.0",
-    "dayjs": "^1.11.19",
-    "tailwindcss": "^4.1.18"
+    "@astrojs/node": "^11.1.9",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.2",
+    "dayjs": "^1.11.23",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.7",
-    "@shikijs/transformers": "^3.22.0",
-    "@tailwindcss/typography": "^0.5.19",
-    "@types/node": "^25.5.0",
-    "@typescript-eslint/parser": "^8.57.0",
-    "eslint": "^10.0.0",
-    "eslint-plugin-astro": "^1.6.0",
-    "globals": "^17.3.0",
-    "prettier": "^3.8.1",
+    "@astrojs/check": "^0.9.12",
+    "@shikijs/transformers": "^4.5.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "@types/node": "^25.9.9",
+    "@typescript-eslint/parser": "^8.72.0",
+    "eslint": "^10.13.0",
+    "eslint-plugin-astro": "^1.7.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.10",
     "prettier-plugin-astro": "^0.14.1",
-    "prettier-plugin-tailwindcss": "^0.7.2",
+    "prettier-plugin-tailwindcss": "^0.7.4",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.0"
+    "typescript-eslint": "^8.72.0"
   }
 }
