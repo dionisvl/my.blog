@@ -27,6 +27,9 @@ RUN pnpm build
 
 FROM node:24-alpine AS prod
 
+# The runtime only needs node; drop npm/corepack so their bundled deps are not shipped
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
+
 WORKDIR /app
 
 ENV NODE_ENV=production \
