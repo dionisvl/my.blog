@@ -9,6 +9,8 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http3"
+      # Registry pushes send whole layers in one request; the 60s default cuts them off.
+      - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=600s"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
       - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
@@ -21,12 +23,21 @@ services:
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.ipresolver.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.ipresolver.acme.storage=/letsencrypt/acme-ip.json"
+      - "--certificatesresolvers.ipresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.ipresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.ipresolver.acme.profile=shortlived"
+      - "--certificatesresolvers.ipresolver.acme.certificatesduration=160"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
     ports:
       - "80:80"
       - "443:443"
       - "443:443/udp"  # for HTTP/3 UDP traffic
     volumes:
       - "./letsencrypt:/letsencrypt"
+      - "./.devops/traefik/dynamic:/etc/traefik/dynamic:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - app-network

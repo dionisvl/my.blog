@@ -1,6 +1,7 @@
 services:
   traefik:
-    image: traefik:v3.6.7
+    restart: unless-stopped
+    image: traefik:${TRAEFIK_VERSION:?set TRAEFIK_VERSION in .env}
     command:
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -107,6 +108,7 @@ services:
         max-file: "3"
 
   pets-app:
+    restart: unless-stopped
     build:
       context: ./.docker/php-simple
       dockerfile: ./Dockerfile
@@ -119,7 +121,8 @@ services:
       - app-network
 
   postgres:
-    image: postgres:17.9-alpine
+    restart: unless-stopped
+    image: postgres:17.11-alpine
     env_file:
       - path: ./.env
         required: true
@@ -136,7 +139,7 @@ services:
       retries: 5
 
   victoria-logs:
-    image: victoriametrics/victoria-logs:v1.44.0
+    image: victoriametrics/victoria-logs:v1.53.0
     expose:
       - "9428"
     volumes:
@@ -149,7 +152,7 @@ services:
     restart: unless-stopped
 
   vector:
-    image: timberio/vector:nightly-2026-01-30-alpine
+    image: timberio/vector:0.60.0-alpine
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./.devops/vmetrics/vector.toml:/etc/vector/vector.toml:ro
@@ -166,7 +169,7 @@ services:
       - "traefik.enable=false"
 
   vmauth:
-    image: victoriametrics/vmauth:v1.134.0
+    image: victoriametrics/vmauth:v1.154.1
     expose:
       - "8427"
     volumes:
@@ -184,7 +187,7 @@ services:
       - victoria-logs
 
   jaeger:
-    image: jaegertracing/jaeger:2.15.0
+    image: jaegertracing/jaeger:2.22.0
     command:
       - "--set=receivers.otlp.protocols.grpc.endpoint=0.0.0.0:4317"
       - "--set=receivers.otlp.protocols.http.endpoint=0.0.0.0:4318"
@@ -197,6 +200,7 @@ services:
     restart: unless-stopped
 
   astro-frontend:
+    restart: unless-stopped
     environment:
       API_KEY: "${GO_API_KEY}"
       PORT: "4321"
