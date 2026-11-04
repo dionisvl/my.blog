@@ -65,6 +65,8 @@ services:
     image: ${DOCKER_REGISTRY_SERVER}/pets-app:${PHP_VERSION}
     volumes:
       - /home/pets.my.blog:/app:rwte
+      - /home/my.blog/config/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
+      - /home/my.blog/config/php/pets-security.ini:/usr/local/etc/php/conf.d/zz-pets-security.ini:ro
     labels:
       - "traefik.enable=true"
       # HTTP to HTTPS redirect
@@ -82,6 +84,8 @@ services:
       - app-network
 
   symfony:
+    volumes:
+      - /home/my.blog/config/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
     image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:${PHP_VERSION}
     build:
       context: ./api-symfony
