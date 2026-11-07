@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 
@@ -32,7 +33,7 @@ func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	page := PageFromQuery(r, 1)
 	const perPage = 10
 
-	g, ctx := errgroup.WithContext(r.Context())
+	g, ctx := errgroup.WithContext(requestContext(r))
 
 	var posts []model.Post
 	var total int
@@ -74,4 +75,14 @@ func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Categories:    categories,
 		Pagination:    BuildPagination(page, perPage, total),
 	})
+}
+
+// requestContext carries the reader's preferred language (?lang=) so article cards in lists follow it.
+// Without a supported choice the cards are English.
+func requestContext(r *http.Request) context.Context {
+	lang := r.URL.Query().Get("lang")
+	if !model.IsSupportedLocale(lang) {
+		lang = model.LocaleEN
+	}
+	return repository.WithPreferredLocale(r.Context(), lang)
 }

@@ -29,7 +29,7 @@ func (h *SearchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var posts []model.Post
 	if query != "" {
 		var err error
-		posts, err = h.posts.SearchPublished(r.Context(), query, 20)
+		posts, err = h.posts.SearchPublished(requestContext(r), query, 20)
 		if err != nil {
 			h.logger.Error("search failed", slog.String("error", err.Error()))
 			RespondError(w, http.StatusInternalServerError, "internal server error")

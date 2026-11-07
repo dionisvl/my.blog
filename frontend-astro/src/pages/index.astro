@@ -7,11 +7,14 @@ import LazyImage from "../components/LazyImage.astro";
 import { getHome } from "../lib/api";
 import { formatDate } from "../lib/format";
 import { canonicalFor } from "../lib/url";
+import { parseLanguagePreference } from "../lib/language-choice";
 
 const pageParam = Astro.url.searchParams.get("page");
 const page = Math.max(1, parseInt(pageParam || "1", 10));
 
-const data = await getHome(page);
+const preferredLang = parseLanguagePreference(Astro.request.headers.get("cookie"));
+const data = await getHome(page, preferredLang ?? undefined);
+Astro.response.headers.set("Vary", "Cookie");
 const title = `Web3 Blog - Homepage${page > 1 ? `, page ${page}` : ""}`;
 const description = `Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.${
   page > 1 ? ` Page ${page}.` : ""

@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://web3main.pro/contracts/article-blocks/v1/schema.json",
+  "title": "Modular article document, schema_version 1",
+  "description": "Publishable form of one locale of a modular article. Drafts may omit required properties (see CONTRACT.md); published locales always satisfy this schema plus the semantic rules listed in CONTRACT.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "locale", "blocks"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "locale": { "enum": ["ru", "en"] },
+    "verified_at": { "$ref": "#/$defs/date" },
+    "blocks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 60,
+      "items": { "$ref": "#/$defs/block" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,39}$" },
+    "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "shortText": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "mediumText": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "longText": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "template": {
+      "description": "Label template; only the placeholders {name} and {cta} are allowed.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "^[^{}]*(\\{(name|cta)\\}[^{}]*)*$"
+    },
+    "url": {
+      "description": "http(s) absolute URL or a site-relative path starting with a single slash.",
+      "type": "string",
+      "maxLength": 2048,
+      "pattern": "^(https?://[^\\s/?#@]+([/?#][^\\s]*)?|/([^/\\s][^\\s]*)?)$"
+    },
+    "rating": { "enum": ["good", "mixed", "bad", "neutral"] },
+    "variant": { "enum": ["primary", "ghost"] },
+    "html": { "type": "string", "maxLength": 20000 },
+    "cta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "url", "variant", "sponsored"],
+      "properties": {
+        "label": { "$ref": "#/$defs/shortText" },
+        "url": { "$ref": "#/$defs/url" },
+        "variant": { "$ref": "#/$defs/variant" },
+        "sponsored": { "type": "boolean" }
+      }
+    },
+    "block": {
+      "type": "object",
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": {
+          "enum": [
+            "richText",
+            "comparisonTable",
+            "productCard",
+            "faq",
+            "cta",
+            "cardSelector",
+            "sources",
+            "sponsoredDisclosure",
+            "customCode"
+          ]
+        }
+      },
+      "oneOf": [
+        { "$ref": "#/$defs/richTextBlock" },
+        { "$ref": "#/$defs/comparisonTableBlock" },
+        { "$ref": "#/$defs/productCardBlock" },
+        { "$ref": "#/$defs/faqBlock" },
+        { "$ref": "#/$defs/ctaBlock" },
+        { "$ref": "#/$defs/cardSelectorBlock" },
+        { "$ref": "#/$defs/sourcesBlock" },
+        { "$ref": "#/$defs/sponsoredDisclosureBlock" },
+        { "$ref": "#/$defs/customCodeBlock" }
+      ]
+    },
+    "customCodeBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "customCode" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "html": { "type": "string", "maxLength": 100000 },
+            "css": { "type": "string", "maxLength": 100000 },
+            "js": { "type": "string", "maxLength": 100000 }
+          }
+        }
+      }
+    },
+    "richTextBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "richText" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["html"],
+          "properties": {
+            "html": { "$ref": "#/$defs/html" },
+            "variant": { "enum": ["default", "lead", "callout"] }
+          }
+        }
+      }
+    },
+    "comparisonTableBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "comparisonTable" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["caption", "criteriaLabel", "columns", "rows"],
+          "properties": {
+            "caption": { "$ref": "#/$defs/mediumText" },
+            "criteriaLabel": { "$ref": "#/$defs/shortText" },
+            "legend": {
+              "type": "array",
+              "maxItems": 4,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["rating", "label"],
+                "properties": {
+                  "rating": { "$ref": "#/$defs/rating" },
+                  "label": { "$ref": "#/$defs/shortText" }
+                }
+              }
+            },
+            "columns": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "name"],
+                "properties": {
+                  "id": { "$ref": "#/$defs/id" },
+                  "name": { "$ref": "#/$defs/shortText" },
+                  "subtitle": { "$ref": "#/$defs/mediumText" },
+                  "link": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["url", "sponsored"],
+                    "properties": {
+                      "url": { "$ref": "#/$defs/url" },
+                      "sponsored": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            },
+            "rows": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 30,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "label", "cells"],
+                "properties": {
+                  "id": { "$ref": "#/$defs/id" },
+                  "label": { "$ref": "#/$defs/shortText" },
+                  "cells": {
+                    "description": "Exactly one cell per column, in column order (semantic rule cell_count_mismatch).",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 8,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["value"],
+                      "properties": {
+                        "rating": { "$ref": "#/$defs/rating" },
+                        "value": { "$ref": "#/$defs/mediumText" },
+                        "note": { "$ref": "#/$defs/longText" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "ctaRow": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["label", "items"],
+              "properties": {
+                "label": { "$ref": "#/$defs/shortText" },
+                "items": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["columnId", "label", "url", "variant", "sponsored"],
+                    "properties": {
+                      "columnId": { "$ref": "#/$defs/id" },
+                      "label": { "$ref": "#/$defs/shortText" },
+                      "url": { "$ref": "#/$defs/url" },
+                      "variant": { "$ref": "#/$defs/variant" },
+                      "sponsored": { "type": "boolean" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "productCardBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "productCard" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["title"],
+          "properties": {
+            "title": { "$ref": "#/$defs/shortText" },
+            "badge": { "$ref": "#/$defs/shortText" },
+            "tag": { "$ref": "#/$defs/shortText" },
+            "summary": { "$ref": "#/$defs/longText" },
+            "bullets": {
+              "type": "array",
+              "maxItems": 10,
+              "items": { "$ref": "#/$defs/mediumText" }
+            },
+            "rating": { "$ref": "#/$defs/rating" },
+            "cta": { "$ref": "#/$defs/cta" },
+            "secondaryCta": { "$ref": "#/$defs/cta" },
+            "note": { "$ref": "#/$defs/mediumText" }
+          }
+        }
+      }
+    },
+    "faqBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "faq" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["heading", "items"],
+          "properties": {
+            "heading": { "$ref": "#/$defs/shortText" },
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 30,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "question", "answerHtml"],
+                "properties": {
+                  "id": { "$ref": "#/$defs/id" },
+                  "question": { "$ref": "#/$defs/mediumText" },
+                  "answerHtml": { "$ref": "#/$defs/html" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ctaBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "cta" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["label", "url", "variant", "sponsored"],
+          "properties": {
+            "label": { "$ref": "#/$defs/shortText" },
+            "url": { "$ref": "#/$defs/url" },
+            "variant": { "$ref": "#/$defs/variant" },
+            "sponsored": { "type": "boolean" },
+            "title": { "$ref": "#/$defs/shortText" },
+            "text": { "$ref": "#/$defs/mediumText" },
+            "sticky": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "cardSelectorBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "cardSelector" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["heading", "groupLabel", "targetBlockId", "defaultOptionId", "options", "labels"],
+          "properties": {
+            "heading": { "$ref": "#/$defs/shortText" },
+            "groupLabel": { "$ref": "#/$defs/shortText" },
+            "targetBlockId": { "$ref": "#/$defs/id" },
+            "defaultOptionId": { "$ref": "#/$defs/id" },
+            "options": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 8,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "label", "columnId"],
+                "properties": {
+                  "id": { "$ref": "#/$defs/id" },
+                  "label": { "$ref": "#/$defs/shortText" },
+                  "columnId": { "$ref": "#/$defs/id" }
+                }
+              }
+            },
+            "labels": {
+              "description": "Every string the client script renders dynamically. Placeholders: {name} = selected option label, {cta} = selected call-to-action label.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["selectedTable", "stickyCaption", "ctaAria", "mobileHint"],
+              "properties": {
+                "selectedTable": { "$ref": "#/$defs/template" },
+                "stickyCaption": { "$ref": "#/$defs/template" },
+                "ctaAria": { "$ref": "#/$defs/template" },
+                "mobileHint": { "$ref": "#/$defs/template" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sourcesBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "sources" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["heading", "items"],
+          "properties": {
+            "heading": { "$ref": "#/$defs/shortText" },
+            "items": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["id", "label", "url"],
+                "properties": {
+                  "id": { "$ref": "#/$defs/id" },
+                  "label": { "$ref": "#/$defs/mediumText" },
+                  "url": { "$ref": "#/$defs/url" },
+                  "sponsored": { "type": "boolean" },
+                  "publisher": { "$ref": "#/$defs/shortText" },
+                  "accessed_at": { "$ref": "#/$defs/date" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sponsoredDisclosureBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "props"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "const": "sponsoredDisclosure" },
+        "props": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["text"],
+          "properties": {
+            "text": { "$ref": "#/$defs/longText" },
+            "learnMoreLabel": { "$ref": "#/$defs/shortText" },
+            "learnMoreUrl": { "$ref": "#/$defs/url" }
+          }
+        }
+      }
+    }
+  }
+}

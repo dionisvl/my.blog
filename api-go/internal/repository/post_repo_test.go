@@ -103,7 +103,7 @@ func TestPostRepository_IncrementViews(t *testing.T) {
 
 	repo := repository.NewPostRepository(tdb.DB)
 
-	err := repo.IncrementViews(ctx, postID)
+	_, err := repo.IncrementViews(ctx, postID)
 	require.NoError(t, err)
 
 	post, err := repo.FindPublishedBySlug(ctx, "view-me")

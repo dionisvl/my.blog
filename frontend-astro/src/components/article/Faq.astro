@@ -1,0 +1,22 @@
+---
+import type { FaqProps } from "../../contracts/article-blocks/v1/types";
+
+interface Props extends FaqProps {
+  id: string;
+}
+
+const { id, heading, items } = Astro.props;
+---
+
+<section id={`block-${id}`} class="my-8">
+  <h2 class="text-2xl font-bold text-white mb-3">{heading}</h2>
+  {
+    items.map((item) => (
+      <details class="mb-2 rounded-md border border-gray-600 bg-gray-800 p-3">
+        <summary class="cursor-pointer font-medium text-white">{item.question}</summary>
+        <!-- answerHtml is server-sanitized (allow-list). -->
+        <div class="prose max-w-none mt-2" set:html={item.answerHtml} />
+      </details>
+    ))
+  }
+</section>

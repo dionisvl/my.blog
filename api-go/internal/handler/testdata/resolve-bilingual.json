@@ -1,0 +1,13 @@
+{
+  "contract_version": 1,
+  "slug": "cards",
+  "route_mode": "neutral",
+  "original_locale": null,
+  "primary_locale": "ru",
+  "canonical_path": null,
+  "locales": [
+    {"locale": "ru", "url": "/ru/post/cards", "title": "Карты", "published_at": "2026-10-29T10:00:00Z"},
+    {"locale": "en", "url": "/en/post/cards", "title": "Cards", "published_at": "2026-10-29T10:00:00Z"}
+  ],
+  "x_default_locale": "en"
+}

@@ -21,6 +21,12 @@ class Post
 
     public const int STATUS_DRAFT = 1;
 
+    /** Existing posts: canonical URL stays /post/{slug}; content lives in posts.content. */
+    public const string ROUTE_LEGACY = 'legacy_canonical';
+
+    /** Modular articles: content lives in post_locales; posts is only the anchor. */
+    public const string ROUTE_NEUTRAL = 'neutral';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER)]
@@ -49,6 +55,15 @@ class Post
 
     #[ORM\Column(name: 'views_count', type: Types::INTEGER, options: ['default' => 0])]
     private int $viewsCount = 0;
+
+    #[ORM\Column(name: 'route_mode', type: Types::STRING, length: 20, options: ['default' => self::ROUTE_LEGACY])]
+    private string $routeMode = self::ROUTE_LEGACY;
+
+    #[ORM\Column(name: 'original_locale', type: Types::STRING, length: 5, nullable: true)]
+    private ?string $originalLocale = null;
+
+    #[ORM\Column(name: 'primary_locale', type: Types::STRING, length: 5, nullable: true)]
+    private ?string $primaryLocale = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private \DateTimeInterface $createdAt;
@@ -273,6 +288,46 @@ class Post
     public function setStatus(bool $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getRouteMode(): string
+    {
+        return $this->routeMode;
+    }
+
+    public function isModular(): bool
+    {
+        return self::ROUTE_NEUTRAL === $this->routeMode;
+    }
+
+    public function getOriginalLocale(): ?string
+    {
+        return $this->originalLocale;
+    }
+
+    public function setOriginalLocale(?string $originalLocale): self
+    {
+        $this->originalLocale = $originalLocale;
+
+        return $this;
+    }
+
+    public function getPrimaryLocale(): ?string
+    {
+        return $this->primaryLocale;
+    }
+
+    /**
+     * Turns this row into a modular anchor. It is created as a DRAFT on purpose: posts.status is
+     * inverted (false = published) and defaults to published, so the anchor must never rely on it.
+     */
+    public function markAsModularDraft(string $primaryLocale): self
+    {
+        $this->routeMode = self::ROUTE_NEUTRAL;
+        $this->primaryLocale = $primaryLocale;
+        $this->status = true;
 
         return $this;
     }

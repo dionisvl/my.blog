@@ -1,0 +1,31 @@
+---
+import type { CtaProps } from "../../contracts/article-blocks/v1/types";
+import { relFor, safeHref } from "../../lib/articles-core";
+
+interface Props extends CtaProps {
+  id: string;
+}
+
+const { id, label, url, variant, sponsored, title, text, sticky } = Astro.props;
+
+const buttonClass =
+  variant === "primary"
+    ? "inline-block bg-blue-500 hover:bg-blue-600 text-white rounded-md px-5 py-2.5 font-medium"
+    : "inline-block border border-gray-500 hover:bg-gray-700 text-gray-100 rounded-md px-5 py-2.5 font-medium";
+---
+
+<!-- A sticky CTA is a bar pinned to the bottom on small screens and an ordinary block from md up. -->
+<div
+  id={`block-${id}`}
+  class={
+    sticky
+      ? "fixed inset-x-0 bottom-0 z-40 border-t border-gray-600 bg-gray-900 p-3 text-center md:static md:z-auto md:my-6 md:rounded-lg md:border md:bg-gray-800 md:p-5"
+      : "my-6 rounded-lg border border-gray-600 bg-gray-800 p-5 text-center"
+  }
+>
+  {title && <p class="font-semibold text-white">{title}</p>}
+  {text && <p class="text-sm text-gray-300 mb-2">{text}</p>}
+  <a href={safeHref(url)} rel={relFor(sponsored, url) || undefined} target="_blank" class={buttonClass}>
+    {label}
+  </a>
+</div>

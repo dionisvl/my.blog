@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "locale": "en",
+  "verified_at": "2026-10-29",
+  "blocks": [
+    {
+      "id": "intro",
+      "type": "richText",
+      "props": {
+        "variant": "lead",
+        "html": "<p>Fixture article comparing three <strong>fictional</strong> payment cards. Every number below is a placeholder, not a real tariff.</p>"
+      }
+    },
+    {
+      "id": "disclosure",
+      "type": "sponsoredDisclosure",
+      "props": {
+        "text": "Some links on this page are sponsored: the author may receive a reward if you sign up through them. Placeholder text for contract tests only.",
+        "learnMoreLabel": "How we choose",
+        "learnMoreUrl": "/contacts"
+      }
+    },
+    {
+      "id": "picker",
+      "type": "cardSelector",
+      "props": {
+        "heading": "Compare a card",
+        "groupLabel": "Choose a card",
+        "targetBlockId": "compare",
+        "defaultOptionId": "opt-beta",
+        "options": [
+          {
+            "id": "opt-alpha",
+            "label": "Alpha Card",
+            "columnId": "alpha"
+          },
+          {
+            "id": "opt-beta",
+            "label": "Beta Card",
+            "columnId": "beta"
+          },
+          {
+            "id": "opt-gamma",
+            "label": "Gamma Card",
+            "columnId": "gamma"
+          }
+        ],
+        "labels": {
+          "selectedTable": "Terms of {name}",
+          "stickyCaption": "Terms and sign-up",
+          "ctaAria": "{cta} — {name}",
+          "mobileHint": "Pick a card above to see its terms without horizontal scrolling."
+        }
+      }
+    },
+    {
+      "id": "compare",
+      "type": "comparisonTable",
+      "props": {
+        "caption": "Comparison of the three fictional cards",
+        "criteriaLabel": "Criterion",
+        "legend": [
+          {
+            "rating": "good",
+            "label": "good value"
+          },
+          {
+            "rating": "mixed",
+            "label": "mixed, with caveats"
+          },
+          {
+            "rating": "bad",
+            "label": "expensive or risky"
+          }
+        ],
+        "columns": [
+          {
+            "id": "alpha",
+            "name": "Alpha Card",
+            "subtitle": "Placeholder issuer A",
+            "link": {
+              "url": "https://partner.example.test/alpha?ref=fixture",
+              "sponsored": true
+            }
+          },
+          {
+            "id": "beta",
+            "name": "Beta Card",
+            "subtitle": "Placeholder issuer B",
+            "link": {
+              "url": "https://partner.example.test/beta?ref=fixture",
+              "sponsored": true
+            }
+          },
+          {
+            "id": "gamma",
+            "name": "Gamma Card",
+            "subtitle": "Placeholder issuer C"
+          }
+        ],
+        "rows": [
+          {
+            "id": "issue",
+            "label": "Card issue",
+            "cells": [
+              {
+                "rating": "good",
+                "value": "Free",
+                "note": "Virtual card only (placeholder)"
+              },
+              {
+                "rating": "good",
+                "value": "Free"
+              },
+              {
+                "rating": "mixed",
+                "value": "Paid",
+                "note": "Price depends on the region (placeholder)"
+              }
+            ]
+          },
+          {
+            "id": "fee",
+            "label": "Payment fee",
+            "cells": [
+              {
+                "rating": "mixed",
+                "value": "1% + 0.1 USD"
+              },
+              {
+                "rating": "good",
+                "value": "0%"
+              },
+              {
+                "rating": "bad",
+                "value": "3%",
+                "note": "Includes a currency spread (placeholder)"
+              }
+            ]
+          }
+        ],
+        "ctaRow": {
+          "label": "Sign up",
+          "items": [
+            {
+              "columnId": "alpha",
+              "label": "Get Alpha Card",
+              "url": "https://partner.example.test/alpha?ref=fixture",
+              "variant": "primary",
+              "sponsored": true
+            },
+            {
+              "columnId": "beta",
+              "label": "Get Beta Card",
+              "url": "https://partner.example.test/beta?ref=fixture",
+              "variant": "primary",
+              "sponsored": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pick",
+      "type": "productCard",
+      "props": {
+        "badge": "Fixture pick",
+        "title": "Beta Card",
+        "bullets": [
+          "No issue fee",
+          "No payment fee",
+          "Works with wallets (placeholder)"
+        ],
+        "rating": "good",
+        "cta": {
+          "label": "Get Beta Card",
+          "url": "https://partner.example.test/beta?ref=fixture",
+          "variant": "primary",
+          "sponsored": true
+        },
+        "secondaryCta": {
+          "label": "Or read about Alpha",
+          "url": "/en/post/fixture-alpha",
+          "variant": "ghost",
+          "sponsored": false
+        },
+        "note": "Sign-up takes a few minutes (placeholder)."
+      }
+    },
+    {
+      "id": "advice",
+      "type": "richText",
+      "props": {
+        "variant": "callout",
+        "html": "<p><b>Tip.</b> These are prepaid cards: funds are held by the service. Keep <a href=\"https://docs.example.test/prepaid\" rel=\"noopener\" target=\"_blank\">a reserve card</a> from another issuer.</p>"
+      }
+    },
+    {
+      "id": "faq",
+      "type": "faq",
+      "props": {
+        "heading": "FAQ",
+        "items": [
+          {
+            "id": "q-verify",
+            "question": "Is verification required?",
+            "answerHtml": "<p>Placeholder answer with <em>emphasis</em>.</p>"
+          },
+          {
+            "id": "q-first",
+            "question": "Which card should I get first?",
+            "answerHtml": "<p>Placeholder answer.</p><ul><li>Point one</li><li>Point two</li></ul>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bar",
+      "type": "cta",
+      "props": {
+        "title": "Beta Card",
+        "text": "free · no payment fee",
+        "label": "Sign up",
+        "url": "https://partner.example.test/beta?ref=fixture",
+        "variant": "primary",
+        "sponsored": true,
+        "sticky": true
+      }
+    },
+    {
+      "id": "refs",
+      "type": "sources",
+      "props": {
+        "heading": "Sources",
+        "items": [
+          {
+            "id": "s1",
+            "label": "Placeholder issuer tariff page",
+            "url": "https://docs.example.test/tariffs",
+            "publisher": "Example Issuer",
+            "accessed_at": "2026-10-29"
+          },
+          {
+            "id": "s2",
+            "label": "Placeholder review",
+            "url": "https://docs.example.test/review"
+          }
+        ]
+      }
+    },
+    {
+      "id": "owner-widget",
+      "type": "customCode",
+      "props": {
+        "html": "<div class=\"owner-widget\" data-note=\"Raw owner-authored block\">Widget</div>",
+        "css": ".owner-widget { margin: 1rem 0; }",
+        "js": "document.querySelectorAll('.owner-widget').forEach(function (el) { el.dataset.ready = '1'; });"
+      }
+    }
+  ]
+}

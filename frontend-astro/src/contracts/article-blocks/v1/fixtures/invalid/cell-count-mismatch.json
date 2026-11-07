@@ -1,0 +1,26 @@
+{
+  "description": "Every comparison row needs exactly one cell per column.",
+  "mode": "publication",
+  "expect_codes": ["cell_count_mismatch"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      {
+        "id": "compare",
+        "type": "comparisonTable",
+        "props": {
+          "caption": "Compare",
+          "criteriaLabel": "Criterion",
+          "columns": [
+            { "id": "a", "name": "A" },
+            { "id": "b", "name": "B" }
+          ],
+          "rows": [
+            { "id": "r1", "label": "Row", "cells": [ { "value": "only one" } ] }
+          ]
+        }
+      }
+    ]
+  }
+}

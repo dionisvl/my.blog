@@ -25,6 +25,7 @@ func NewRouter(
 	postLikeRepo repository.PostLikeRepository,
 	incomingRepo repository.IncomingRepository,
 	subscriptionRepo repository.SubscriptionRepository,
+	articleRepo repository.ArticleRepository,
 ) *chi.Mux {
 	r := chi.NewRouter()
 
@@ -47,13 +48,14 @@ func NewRouter(
 	healthHandler := handler.NewHealthHandler()
 	homeHandler := handler.NewHomeHandler(postRepo, categoryRepo, logger)
 	postHandler := handler.NewPostHandler(postRepo, categoryRepo, aphorismRepo, logger)
+	articleHandler := handler.NewArticleHandler(postRepo, articleRepo, categoryRepo, aphorismRepo, logger)
 	searchHandler := handler.NewSearchHandler(postRepo, logger)
 	tagHandler := handler.NewTagHandler(postRepo, tagRepo, logger)
 	categoryHandler := handler.NewCategoryHandler(postRepo, categoryRepo, logger)
 	contactsHandler := handler.NewContactsHandler(cfg.App.MainHost)
 	commentHandler := handler.NewCommentHandler(commentRepo, logger)
 	postLikeHandler := handler.NewPostLikeHandler(postLikeRepo, logger)
-	seoHandler := handler.NewSEOHandler(cfg.Files.SeoDir, cfg.App.MainHost, logger)
+	seoHandler := handler.NewSEOHandler(cfg.Files.SeoDir, cfg.App.MainHost, logger, articleRepo)
 	storageHandler := handler.NewStorageHandler(cfg.Files.StorageDir)
 	incomingHandler := handler.NewIncomingHandler(incomingRepo, logger)
 	subscribeHandler := handler.NewSubscribeHandler(subscriptionRepo, logger)
@@ -71,6 +73,8 @@ func NewRouter(
 
 			r.Get("/", homeHandler.ServeHTTP)
 			r.Get("/post/{slug}", postHandler.ServeHTTP)
+			r.Get("/post/{slug}/resolve", articleHandler.Resolve)
+			r.Get("/post/{slug}/locale/{locale}", articleHandler.Locale)
 			r.Get("/search", searchHandler.ServeHTTP)
 			r.Get("/tag/{slug}", tagHandler.ServeHTTP)
 			r.Get("/category/{slug}", categoryHandler.ServeHTTP)

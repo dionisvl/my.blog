@@ -1,0 +1,12 @@
+{
+  "description": "Stored rich text must already be sanitized (a fixed point of the sanitizer).",
+  "mode": "draft",
+  "expect_codes": ["html_not_sanitized"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      { "id": "body", "type": "richText", "props": { "html": "<p onclick=\"x()\">Hi</p><script>alert(1)</script>" } }
+    ]
+  }
+}

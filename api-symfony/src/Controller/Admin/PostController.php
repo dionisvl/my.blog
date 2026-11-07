@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Attribute\MapUploadedFile;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -49,6 +50,8 @@ final class PostController extends AbstractController
             throw $this->createNotFoundException('Post not found');
         }
 
+        $this->refuseModularAnchor($post);
+
         $categories = $this->categoryRepository->findAll();
         $tags = $this->tagRepository->findAll();
         $selectedTags = [];
@@ -80,6 +83,8 @@ final class PostController extends AbstractController
             throw $this->createNotFoundException('Post not found');
         }
 
+        $this->refuseModularAnchor($post);
+
         $payload->image = $image;
 
         $this->postManager->update($post, $payload);
@@ -99,6 +104,8 @@ final class PostController extends AbstractController
         if (!$post instanceof Post) {
             throw $this->createNotFoundException('Post not found');
         }
+
+        $this->refuseModularAnchor($post);
 
         $this->postManager->delete($post);
         $this->addFlash('success', 'Post deleted successfully!');
@@ -129,5 +136,16 @@ final class PostController extends AbstractController
             'categories' => $categories,
             'tags' => $tags,
         ]);
+    }
+
+    /**
+     * Modular articles keep their content in post_locales; the legacy form would overwrite the
+     * anchor's synced card fields (and could flip its inverted status flag), so it must not touch them.
+     */
+    private function refuseModularAnchor(Post $post): void
+    {
+        if ($post->isModular()) {
+            throw new ConflictHttpException('This is a modular article; the legacy post form cannot edit or delete it.');
+        }
     }
 }

@@ -1,0 +1,18 @@
+---
+import type { RichTextProps } from "../../contracts/article-blocks/v1/types";
+
+interface Props extends RichTextProps {
+  id: string;
+}
+
+const { id, html, variant = "default" } = Astro.props;
+
+const variantClass = {
+  default: "",
+  lead: "text-lg text-gray-200",
+  callout: "border-l-4 border-yellow-500 bg-gray-700/60 p-4 rounded-r-md",
+}[variant];
+---
+
+<!-- `html` is server-sanitized by the publisher (allow-list), so set:html is acceptable here. -->
+<div id={`block-${id}`} class={`prose max-w-none my-6 ${variantClass}`} set:html={html} />

@@ -1,0 +1,13 @@
+{
+  "description": "Block ids are unique within a document.",
+  "mode": "draft",
+  "expect_codes": ["duplicate_id"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      { "id": "same", "type": "richText", "props": { "html": "<p>One</p>" } },
+      { "id": "same", "type": "richText", "props": { "html": "<p>Two</p>" } }
+    ]
+  }
+}

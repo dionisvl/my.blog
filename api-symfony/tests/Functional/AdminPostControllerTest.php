@@ -120,6 +120,30 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         self::assertCount(1, $post->getTags());
     }
 
+    public function testLegacyAdminCannotReuseAModularArticleSlug(): void
+    {
+        $user = $this->createAdminUser();
+        $anchor = new Post();
+        $anchor->setTitle('Modular')->setSlug('reserved-title')->setContent('')
+            ->setAuthor($user)->markAsModularDraft('en');
+        $this->em->persist($anchor);
+        $this->em->flush();
+
+        $this->client->loginUser($user);
+        $this->client->request(Request::METHOD_POST, '/admin/posts/store', [
+            'title' => 'Reserved Title',
+            'content' => 'Legacy body',
+            'description' => 'Legacy summary',
+            'date' => '2024-01-01',
+            'status' => '0',
+            'is_featured' => '0',
+        ]);
+
+        $this->assertResponseStatusCodeSame(409);
+        $this->em->clear();
+        self::assertCount(1, $this->em->getRepository(Post::class)->findBy(['slug' => 'reserved-title']));
+    }
+
     private function createTag(string $title, string $slug): Tag
     {
         $tag = new Tag();

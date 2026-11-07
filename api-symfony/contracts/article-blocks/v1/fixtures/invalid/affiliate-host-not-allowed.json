@@ -1,0 +1,18 @@
+{
+  "description": "A sponsored link may only point at an allow-listed affiliate host.",
+  "mode": "draft",
+  "expect_codes": ["affiliate_host_not_allowed"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "verified_at": "2026-10-29",
+    "blocks": [
+      { "id": "disclosure", "type": "sponsoredDisclosure", "props": { "text": "Some links are sponsored." } },
+      {
+        "id": "bar",
+        "type": "cta",
+        "props": { "label": "Sign up", "url": "https://unlisted.example.test/a", "variant": "primary", "sponsored": true }
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "description": "cardSelector must point at an existing comparisonTable block and its columns.",
+  "mode": "publication",
+  "expect_codes": ["bad_reference"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      {
+        "id": "picker",
+        "type": "cardSelector",
+        "props": {
+          "heading": "Compare",
+          "groupLabel": "Choose",
+          "targetBlockId": "missing-table",
+          "defaultOptionId": "o1",
+          "options": [
+            { "id": "o1", "label": "One", "columnId": "c1" },
+            { "id": "o2", "label": "Two", "columnId": "c2" }
+          ],
+          "labels": { "selectedTable": "Terms of {name}", "stickyCaption": "Sign up", "ctaAria": "{cta} — {name}", "mobileHint": "Pick one." }
+        }
+      }
+    ]
+  }
+}

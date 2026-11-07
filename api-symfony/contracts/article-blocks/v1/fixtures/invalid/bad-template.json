@@ -1,0 +1,18 @@
+{
+  "description": "Dynamic label templates only support the {name} and {cta} placeholders.",
+  "mode": "draft",
+  "expect_codes": ["bad_template"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      {
+        "id": "picker",
+        "type": "cardSelector",
+        "props": {
+          "labels": { "selectedTable": "Terms of {user}", "stickyCaption": "Sign up", "ctaAria": "{cta} — {name}", "mobileHint": "Pick one." }
+        }
+      }
+    ]
+  }
+}

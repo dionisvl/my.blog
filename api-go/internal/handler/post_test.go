@@ -25,9 +25,9 @@ func (f *fakePostRepo) FindPublishedBySlug(ctx context.Context, slug string) (*m
 	return f.post, nil
 }
 
-func (f *fakePostRepo) IncrementViews(ctx context.Context, postID int) error {
+func (f *fakePostRepo) IncrementViews(ctx context.Context, postID int) (int, error) {
 	f.incrementCalls++
-	return nil
+	return f.post.ViewsCount + 1, nil
 }
 
 func (f *fakePostRepo) FindFeatured(ctx context.Context, limit int) ([]model.Post, error) {

@@ -23,6 +23,11 @@ type Post struct {
 	CreatedAt   time.Time `bun:"created_at,notnull"  json:"created_at"`
 	UpdatedAt   time.Time `bun:"updated_at,notnull"  json:"updated_at"`
 
+	// Additive fields (modular articles). Legacy rows keep route_mode=legacy_canonical and no locales.
+	RouteMode      string  `bun:"route_mode,notnull" json:"route_mode"`
+	OriginalLocale *string `bun:"original_locale"    json:"original_locale,omitempty"`
+	PrimaryLocale  *string `bun:"primary_locale"     json:"primary_locale,omitempty"`
+
 	Author   *User     `bun:"rel:belongs-to,join:user_id=id"     json:"author,omitempty"`
 	Category *Category `bun:"rel:belongs-to,join:category_id=id" json:"category,omitempty"`
 	Tags     []Tag     `bun:"m2m:post_tags,join:Post=Tag"        json:"tags,omitempty"`
@@ -30,6 +35,14 @@ type Post struct {
 
 	ImageURL   string `bun:"-" json:"image_url"`
 	LikesCount int    `bun:"-" json:"likes_count"`
+
+	// Locales lists the published locales of a modular article (empty for legacy posts).
+	Locales []LocaleLink `bun:"-" json:"locales,omitempty"`
+}
+
+// IsModular reports whether the row is the anchor of a modular multilingual article.
+func (p *Post) IsModular() bool {
+	return p.RouteMode == RouteModeNeutral
 }
 
 func (p *Post) ResolveImageURL() {

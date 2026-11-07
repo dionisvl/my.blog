@@ -27,7 +27,7 @@ func (r *categoryRepository) FindWithPostCounts(ctx context.Context) ([]model.Ca
 		TableExpr("categories AS c").
 		ColumnExpr("c.*").
 		ColumnExpr("COUNT(p.id) AS posts_count").
-		Join("LEFT JOIN posts AS p ON p.category_id = c.id AND p.status = ?", false).
+		Join("LEFT JOIN posts AS p ON p.category_id = c.id AND p.status = ? AND "+publishedVisibilityExpr, false).
 		GroupExpr("c.id").
 		Having("COUNT(p.id) > 0").
 		OrderExpr("posts_count DESC").

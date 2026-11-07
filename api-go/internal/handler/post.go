@@ -53,20 +53,6 @@ func (h *PostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cookieName := fmt.Sprintf("viewedPostToday%d", post.ID)
-	if _, err := r.Cookie(cookieName); err != nil {
-		if incrementErr := h.posts.IncrementViews(r.Context(), post.ID); incrementErr != nil {
-			h.logger.Error("increment views failed", slog.String("error", incrementErr.Error()))
-		}
-		http.SetCookie(w, &http.Cookie{
-			Name:     cookieName,
-			Value:    time.Now().Format("2006-01-02 15:04:05"),
-			Expires:  time.Now().Add(24 * time.Hour),
-			Path:     "/",
-			HttpOnly: true,
-		})
-	}
-
 	g, ctx := errgroup.WithContext(r.Context())
 
 	var categories []model.CategoryWithCount
@@ -99,6 +85,24 @@ func (h *PostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.logger.Error("post show fetch failed", slog.String("error", err.Error()))
 		RespondError(w, http.StatusInternalServerError, "internal server error")
 		return
+	}
+
+	cookieName := fmt.Sprintf("viewedPostToday%d", post.ID)
+	if _, err := r.Cookie(cookieName); err != nil {
+		viewsCount, incrementErr := h.posts.IncrementViews(r.Context(), post.ID)
+		if incrementErr != nil {
+			h.logger.Error("increment views failed", slog.String("error", incrementErr.Error()))
+		} else {
+			post.ViewsCount = viewsCount
+			w.Header().Set("X-View-Counted", "true")
+			http.SetCookie(w, &http.Cookie{
+				Name:     cookieName,
+				Value:    time.Now().Format("2006-01-02 15:04:05"),
+				Expires:  time.Now().Add(24 * time.Hour),
+				Path:     "/",
+				HttpOnly: true,
+			})
+		}
 	}
 
 	RespondJSON(w, http.StatusOK, postResponse{

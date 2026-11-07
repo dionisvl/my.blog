@@ -1,0 +1,12 @@
+{
+  "description": "A block type outside the catalogue blocks publication.",
+  "mode": "publication",
+  "expect_codes": ["unknown_block_type"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      { "id": "x", "type": "customScript", "props": { "src": "https://evil.example.test/x.js" } }
+    ]
+  }
+}

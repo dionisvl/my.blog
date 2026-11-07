@@ -1,0 +1,134 @@
+---
+import type { CardSelectorProps } from "../../contracts/article-blocks/v1/types";
+
+interface Props extends CardSelectorProps {
+  id: string;
+}
+
+const { id, heading, groupLabel, targetBlockId, defaultOptionId, options, labels } = Astro.props;
+
+const defaultOption = options.find((option) => option.id === defaultOptionId) ?? options[0];
+---
+
+<!--
+  Chooses which product column of the target comparison table is visible on narrow screens.
+  Every dynamic string comes from `labels` (so both languages are translated) and is written with
+  textContent, never innerHTML.
+-->
+<section
+  id={`block-${id}`}
+  class="my-6 card-selector"
+  data-card-selector
+  data-target={`block-${targetBlockId}`}
+  data-default-column={defaultOption?.columnId}
+  data-label-selected={labels.selectedTable}
+  data-label-sticky={labels.stickyCaption}
+  data-label-cta-aria={labels.ctaAria}
+>
+  <h2 class="text-xl font-bold text-white mb-2">{heading}</h2>
+  <div role="group" aria-label={groupLabel} class="flex flex-wrap gap-2">
+    {
+      options.map((option) => (
+        <button
+          type="button"
+          data-column={option.columnId}
+          data-name={option.label}
+          aria-pressed={option.id === defaultOption?.id ? "true" : "false"}
+          class="rounded-full border border-gray-500 px-3 py-1 text-sm text-gray-100 aria-pressed:bg-blue-500 aria-pressed:border-blue-500"
+        >
+          {option.label}
+        </button>
+      ))
+    }
+  </div>
+  <p class="mt-2 text-sm text-gray-300" data-selected-caption aria-live="polite"></p>
+  <p class="mt-1 text-xs text-gray-400">{labels.mobileHint}</p>
+  <a
+    data-selector-cta
+    class="selector-cta mt-3 hidden rounded-md bg-blue-500 px-4 py-2 text-center text-white"
+    target="_blank"
+    rel="noopener noreferrer"
+  ></a>
+</section>
+
+<script>
+  import { fillTemplate } from "../../lib/articles-core";
+
+  function init(root: HTMLElement): void {
+    const table = document.querySelector<HTMLTableElement>(
+      `#${CSS.escape(root.dataset.target ?? "")} table.comparison-table`,
+    );
+    if (!table) return;
+
+    const caption = root.querySelector<HTMLElement>("[data-selected-caption]");
+    const cta = root.querySelector<HTMLAnchorElement>("[data-selector-cta]");
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("button[data-column]"));
+
+    function select(button: HTMLButtonElement): void {
+      const columnId = button.dataset.column ?? "";
+      const name = button.dataset.name ?? "";
+
+      table!.setAttribute("data-selector-active", "");
+      table!.querySelectorAll<HTMLElement>("[data-col]").forEach((cell) => {
+        cell.classList.toggle("is-selected-col", cell.dataset.col === columnId);
+      });
+      buttons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+
+      const source = table!.querySelector<HTMLAnchorElement>(
+        `a[data-cta-for="${CSS.escape(columnId)}"]`,
+      );
+      const ctaLabel = source?.textContent?.trim() ?? "";
+
+      if (caption) {
+        caption.textContent = fillTemplate(root.dataset.labelSelected ?? "", { name, cta: ctaLabel });
+      }
+      if (cta) {
+        if (source) {
+          cta.href = source.href;
+          cta.rel = source.rel;
+          cta.textContent = fillTemplate(root.dataset.labelSticky ?? "", { name, cta: ctaLabel });
+          cta.setAttribute("aria-label", fillTemplate(root.dataset.labelCtaAria ?? "", { name, cta: ctaLabel }));
+          cta.classList.remove("hidden");
+        } else {
+          cta.classList.add("hidden");
+        }
+      }
+      document.body.classList.toggle(
+        "has-card-selector-sticky",
+        Boolean(document.querySelector(".card-selector .selector-cta:not(.hidden)")),
+      );
+    }
+
+    buttons.forEach((button) => button.addEventListener("click", () => select(button)));
+
+    const initial =
+      buttons.find((button) => button.dataset.column === root.dataset.defaultColumn) ?? buttons[0];
+    if (initial) select(initial);
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-card-selector]").forEach(init);
+</script>
+
+<style is:global>
+  .card-selector { display: none; }
+  @media (max-width: 980px) {
+    .card-selector { display: block; }
+    .card-selector [role="group"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    body.has-card-selector-sticky { padding-bottom: 84px; }
+    .card-selector .selector-cta:not(.hidden) {
+      display: flex;
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 40;
+      margin: 0;
+      border-radius: 0;
+      min-height: 52px;
+      justify-content: center;
+      align-items: center;
+      padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+</style>

@@ -1,0 +1,25 @@
+---
+import type { SponsoredDisclosureProps } from "../../contracts/article-blocks/v1/types";
+import { relFor, safeHref } from "../../lib/articles-core";
+
+interface Props extends SponsoredDisclosureProps {
+  id: string;
+}
+
+const { id, text, learnMoreLabel, learnMoreUrl } = Astro.props;
+---
+
+<aside id={`block-${id}`} class="my-6 rounded-md border border-yellow-600 bg-gray-800 p-3 text-sm text-yellow-100" role="note">
+  <span>{text}</span>
+  {
+    learnMoreUrl && learnMoreLabel && (
+      <a
+        href={safeHref(learnMoreUrl)}
+        rel={relFor(false, learnMoreUrl) || undefined}
+        class="ml-1 underline text-yellow-300 hover:text-yellow-200"
+      >
+        {learnMoreLabel}
+      </a>
+    )
+  }
+</aside>

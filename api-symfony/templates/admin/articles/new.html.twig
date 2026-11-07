@@ -1,0 +1,39 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}New modular article{% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>New modular article</h1>
+        </section>
+        <section class="content">
+            {% if errors|length > 0 %}
+                <div class="alert alert-danger">
+                    <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+                </div>
+            {% endif %}
+            <form method="post" action="{{ path('admin_articles_new') }}" class="box box-body">
+                <input type="hidden" name="_token" value="{{ csrf }}">
+                <div class="form-group">
+                    <label for="slug">Slug (latin lower-case words and digits, hyphens)</label>
+                    <input class="form-control" id="slug" name="slug" value="{{ form.slug }}" required maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label for="title">Working title (admin only; the real titles are set per language)</label>
+                    <input class="form-control" id="title" name="title" value="{{ form.title }}" required maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label for="primary_locale">Primary language</label>
+                    <select class="form-control" id="primary_locale" name="primary_locale">
+                        {% for locale in locales %}
+                            <option value="{{ locale }}"{% if form.primary_locale == locale %} selected{% endif %}>{{ locale }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn btn-success" type="submit">Create and open editor</button>
+                <a class="btn btn-default" href="{{ path('admin_articles_index') }}">Cancel</a>
+            </form>
+        </section>
+    </div>
+{% endblock %}

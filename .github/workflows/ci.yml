@@ -12,6 +12,20 @@ jobs:
     env:
       APP_ENV: test
       DEFAULT_URI: http://localhost
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: article_ci
+          POSTGRES_USER: article
+          POSTGRES_PASSWORD: article-ci-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U article -d article_ci"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +34,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
-          extensions: gd, zip, pdo, pdo_sqlite, pdo_mysql, mbstring, curl, xml, bcmath, exif, intl, opcache
+          extensions: gd, zip, pdo, pdo_sqlite, pdo_pgsql, pdo_mysql, mbstring, curl, xml, bcmath, exif, intl, opcache
 
       - name: Copy environment file
         run: cp api-symfony/.env.test api-symfony/.env
@@ -29,9 +43,130 @@ jobs:
         working-directory: api-symfony
         run: composer install --prefer-dist --no-progress --no-interaction
 
-      - name: Run tests
+      - name: Run SQLite tests
         working-directory: api-symfony
+        env:
+          DATABASE_URL: sqlite:///${{ runner.temp }}/article-ci.sqlite
         run: ./vendor/bin/phpunit --testdox
+
+      - name: Create PostgreSQL test database
+        env:
+          PGPASSWORD: article-ci-only
+        run: psql -h 127.0.0.1 -U article -d article_ci -c 'CREATE DATABASE article_ci_test'
+
+      - name: Run PostgreSQL publishing tests
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_ci?serverVersion=17.0.0
+        run: ./vendor/bin/phpunit tests/Functional/ArticlePublisherTest.php --no-progress
+
+      - name: Setup Go for cross-runtime verification
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: api-go/go.mod
+          cache-dependency-path: api-go/go.sum
+
+      - name: Publish fixture with Symfony
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_ci?serverVersion=17.0.0
+        run: ./vendor/bin/phpunit tests/Functional/ArticlePublisherTest.php --filter testPublishMakesTheAnchorVisibleWithEscapedCardFields --no-progress
+
+      - name: Read Symfony publication with Go
+        working-directory: api-go
+        env:
+          ARTICLE_PHP_PUBLISHED_DSN: postgres://article:article-ci-only@127.0.0.1:5432/article_ci_test?sslmode=disable
+        run: go test -count=1 -run '^TestArticles_ConsumePhpPublishedLocale$' ./internal/repository
+
+      # Migrated-schema smoke: baseline schema + real Doctrine migration class, isolated from article_ci_test.
+      # Doctrine's when@test dbname_suffix turns DATABASE_URL base article_migration_ci into article_migration_ci_test.
+      - name: Recreate migrated-schema smoke database
+        env:
+          PGPASSWORD: article-ci-only
+        run: |
+          psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -U article -d article_ci -c 'DROP DATABASE IF EXISTS article_migration_ci_test WITH (FORCE)'
+          psql -X -v ON_ERROR_STOP=1 -h 127.0.0.1 -U article -d article_ci -c 'CREATE DATABASE article_migration_ci_test'
+
+      - name: Restore production baseline into migrated-schema smoke database
+        env:
+          PGPASSWORD: article-ci-only
+        run: |
+          set -euo pipefail
+          baseline=api-go/internal/repository/testdata/prod_baseline.sql
+          converted="$RUNNER_TEMP/prod_baseline.psql.sql"
+          # Only exact "-- @@" lines become ";" terminators; every other line (including comments) is kept verbatim.
+          awk '/^-- @@[ \t]*$/ { print ";"; next } { print } END { print ";" }' "$baseline" > "$converted"
+          psql -X -1 -v ON_ERROR_STOP=1 -h 127.0.0.1 -U article -d article_migration_ci_test -f "$converted"
+
+      - name: Migrate migrated-schema smoke database with Doctrine
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+        run: php bin/console doctrine:migrations:migrate --no-interaction
+
+      - name: Publish migrated-schema smoke fixture with Symfony
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+        run: php tests/Support/article_migrated_schema_smoke.php publish
+
+      - name: Read migrated-schema smoke publication with Go
+        working-directory: api-go
+        env:
+          ARTICLE_PHP_PUBLISHED_DSN: postgres://article:article-ci-only@127.0.0.1:5432/article_migration_ci_test?sslmode=disable
+        run: |
+          set -o pipefail
+          go test -count=1 -v -run '^TestArticles_ConsumePhpPublishedLocale$' ./internal/repository | tee "$RUNNER_TEMP/go-migrated-smoke.log"
+          # The Go test skips silently without the DSN, so require an actual PASS line.
+          grep -q -- '--- PASS: TestArticles_ConsumePhpPublishedLocale ' "$RUNNER_TEMP/go-migrated-smoke.log"
+
+      - name: Unpublish migrated-schema smoke fixture with Symfony
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+        run: php tests/Support/article_migrated_schema_smoke.php unpublish
+
+      - name: Roll back migrated-schema smoke database with Doctrine
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+        run: php bin/console doctrine:migrations:execute --down --no-interaction 'DoctrineMigrations\Version20261102120000'
+
+      - name: Verify migrated-schema smoke rollback
+        env:
+          PGPASSWORD: article-ci-only
+        run: |
+          set -euo pipefail
+          psql_query() {
+            psql -X -A -t -v ON_ERROR_STOP=1 -h 127.0.0.1 -U article -d article_migration_ci_test -c "$1"
+          }
+          # Anchor is hidden (posts.status = true) and still present.
+          test "$(psql_query "SELECT count(*) FROM posts WHERE slug = 'modular-publish' AND status = true")" = 1
+          # DOWN drops post_locales, so the table must be absent.
+          test "$(psql_query "SELECT to_regclass('public.post_locales') IS NULL")" = t
+          # The only migration was rolled back, so no version rows remain.
+          test "$(psql_query "SELECT count(*) FROM doctrine_migration_versions")" = 0
+
+  go-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: api-go/go.mod
+          cache-dependency-path: api-go/go.sum
+
+      - name: Test Go API and PostgreSQL migration
+        working-directory: api-go
+        env:
+          TESTCONTAINERS_RYUK_DISABLED: 'true'
+        run: go test -count=1 ./...
+
+      - name: Vet Go API
+        working-directory: api-go
+        run: go vet ./...
 
   docker-build:
     runs-on: ubuntu-latest

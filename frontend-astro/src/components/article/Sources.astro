@@ -1,0 +1,32 @@
+---
+import type { SourcesProps } from "../../contracts/article-blocks/v1/types";
+import { relFor, safeHref } from "../../lib/articles-core";
+
+interface Props extends SourcesProps {
+  id: string;
+}
+
+const { id, heading, items } = Astro.props;
+---
+
+<section id={`block-${id}`} class="my-8">
+  <h2 class="text-2xl font-bold text-white mb-3">{heading}</h2>
+  <ol class="list-decimal pl-6 text-gray-300 space-y-1">
+    {
+      items.map((item) => (
+        <li id={`source-${id}-${item.id}`}>
+          <a
+            href={safeHref(item.url)}
+            rel={relFor(item.sponsored, item.url) || undefined}
+            target="_blank"
+            class="text-blue-400 hover:text-blue-300"
+          >
+            {item.label}
+          </a>
+          {item.publisher && <span class="text-gray-400"> — {item.publisher}</span>}
+          {item.accessed_at && <time class="text-gray-500 text-xs" datetime={item.accessed_at}> ({item.accessed_at})</time>}
+        </li>
+      ))
+    }
+  </ol>
+</section>
