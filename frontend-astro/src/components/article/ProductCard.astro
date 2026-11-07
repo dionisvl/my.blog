@@ -1,0 +1,53 @@
+---
+import type { ProductCardProps } from "../../contracts/article-blocks/v1/types";
+import { ratingClass, relFor, safeHref } from "../../lib/articles-core";
+
+interface Props extends ProductCardProps {
+  id: string;
+}
+
+const { id, title, badge, tag, summary, bullets = [], rating, cta, secondaryCta, note } = Astro.props;
+---
+
+<article id={`block-${id}`} class="my-6 rounded-lg border border-gray-600 bg-gray-800 p-5">
+  <header class="flex flex-wrap items-center gap-2 mb-2">
+    <h3 class={`text-xl font-semibold ${rating ? ratingClass(rating) : "text-white"}`}>{title}</h3>
+    {badge && <span class="rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white">{badge}</span>}
+    {tag && <span class="rounded-full bg-gray-700 px-2 py-0.5 text-xs text-gray-200">{tag}</span>}
+  </header>
+  {summary && <p class="text-gray-200 mb-3">{summary}</p>}
+  {
+    bullets.length > 0 && (
+      <ul class="list-disc pl-5 text-gray-300 mb-3">
+        {bullets.map((bullet) => <li>{bullet}</li>)}
+      </ul>
+    )
+  }
+  <div class="flex flex-wrap gap-3">
+    {
+      cta && (
+        <a
+          href={safeHref(cta.url)}
+          rel={relFor(cta.sponsored, cta.url) || undefined}
+          target="_blank"
+          class="inline-block bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2"
+        >
+          {cta.label}
+        </a>
+      )
+    }
+    {
+      secondaryCta && (
+        <a
+          href={safeHref(secondaryCta.url)}
+          rel={relFor(secondaryCta.sponsored, secondaryCta.url) || undefined}
+          target="_blank"
+          class="inline-block border border-gray-500 hover:bg-gray-700 text-gray-100 rounded-md px-4 py-2"
+        >
+          {secondaryCta.label}
+        </a>
+      )
+    }
+  </div>
+  {note && <p class="mt-3 text-xs text-gray-400">{note}</p>}
+</article>

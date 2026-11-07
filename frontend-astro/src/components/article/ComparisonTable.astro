@@ -1,0 +1,112 @@
+---
+import type { ComparisonTableProps } from "../../contracts/article-blocks/v1/types";
+import { ratingClass, relFor, safeHref } from "../../lib/articles-core";
+
+interface Props extends ComparisonTableProps {
+  id: string;
+}
+
+const { id, caption, criteriaLabel, legend = [], columns, rows, ctaRow } = Astro.props;
+
+const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, item]));
+---
+
+<section id={`block-${id}`} class="my-8">
+  {
+    legend.length > 0 && (
+      <ul class="flex flex-wrap gap-4 text-sm mb-3" aria-label={caption}>
+        {legend.map((entry) => (
+          <li class={ratingClass(entry.rating)}>
+            <span aria-hidden="true">●</span> {entry.label}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <div class="overflow-x-auto">
+    <table class="comparison-table w-full text-sm border-collapse" data-selectable>
+      <caption class="text-left text-lg font-semibold text-white mb-2">{caption}</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="text-left p-2 border-b border-gray-600 text-gray-300">{criteriaLabel}</th>
+          {
+            columns.map((column) => (
+              <th scope="col" data-col={column.id} class="text-left p-2 border-b border-gray-600 text-white align-top">
+                <div class="font-semibold">
+                  {column.link ? (
+                    <a
+                      href={safeHref(column.link.url)}
+                      rel={relFor(column.link.sponsored, column.link.url) || undefined}
+                      target="_blank"
+                      class="text-blue-400 hover:text-blue-300"
+                    >
+                      {column.name}
+                    </a>
+                  ) : (
+                    column.name
+                  )}
+                </div>
+                {column.subtitle && <div class="text-xs text-gray-400 font-normal">{column.subtitle}</div>}
+              </th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr>
+              <th scope="row" class="text-left p-2 border-b border-gray-700 text-gray-300 font-medium">{row.label}</th>
+              {row.cells.map((cell, index) => (
+                <td data-col={columns[index]?.id} class={`p-2 border-b border-gray-700 align-top ${ratingClass(cell.rating)}`}>
+                  <div>{cell.value}</div>
+                  {cell.note && <div class="text-xs text-gray-400">{cell.note}</div>}
+                </td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+      {
+        ctaRow && (
+          <tfoot>
+            <tr>
+              <th scope="row" class="text-left p-2 text-gray-300 font-medium">{ctaRow.label}</th>
+              {columns.map((column) => {
+                const cta = ctaByColumn.get(column.id);
+                return (
+                  <td data-col={column.id} class="p-2">
+                    {cta && (
+                      <a
+                        href={safeHref(cta.url)}
+                        rel={relFor(cta.sponsored, cta.url) || undefined}
+                        target="_blank"
+                        data-cta-for={column.id}
+                        class={
+                          cta.variant === "primary"
+                            ? "inline-block bg-blue-500 hover:bg-blue-600 text-white rounded-md px-3 py-1.5"
+                            : "inline-block border border-gray-500 hover:bg-gray-700 text-gray-100 rounded-md px-3 py-1.5"
+                        }
+                      >
+                        {cta.label}
+                      </a>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          </tfoot>
+        )
+      }
+    </table>
+  </div>
+</section>
+
+<style is:global>
+  /* On narrow screens a card selector shows one product column at a time. */
+  @media (max-width: 980px) {
+    table.comparison-table[data-selector-active] [data-col]:not(.is-selected-col) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,21 @@
+---
+import type { CustomCodeProps } from "../../contracts/article-blocks/v1/types";
+import { inlineScriptSafe } from "../../lib/articles-core";
+
+interface Props extends CustomCodeProps {
+  id: string;
+}
+
+const { id, html, css, js } = Astro.props;
+---
+
+<!--
+  Owner-authored raw code (first release): emitted as written, not sanitized, not bundled and not
+  scoped. It is plain HTML, CSS and JavaScript with nothing framework-specific, so the latest web
+  platform features can be used. Only a literal "</script" is neutralised so it cannot end the tag.
+-->
+<div id={`block-${id}`} class="custom-code-block">
+  {html && <Fragment set:html={html} />}
+</div>
+{css && <style is:inline set:html={css} />}
+{js && <script is:inline set:html={inlineScriptSafe(js)} />}

@@ -1,0 +1,65 @@
+---
+import type { ArticleBlock } from "../../contracts/article-blocks/v1/types";
+import RichText from "./RichText.astro";
+import ComparisonTable from "./ComparisonTable.astro";
+import ProductCard from "./ProductCard.astro";
+import Faq from "./Faq.astro";
+import CtaBlock from "./CtaBlock.astro";
+import CardSelector from "./CardSelector.astro";
+import Sources from "./Sources.astro";
+import SponsoredDisclosure from "./SponsoredDisclosure.astro";
+import CustomCode from "./CustomCode.astro";
+
+interface Props {
+  blocks: ArticleBlock[];
+}
+
+const { blocks } = Astro.props;
+
+// An unknown block type never reaches here through the publisher; if one does (a newer contract),
+// it is skipped and logged instead of breaking the whole page.
+const KNOWN = new Set([
+  "richText",
+  "comparisonTable",
+  "productCard",
+  "faq",
+  "cta",
+  "cardSelector",
+  "sources",
+  "sponsoredDisclosure",
+  "customCode",
+]);
+
+for (const block of blocks) {
+  if (!KNOWN.has(block.type)) {
+    console.warn(`article: skipping unknown block type "${String(block.type)}"`);
+  }
+}
+---
+
+{
+  blocks.map((block) => {
+    switch (block.type) {
+      case "richText":
+        return <RichText id={block.id} {...block.props} />;
+      case "comparisonTable":
+        return <ComparisonTable id={block.id} {...block.props} />;
+      case "productCard":
+        return <ProductCard id={block.id} {...block.props} />;
+      case "faq":
+        return <Faq id={block.id} {...block.props} />;
+      case "cta":
+        return <CtaBlock id={block.id} {...block.props} />;
+      case "cardSelector":
+        return <CardSelector id={block.id} {...block.props} />;
+      case "sources":
+        return <Sources id={block.id} {...block.props} />;
+      case "sponsoredDisclosure":
+        return <SponsoredDisclosure id={block.id} {...block.props} />;
+      case "customCode":
+        return <CustomCode id={block.id} {...block.props} />;
+      default:
+        return null;
+    }
+  })
+}

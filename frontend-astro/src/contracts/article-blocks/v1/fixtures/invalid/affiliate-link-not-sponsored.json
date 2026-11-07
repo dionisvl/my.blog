@@ -1,0 +1,16 @@
+{
+  "description": "A link to an allow-listed affiliate host must be marked sponsored.",
+  "mode": "draft",
+  "expect_codes": ["affiliate_not_sponsored"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      {
+        "id": "bar",
+        "type": "cta",
+        "props": { "label": "Sign up", "url": "https://partner.example.test/a", "variant": "primary", "sponsored": false }
+      }
+    ]
+  }
+}

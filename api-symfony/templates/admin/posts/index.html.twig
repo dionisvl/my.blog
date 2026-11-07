@@ -56,6 +56,9 @@
                                     {% if post.status %}
                                         <span class="label label-warning" style="margin-left:6px;">Draft</span>
                                     {% endif %}
+                                    {% if post.modular %}
+                                        <span class="label label-info" style="margin-left:6px;">Modular</span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {% if post.category %}
@@ -79,6 +82,7 @@
                                     {% endif %}
                                 </td>
                                 <td>
+                                    {% if not post.modular %}
                                     <a href="{{ path('admin_posts_edit', {id: post.id}) }}">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
@@ -91,6 +95,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
+                                    {% endif %}
 
                                     <a target="_blank" href="{{ path('post_show', {slug: post.slug}) }}">
                                         <i class="fas fa-external-link-alt"></i>

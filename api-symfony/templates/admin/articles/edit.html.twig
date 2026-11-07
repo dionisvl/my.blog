@@ -1,0 +1,91 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}Article {{ post.slug }} ({{ locale }}){% endblock %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>{{ post.slug }} <small>{{ locale|upper }} version</small></h1>
+            <ul class="nav nav-pills" style="margin-top:8px">
+                <li><a href="{{ path('admin_articles_index') }}">← All articles</a></li>
+                {% for l in locales %}
+                    <li{% if l == locale %} class="active"{% endif %}>
+                        <a href="{{ path('admin_articles_edit', {id: post.id, locale: l}) }}">{{ l|upper }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="content">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+            {% for warning in warnings %}
+                <div class="alert alert-warning">{{ warning }}</div>
+            {% endfor %}
+
+            <div id="article-builder">
+                <div class="box">
+                    <div class="box-header with-border"><h3 class="box-title">Article</h3></div>
+                    <div class="box-body">
+                        <div class="form-group"><label for="ab-title">Title</label><input class="form-control" id="ab-title" maxlength="255"></div>
+                        <div class="form-group"><label for="ab-summary">Summary (card text, up to 2000)</label><textarea class="form-control" id="ab-summary" rows="3" maxlength="2000"></textarea></div>
+                        <div class="form-group"><label for="ab-meta-title">SEO title (optional)</label><input class="form-control" id="ab-meta-title" maxlength="255"></div>
+                        <div class="form-group"><label for="ab-meta-description">SEO description (optional, up to 500)</label><textarea class="form-control" id="ab-meta-description" rows="2" maxlength="500"></textarea></div>
+                        <div class="form-group"><label for="ab-verified-at">Facts verified on (YYYY-MM-DD; required with sponsored links)</label><input class="form-control" id="ab-verified-at" placeholder="2026-11-06"></div>
+                    </div>
+                </div>
+
+                <div id="ab-blocks"></div>
+                <p id="ab-editor-warning" class="text-muted" role="status" aria-live="polite"></p>
+
+                <div class="box">
+                    <div class="box-body form-inline">
+                        <select id="ab-add-type" class="form-control" aria-label="Block type"></select>
+                        <button type="button" id="ab-add" class="btn btn-default">+ Add block</button>
+                    </div>
+                </div>
+
+                <div id="ab-issues" class="alert alert-danger" style="display:none" role="alert"></div>
+
+                <div class="box">
+                    <div class="box-body">
+                        <button type="button" id="ab-save" class="btn btn-primary">Save draft</button>
+                        <span id="ab-status" class="text-muted" style="margin:0 12px" role="status" aria-live="polite">
+                            {% if row is null %}Not saved yet{% else %}Saved{% endif %}
+                        </span>
+                        <span class="pull-right">
+                            {% set localePublished = row is not null and row.published %}
+                            State: <strong id="ab-locale-state">{% if row is null %}not started{% elseif localePublished %}published{% else %}draft{% endif %}</strong>
+                            <form method="post" style="display:inline" data-needs-saved data-article-transition
+                                  action="{{ path(localePublished ? 'admin_articles_unpublish' : 'admin_articles_publish', {id: post.id, locale: locale}) }}">
+                                <input type="hidden" name="_token" value="{{ csrf }}">
+                                <button class="btn {{ localePublished ? 'btn-warning' : 'btn-success' }}" type="submit"{% if row is null %} disabled{% endif %}>
+                                    {{ localePublished ? 'Unpublish' : 'Publish' }}
+                                </button>
+                            </form>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script type="application/json" id="article-initial">{{ {
+        locale: locale,
+        csrf: csrf,
+        saveUrl: path('admin_articles_save', {id: post.id, locale: locale}),
+        initial: initial,
+        labels: {
+            add: 'Add', enable: 'Enabled', up: 'Move up', down: 'Move down', remove: 'Remove',
+            confirmRemove: 'Remove this item?', empty: 'No blocks yet. Add the first block below.',
+            unknownBlock: 'Unknown block type: it is kept as is, but cannot be edited here.',
+            unsaved: 'Unsaved changes', saved: 'Saved', notSaved: 'Not saved',
+            network: 'Network error, nothing was saved.', saveFirst: 'Save the draft first.',
+            savedWithChanges: 'Saved snapshot; newer edits are still unsaved.', editorUnavailable: 'Rich text editor did not load; check connection and reload before editing.'
+        }
+    }|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT'))|raw }}</script>
+    <script src="/admin-assets/js/article-builder.js"></script>
+{% endblock %}

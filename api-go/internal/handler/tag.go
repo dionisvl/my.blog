@@ -45,7 +45,7 @@ func (h *TagHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	page := PageFromQuery(r, 1)
 	const perPage = 10
 
-	posts, total, err := h.posts.FindPublishedByTagSlugPaginated(r.Context(), slug, page, perPage)
+	posts, total, err := h.posts.FindPublishedByTagSlugPaginated(requestContext(r), slug, page, perPage)
 	if err != nil {
 		h.logger.Error("tag posts fetch failed", slog.String("error", err.Error()))
 		RespondError(w, http.StatusInternalServerError, "internal server error")

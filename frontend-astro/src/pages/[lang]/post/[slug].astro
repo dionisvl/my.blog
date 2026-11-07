@@ -1,0 +1,310 @@
+---
+export const prerender = false;
+
+import Layout from "../../../layouts/Layout.astro";
+import Sidebar from "../../../components/Sidebar.astro";
+import BlockRenderer from "../../../components/article/BlockRenderer.astro";
+import { ApiClientError } from "../../../lib/api";
+import { getArticleLocale, recordArticleView, resolveArticle } from "../../../lib/articles";
+import type { ArticleLocaleResponse } from "../../../lib/articles";
+import {
+  buildAlternates,
+  formatLongDate,
+  isArticleLocale,
+  planMissingLocaleRedirect,
+  relativeTime,
+} from "../../../lib/articles-core";
+import { messagesFor } from "../../../lib/i18n";
+import { absoluteUrl } from "../../../lib/url";
+
+const { lang, slug } = Astro.params;
+
+// Only ru and en exist; any other prefix is not a page.
+if (!isArticleLocale(lang) || !slug) {
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
+}
+
+function redirectTo(status: 301 | 302, location: string): Response {
+  const response = Astro.redirect(location, status);
+  // The target depends on what is published right now, so it must not be cached.
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+let data: ArticleLocaleResponse;
+try {
+  data = await getArticleLocale(slug, lang);
+} catch (error) {
+  if (!(error instanceof ApiClientError) || error.status !== 404) {
+    throw error;
+  }
+
+  // The requested language is not published: send the reader to what exists, or give a 404.
+  let plan = null;
+  try {
+    plan = planMissingLocaleRedirect(await resolveArticle(slug), lang);
+  } catch (resolveError) {
+    if (!(resolveError instanceof ApiClientError) || resolveError.status !== 404) {
+      throw resolveError;
+    }
+  }
+  if (plan) {
+    return redirectTo(plan.status, plan.location);
+  }
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
+}
+
+const viewCookieName = `viewedPostToday${data.post.id}`;
+if (!Astro.cookies.get(viewCookieName)) {
+  try {
+    const viewResult = await recordArticleView(slug);
+    if (viewResult.post) data.post.views_count = viewResult.post.views_count;
+    if (viewResult.counted && viewResult.post) {
+      Astro.cookies.set(viewCookieName, new Date().toISOString(), {
+        path: "/",
+        maxAge: 24 * 60 * 60,
+        httpOnly: true,
+        secure: Astro.url.protocol === "https:",
+        sameSite: "lax",
+      });
+    }
+  } catch {
+    // Counting is best-effort; a counter failure must not take down the published article.
+  }
+}
+Astro.response.headers.set("Cache-Control", "private, no-store");
+Astro.response.headers.set("Vary", "Cookie");
+
+const m = messagesFor(lang);
+const { post, article } = data;
+const canonicalPath = `/${lang}/post/${post.slug}`;
+const description = (article.meta_description || article.summary || "").trim();
+const title = `${article.meta_title || article.title} - ${m.article.siteSuffix}`;
+const alternates = buildAlternates(data.locales);
+
+const shareUrl = encodeURIComponent(absoluteUrl(canonicalPath));
+const shareTitle = encodeURIComponent(article.title);
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={post.image_url ? absoluteUrl(post.image_url) : undefined}
+  ogType="article"
+  canonical={absoluteUrl(canonicalPath)}
+  lang={lang}
+  alternates={alternates}
+  articleSlug={slug}
+>
+  <div class="w-full md:w-3/4 pr-0 md:pr-6">
+    <article
+      class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700"
+      lang={lang}
+    >
+      <div class="p-6">
+        <header class="text-center mb-6">
+          {
+            post.category && (
+              <h6 class="text-sm mb-2">
+                <a href={`/category/${post.category.slug}`} class="text-blue-500 hover:text-blue-700">
+                  {post.category.title}
+                </a>
+              </h6>
+            )
+          }
+          <h1 class="text-3xl font-bold text-white mb-2">{article.title}</h1>
+          {article.summary && <p class="text-gray-300">{article.summary}</p>}
+        </header>
+
+        <div class="article-blocks">
+          <BlockRenderer blocks={article.document.blocks} />
+        </div>
+
+        {
+          data.aphorism && (
+            <div class="mt-8">
+              <h4 class="font-semibold mb-2 text-white">{m.article.quoteOfTheDay}</h4>
+              <div class="border-2 rounded-sm p-2 m-2 flex items-center bg-gray-700 text-white">
+                {data.aphorism.text}
+              </div>
+            </div>
+          )
+        }
+
+        {
+          post.tags && post.tags.length > 0 && (
+            <div class="flex flex-wrap mt-6 mb-4">
+              {post.tags.map((tag) => (
+                <a
+                  href={`/tag/${tag.slug}`}
+                  class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-sm mr-2 mb-2 transition text-white"
+                >
+                  {tag.title}
+                </a>
+              ))}
+            </div>
+          )
+        }
+
+        <div class="flex justify-between items-center text-sm text-gray-400 pt-4 border-t border-gray-700">
+          <span>
+            {
+              post.author && (
+                <>
+                  {m.article.by} <span class="text-gray-300">{post.author.name}</span>{" "}
+                </>
+              )
+            }
+            {m.article.on} <b>{formatLongDate(article.published_at, lang)}</b>
+          </span>
+
+          <div class="flex items-center">
+            <span class="flex items-center mr-4">{post.views_count}</span>
+            <a
+              class="flex items-center w-full sm:w-auto group"
+              onclick="Likes.toggle(this,event);"
+              data-post_id={post.id}
+              href="#"
+              title="Like"
+            >
+              <i class="far fa-heart text-red-500 mr-1 heart-icon transition-transform duration-500"></i>
+              <span class="like_button_count transition-colors duration-500 group-hover:text-blue-400">
+                {post.likes_count}
+              </span>
+            </a>
+
+            <div class="ml-4 flex items-center space-x-2">
+              <a
+                href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-gray-400 hover:text-blue-400 transition-colors"
+                title={m.article.shareTelegram}
+                aria-label={m.article.shareTelegram}
+              >
+                <i class="fab fa-telegram" aria-hidden="true"></i>
+              </a>
+              <a
+                href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-gray-400 hover:text-blue-400 transition-colors"
+                title={m.article.shareX}
+                aria-label={m.article.shareX}
+              >
+                <i class="fab fa-twitter" aria-hidden="true"></i>
+              </a>
+              <a
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-gray-400 hover:text-blue-400 transition-colors"
+                title={m.article.shareLinkedIn}
+                aria-label={m.article.shareLinkedIn}
+              >
+                <i class="fab fa-linkedin" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <div class="mt-8">
+      {
+        post.comments?.map((comment) => (
+          <div class="bg-gray-800 p-4 mb-4 rounded-lg border border-gray-700 flex">
+            <div class="mr-4 flex-shrink-0">
+              <img
+                class="rounded-full w-12 h-12 object-cover"
+                src="/storage/blog_images/comment.jpg"
+                alt={comment.author_name}
+              />
+            </div>
+            <div>
+              <h5 class="font-semibold text-white">{comment.author_name}</h5>
+              <p class="text-xs text-gray-400 mb-2">{relativeTime(comment.created_at, lang)}</p>
+              <p class="text-gray-300">{comment.text}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="bg-gray-800 p-6 mt-8 rounded-lg border border-gray-700">
+      <h4 class="text-xl font-semibold mb-4 text-white">{m.article.leaveReply}</h4>
+
+      <div id="comment-flash"></div>
+
+      <form
+        class="w-full"
+        role="form"
+        method="post"
+        action="/api/comment"
+        id="comment-form"
+        data-soon={m.article.commentSoon}
+        data-failed={m.article.commentFailed}
+      >
+        <input type="hidden" name="post_id" value={post.id} />
+        <div class="mb-4">
+          <input type="text" name="honeypot" value="" style="display:none;" />
+          <input type="hidden" class="countMe" name="countMe" value="0" />
+
+          <textarea
+            required
+            class="w-full border border-gray-600 bg-gray-700 text-white rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+            rows="4"
+            name="message"
+            placeholder={m.article.writeComment}
+            onkeyup="count_keyup()"></textarea>
+        </div>
+        <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition duration-200 font-medium">
+          {m.article.postComment}
+        </button>
+      </form>
+
+      <script>
+        const form = document.getElementById("comment-form") as HTMLFormElement | null;
+        const flashDiv = document.getElementById("comment-flash");
+
+        function flash(kind: "ok" | "error", text: string): void {
+          if (!flashDiv) return;
+          const box = document.createElement("div");
+          box.className = `${kind === "ok" ? "bg-green-500" : "bg-red-500"} text-white p-3 rounded mb-4`;
+          box.textContent = text;
+          flashDiv.replaceChildren(box);
+        }
+
+        if (form) {
+          form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            try {
+              const response = await fetch("/api/comment", { method: "POST", body: new FormData(form) });
+              const result = await response.json().catch(() => ({}));
+              if (response.ok) {
+                flash("ok", result.message || form.dataset.soon || "");
+                form.reset();
+                form
+                  .querySelectorAll<HTMLInputElement>('input[name="countMe"]')
+                  .forEach((input) => (input.value = "0"));
+              } else {
+                flash("error", result.message || form.dataset.failed || "");
+              }
+            } catch {
+              flash("error", form.dataset.failed || "");
+            }
+          });
+        }
+      </script>
+    </div>
+  </div>
+
+  <Sidebar
+    categories={data.categories}
+    featuredPosts={data.featured_posts}
+    recentPosts={data.recent_posts}
+    lang={lang}
+  />
+</Layout>

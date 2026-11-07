@@ -1,17 +1,22 @@
 ---
 import LazyImage from "./LazyImage.astro";
 import type { CategoryWithCount, Post } from "../lib/types";
+import type { ArticleLocale } from "../contracts/article-blocks/v1/types";
+import { messagesFor } from "../lib/i18n";
+import { intlLocale } from "../lib/articles-core";
 
 interface Props {
   categories: CategoryWithCount[];
   featuredPosts: Post[];
   recentPosts: Post[];
+  lang?: ArticleLocale;
 }
 
-const { categories, featuredPosts, recentPosts } = Astro.props;
+const { categories, featuredPosts, recentPosts, lang = "en" } = Astro.props;
+const m = messagesFor(lang);
 
 function formatPostDate(createdAt: string): string {
-  return new Date(createdAt).toLocaleDateString("en-US", {
+  return new Date(createdAt).toLocaleDateString(intlLocale(lang), {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -24,7 +29,7 @@ function formatPostDate(createdAt: string): string {
     <!-- Categories Widget -->
     <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
       <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">
-        Categories
+        {m.sidebar.categories}
       </h3>
       <ul class="space-y-2">
         {
@@ -46,7 +51,7 @@ function formatPostDate(createdAt: string): string {
     <!-- Featured Posts Widget -->
     <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
       <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">
-        Featured Posts
+        {m.sidebar.featured}
       </h3>
 
       <div class="space-y-4">
@@ -93,7 +98,7 @@ function formatPostDate(createdAt: string): string {
     <!-- Recent Posts Widget -->
     <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
       <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">
-        Recent Posts
+        {m.sidebar.recent}
       </h3>
       <div class="space-y-4">
         {

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "locale": "en",
+  "blocks": [
+    {
+      "id": "body",
+      "type": "richText",
+      "props": {
+        "html": "<h2>Heading</h2><p>A short <em>English-only</em> article with one block and no sponsored links.</p>"
+      }
+    }
+  ]
+}

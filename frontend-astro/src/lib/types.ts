@@ -1,3 +1,9 @@
+import type {
+  ArticleLocale,
+  LocaleLink,
+  RouteMode,
+} from "../contracts/article-blocks/v1/types";
+
 export interface User {
   id: number;
   name: string;
@@ -56,6 +62,12 @@ export interface Post {
   category?: Category;
   tags?: Tag[];
   comments?: Comment[];
+  // Additive fields (modular articles); absent or "legacy_canonical" for existing posts.
+  route_mode?: RouteMode;
+  original_locale?: ArticleLocale;
+  primary_locale?: ArticleLocale;
+  /** Published locales of a modular article (card links). */
+  locales?: LocaleLink[];
 }
 
 export interface Pagination {

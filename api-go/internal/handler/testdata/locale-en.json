@@ -1,0 +1,36 @@
+{
+  "contract_version": 1,
+  "post": {
+    "id": 7,
+    "title": "Карты",
+    "slug": "cards",
+    "is_featured": false,
+    "views_count": 0,
+    "created_at": "2026-10-29T10:00:00Z",
+    "updated_at": "2026-10-29T10:00:00Z",
+    "route_mode": "neutral",
+    "image_url": "",
+    "likes_count": 0,
+    "locales": [
+      {"locale": "ru", "url": "/ru/post/cards", "title": "Карты", "published_at": "2026-10-29T10:00:00Z"},
+      {"locale": "en", "url": "/en/post/cards", "title": "Cards", "published_at": "2026-10-29T10:00:00Z"}
+    ]
+  },
+  "article": {
+    "locale": "en",
+    "schema_version": 1,
+    "published_at": "2026-10-29T10:00:00Z",
+    "title": "Cards",
+    "summary": "Plain summary",
+    "meta_title": null,
+    "meta_description": null,
+    "document": {"schema_version": 1, "locale": "en", "blocks": [{"id": "body", "type": "richText", "props": {"html": "<p>Hi</p>"}}]}
+  },
+  "locales": [
+    {"locale": "ru", "url": "/ru/post/cards", "title": "Карты", "published_at": "2026-10-29T10:00:00Z"},
+    {"locale": "en", "url": "/en/post/cards", "title": "Cards", "published_at": "2026-10-29T10:00:00Z"}
+  ],
+  "featured_posts": [],
+  "recent_posts": [],
+  "categories": []
+}

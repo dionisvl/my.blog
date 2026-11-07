@@ -1,0 +1,16 @@
+{
+  "description": "Only http(s) and site-relative URLs are allowed, even in drafts.",
+  "mode": "draft",
+  "expect_codes": ["url_scheme_not_allowed"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      {
+        "id": "bar",
+        "type": "cta",
+        "props": { "label": "Go", "url": "javascript:alert(1)", "variant": "primary", "sponsored": false }
+      }
+    ]
+  }
+}

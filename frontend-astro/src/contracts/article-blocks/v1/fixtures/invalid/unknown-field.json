@@ -1,0 +1,12 @@
+{
+  "description": "Unknown properties are rejected, so arbitrary script or style props cannot be smuggled in.",
+  "mode": "draft",
+  "expect_codes": ["unknown_field"],
+  "document": {
+    "schema_version": 1,
+    "locale": "en",
+    "blocks": [
+      { "id": "body", "type": "richText", "props": { "html": "<p>Hi</p>", "css": "body{display:none}" } }
+    ]
+  }
+}

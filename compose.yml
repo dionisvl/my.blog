@@ -221,3 +221,4 @@ volumes:
   postgres_data:
   victoria_logs_data:
   astro_node_modules:
+  geoip_data:

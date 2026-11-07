@@ -20,6 +20,9 @@ importers:
       dayjs:
         specifier: ^1.11.23
         version: 1.11.23
+      maxmind:
+        specifier: ^5.0.8
+        version: 5.0.8
       tailwindcss:
         specifier: ^4.3.3
         version: 4.3.3
@@ -1673,6 +1676,10 @@ packages:
   magicast@0.5.5:
     resolution: {integrity: sha512-UicdXN8zQ3JHlxVq+28afMXPr1z7WNY6+7EJnzTdQWkTAlMLF5fNCCKxJHBQwGaNGR11581EiQmQzx73+MvszA==}
 
+  maxmind@5.0.8:
+    resolution: {integrity: sha512-M8iv2u1rZG27NiJGYO4q2JUCafvenr8KGUyCkQxh4nMrSLu+tUNGeoX0Ys6FjGRSw6cof5ED1+/003zzPBkfjw==}
+    engines: {node: '>=12', npm: '>=6'}
+
   mdast-util-to-hast@13.2.1:
     resolution: {integrity: sha512-cctsq2wp5vTsLIcaymblUriiTcZd0CwWtCbLvrOzYCDZoWyMNV8sZ7krj09FSnsiJi3WVsHLM4k6Dq/yaPyCXA==}
 
@@ -1716,6 +1723,10 @@ packages:
   minimatch@10.2.6:
     resolution: {integrity: sha512-vpLQEs+VLCr1nU0BXS07maYoFwlDAH0gngQuuttxIwutDFEMHq2blX+8vpgxDdK3J1PwjCJiep77OitTZ4Ll1A==}
     engines: {node: 18 || 20 || >=22}
+
+  mmdb-lib@3.0.3:
+    resolution: {integrity: sha512-xQPoBXcNjjHiOvOraFBKtA++uNWF6aCVHL9dRKFXEov8eI3QJwtgiw3qApsonFT5SpoqsEVISUTg3HIDs2DiXw==}
+    engines: {node: '>=10', npm: '>=6'}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -2080,6 +2091,10 @@ packages:
 
   tiny-inflate@1.0.3:
     resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
+
+  tiny-lru@13.1.1:
+    resolution: {integrity: sha512-5yPLGQspKXPoVMbUj+o/JWV3FJA1WdQAtU7CWvHb+B+RSInhzGs+W2H6FOt3Z0uNnf2DC8BJExJa7AWPW1bzFw==}
+    engines: {node: '>=14'}
 
   tinyclip@1.0.3:
     resolution: {integrity: sha512-nTv2raKFMzGG6JJp0lpNDsRPdfFE6UHlu2rVEjXo8vkx1ZS3LW2CVXqIaLu8xZlu+6tbFs9V58Qc/Jmk/Ii7wA==}
@@ -4039,6 +4054,11 @@ snapshots:
       '@babel/types': 7.29.8
       source-map-js: 1.2.2
 
+  maxmind@5.0.8:
+    dependencies:
+      mmdb-lib: 3.0.3
+      tiny-lru: 13.1.1
+
   mdast-util-to-hast@13.2.1:
     dependencies:
       '@types/hast': 3.0.5
@@ -4088,6 +4108,8 @@ snapshots:
   minimatch@10.2.6:
     dependencies:
       brace-expansion: 5.0.12
+
+  mmdb-lib@3.0.3: {}
 
   mrmime@2.0.1: {}
 
@@ -4435,6 +4457,8 @@ snapshots:
   tapable@2.3.3: {}
 
   tiny-inflate@1.0.3: {}
+
+  tiny-lru@13.1.1: {}
 
   tinyclip@1.0.3: {}
 

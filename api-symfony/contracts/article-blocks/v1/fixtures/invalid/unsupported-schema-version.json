@@ -1,0 +1,12 @@
+{
+  "description": "Only schema_version 1 exists.",
+  "mode": "draft",
+  "expect_codes": ["unsupported_schema_version"],
+  "document": {
+    "schema_version": 2,
+    "locale": "en",
+    "blocks": [
+      { "id": "body", "type": "richText", "props": { "html": "<p>Hi</p>" } }
+    ]
+  }
+}

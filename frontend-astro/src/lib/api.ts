@@ -60,8 +60,12 @@ async function apiFetch<T>(
 
 // ---- Read endpoints ----
 
-export function getHome(page = 1): Promise<HomeResponse> {
-  return apiFetch<HomeResponse>(`/api/?page=${page}`);
+function langQuery(lang?: string): string {
+  return lang ? `&lang=${encodeURIComponent(lang)}` : "";
+}
+
+export function getHome(page = 1, lang?: string): Promise<HomeResponse> {
+  return apiFetch<HomeResponse>(`/api/?page=${page}${langQuery(lang)}`);
 }
 
 export function getPost(
@@ -75,20 +79,20 @@ export function getPost(
   );
 }
 
-export function getTag(slug: string, page = 1): Promise<TagResponse> {
+export function getTag(slug: string, page = 1, lang?: string): Promise<TagResponse> {
   return apiFetch<TagResponse>(
-    `/api/tag/${encodeURIComponent(slug)}?page=${page}`,
+    `/api/tag/${encodeURIComponent(slug)}?page=${page}${langQuery(lang)}`,
   );
 }
 
-export function getCategory(slug: string, page = 1): Promise<CategoryResponse> {
+export function getCategory(slug: string, page = 1, lang?: string): Promise<CategoryResponse> {
   return apiFetch<CategoryResponse>(
-    `/api/category/${encodeURIComponent(slug)}?page=${page}`,
+    `/api/category/${encodeURIComponent(slug)}?page=${page}${langQuery(lang)}`,
   );
 }
 
-export function search(q: string): Promise<SearchResponse> {
-  return apiFetch<SearchResponse>(`/api/search?q=${encodeURIComponent(q)}`);
+export function search(q: string, lang?: string): Promise<SearchResponse> {
+  return apiFetch<SearchResponse>(`/api/search?q=${encodeURIComponent(q)}${langQuery(lang)}`);
 }
 
 // ---- Write endpoints (called from Astro API routes) ----

@@ -44,8 +44,9 @@ func main() {
 	postLikeRepo := repository.NewPostLikeRepository(db)
 	incomingRepo := repository.NewIncomingRepository(db)
 	subscriptionRepo := repository.NewSubscriptionRepository(db)
+	articleRepo := repository.NewArticleRepository(db)
 
-	router := server.NewRouter(logger, cfg, postRepo, categoryRepo, tagRepo, aphorismRepo, commentRepo, postLikeRepo, incomingRepo, subscriptionRepo)
+	router := server.NewRouter(logger, cfg, postRepo, categoryRepo, tagRepo, aphorismRepo, commentRepo, postLikeRepo, incomingRepo, subscriptionRepo, articleRepo)
 
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", cfg.Server.Port),

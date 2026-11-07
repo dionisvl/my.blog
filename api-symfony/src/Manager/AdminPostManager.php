@@ -14,6 +14,7 @@ use App\Service\FileValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -42,6 +43,9 @@ final readonly class AdminPostManager
         }
 
         $slug = $this->slugger->slug($payload->title)->lower()->toString();
+        if (null !== $this->entityManager->getRepository(Post::class)->findOneBy(['slug' => $slug])) {
+            throw new ConflictHttpException('A post with this URL slug already exists.');
+        }
         $post->setSlug($slug);
 
         return $this->applyPayload($post, $payload);
@@ -107,12 +111,26 @@ final readonly class AdminPostManager
 
     public function update(Post $post, AdminPostPayload $payload): Post
     {
+        $this->assertLegacy($post);
+
         return $this->applyPayload($post, $payload);
     }
 
     public function delete(Post $post): void
     {
+        $this->assertLegacy($post);
+
         $this->entityManager->remove($post);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Second line of defence behind the controller guard: modular anchors are owned by ArticlePublisher.
+     */
+    private function assertLegacy(Post $post): void
+    {
+        if ($post->isModular()) {
+            throw new \LogicException('Modular article anchors cannot be changed through the legacy post manager.');
+        }
     }
 }

@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "locale": "ru",
+  "verified_at": "2026-10-29",
+  "blocks": [
+    {
+      "id": "intro",
+      "type": "richText",
+      "props": {
+        "variant": "lead",
+        "html": "<p>Тестовая статья со сравнением трёх <strong>вымышленных</strong> платёжных карт. Все цифры ниже — заглушки, а не реальные тарифы.</p>"
+      }
+    },
+    {
+      "id": "disclosure",
+      "type": "sponsoredDisclosure",
+      "props": {
+        "text": "Часть ссылок на этой странице спонсорские: автор может получить вознаграждение, если вы оформите карту по ним. Текст-заглушка только для контрактных тестов.",
+        "learnMoreLabel": "Как мы выбираем",
+        "learnMoreUrl": "/contacts"
+      }
+    },
+    {
+      "id": "picker",
+      "type": "cardSelector",
+      "props": {
+        "heading": "Сравнить карту",
+        "groupLabel": "Выберите карту",
+        "targetBlockId": "compare",
+        "defaultOptionId": "opt-beta",
+        "options": [
+          {
+            "id": "opt-alpha",
+            "label": "Alpha Card",
+            "columnId": "alpha"
+          },
+          {
+            "id": "opt-beta",
+            "label": "Beta Card",
+            "columnId": "beta"
+          },
+          {
+            "id": "opt-gamma",
+            "label": "Gamma Card",
+            "columnId": "gamma"
+          }
+        ],
+        "labels": {
+          "selectedTable": "Условия карты {name}",
+          "stickyCaption": "Условия и оформление",
+          "ctaAria": "{cta} — {name}",
+          "mobileHint": "Выберите карту выше — условия показаны без горизонтальной прокрутки."
+        }
+      }
+    },
+    {
+      "id": "compare",
+      "type": "comparisonTable",
+      "props": {
+        "caption": "Сравнение трёх вымышленных карт",
+        "criteriaLabel": "Критерий",
+        "legend": [
+          {
+            "rating": "good",
+            "label": "выгодно / хорошо"
+          },
+          {
+            "rating": "mixed",
+            "label": "средне, есть нюансы"
+          },
+          {
+            "rating": "bad",
+            "label": "дорого / рискованно"
+          }
+        ],
+        "columns": [
+          {
+            "id": "alpha",
+            "name": "Alpha Card",
+            "subtitle": "Условный эмитент A",
+            "link": {
+              "url": "https://partner.example.test/alpha?ref=fixture",
+              "sponsored": true
+            }
+          },
+          {
+            "id": "beta",
+            "name": "Beta Card",
+            "subtitle": "Условный эмитент B",
+            "link": {
+              "url": "https://partner.example.test/beta?ref=fixture",
+              "sponsored": true
+            }
+          },
+          {
+            "id": "gamma",
+            "name": "Gamma Card",
+            "subtitle": "Условный эмитент C"
+          }
+        ],
+        "rows": [
+          {
+            "id": "issue",
+            "label": "Выпуск карты",
+            "cells": [
+              {
+                "rating": "good",
+                "value": "Бесплатно",
+                "note": "Только виртуальная (заглушка)"
+              },
+              {
+                "rating": "good",
+                "value": "Бесплатно"
+              },
+              {
+                "rating": "mixed",
+                "value": "Платно",
+                "note": "Цена зависит от региона (заглушка)"
+              }
+            ]
+          },
+          {
+            "id": "fee",
+            "label": "Комиссия за платёж",
+            "cells": [
+              {
+                "rating": "mixed",
+                "value": "1% + 0,1 USD"
+              },
+              {
+                "rating": "good",
+                "value": "0%"
+              },
+              {
+                "rating": "bad",
+                "value": "3%",
+                "note": "Включая курсовой спред (заглушка)"
+              }
+            ]
+          }
+        ],
+        "ctaRow": {
+          "label": "Оформить",
+          "items": [
+            {
+              "columnId": "alpha",
+              "label": "Получить Alpha Card",
+              "url": "https://partner.example.test/alpha?ref=fixture",
+              "variant": "primary",
+              "sponsored": true
+            },
+            {
+              "columnId": "beta",
+              "label": "Получить Beta Card",
+              "url": "https://partner.example.test/beta?ref=fixture",
+              "variant": "primary",
+              "sponsored": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pick",
+      "type": "productCard",
+      "props": {
+        "badge": "Выбор для теста",
+        "title": "Beta Card",
+        "bullets": [
+          "Выпуск бесплатно",
+          "Комиссии за платёж нет",
+          "Работает с кошельками (заглушка)"
+        ],
+        "rating": "good",
+        "cta": {
+          "label": "Получить Beta Card",
+          "url": "https://partner.example.test/beta?ref=fixture",
+          "variant": "primary",
+          "sponsored": true
+        },
+        "secondaryCta": {
+          "label": "Или прочитать про Alpha",
+          "url": "/ru/post/fixture-alpha",
+          "variant": "ghost",
+          "sponsored": false
+        },
+        "note": "Регистрация занимает несколько минут (заглушка)."
+      }
+    },
+    {
+      "id": "advice",
+      "type": "richText",
+      "props": {
+        "variant": "callout",
+        "html": "<p><b>Совет.</b> Все эти карты предоплаченные: деньги лежат у сервиса. Держите <a href=\"https://docs.example.test/prepaid\" rel=\"noopener\" target=\"_blank\">резервную карту</a> другого эмитента.</p>"
+      }
+    },
+    {
+      "id": "faq",
+      "type": "faq",
+      "props": {
+        "heading": "Частые вопросы",
+        "items": [
+          {
+            "id": "q-verify",
+            "question": "Нужна ли верификация?",
+            "answerHtml": "<p>Ответ-заглушка с <em>выделением</em>.</p>"
+          },
+          {
+            "id": "q-first",
+            "question": "Какую карту оформить первой?",
+            "answerHtml": "<p>Ответ-заглушка.</p><ul><li>Пункт один</li><li>Пункт два</li></ul>"
+          }
+        ]
+      }
+    },
+    {
+      "id": "bar",
+      "type": "cta",
+      "props": {
+        "title": "Beta Card",
+        "text": "бесплатно · без комиссии за платёж",
+        "label": "Оформить",
+        "url": "https://partner.example.test/beta?ref=fixture",
+        "variant": "primary",
+        "sponsored": true,
+        "sticky": true
+      }
+    },
+    {
+      "id": "refs",
+      "type": "sources",
+      "props": {
+        "heading": "Источники",
+        "items": [
+          {
+            "id": "s1",
+            "label": "Страница тарифов условного эмитента",
+            "url": "https://docs.example.test/tariffs",
+            "publisher": "Example Issuer",
+            "accessed_at": "2026-10-29"
+          },
+          {
+            "id": "s2",
+            "label": "Условный обзор",
+            "url": "https://docs.example.test/review"
+          }
+        ]
+      }
+    },
+    {
+      "id": "owner-widget",
+      "type": "customCode",
+      "props": {
+        "html": "<div class=\"owner-widget\" data-note=\"Произвольный блок владельца\">Widget</div>",
+        "css": ".owner-widget { margin: 1rem 0; }",
+        "js": "document.querySelectorAll('.owner-widget').forEach(function (el) { el.dataset.ready = '1'; });"
+      }
+    }
+  ]
+}

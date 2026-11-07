@@ -8,6 +8,18 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     app.secure_cookies: '%env(bool:APP_SECURE_COOKIES)%'
+    # Hosts (no referral codes) of the existing affiliate destinations. Promotional links to these hosts must be
+    # marked `sponsored`; clean help-center citations in the `sources` block are the documented exception.
+    app.article.affiliate_hosts:
+        - bybit.com
+        - pionex.com
+        - platipomiru.com
+        - flexcard.cards
+
+when@test:
+    parameters:
+        app.article.affiliate_hosts:
+            - partner.example.test
 
 services:
     # default configuration for services in *this* file

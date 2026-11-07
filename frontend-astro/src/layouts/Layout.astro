@@ -1,7 +1,11 @@
 ---
 import { PUBLIC_SITE_URL } from "astro:env/client";
 import type { Post } from "../lib/types";
+import type { ArticleLocale } from "../contracts/article-blocks/v1/types";
+import { LANGUAGE_LABELS, messagesFor } from "../lib/i18n";
+import { parseLanguagePreference } from "../lib/language-choice";
 import { absoluteUrl, canonicalFor } from "../lib/url";
+import { isGeoIpLocaleRoutingEnabled } from "../lib/geoip-config";
 import "../styles/global.css";
 
 interface Props {
@@ -11,6 +15,12 @@ interface Props {
   ogType?: string;
   canonical?: string;
   footerPost?: Post;
+  /** Page language; the old site pages stay English. */
+  lang?: ArticleLocale;
+  /** Mutual hreflang links of the published language versions (site-relative paths). */
+  alternates?: { hreflang: string; path: string }[];
+  /** Set on article pages so the language switcher can open the same article in another language. */
+  articleSlug?: string;
 }
 
 const {
@@ -20,7 +30,24 @@ const {
   ogType = "website",
   canonical,
   footerPost,
+  lang = "en",
+  alternates = [],
+  articleSlug,
 } = Astro.props;
+
+const m = messagesFor(lang);
+
+// Article pages offer only the languages that article is published in; other pages offer every site language.
+const switcherLocales = (
+  articleSlug
+    ? alternates.map((alt) => alt.hreflang).filter((code) => code in LANGUAGE_LABELS)
+    : Object.keys(LANGUAGE_LABELS)
+) as ArticleLocale[];
+const switcherCurrent: ArticleLocale = articleSlug
+  ? lang
+  : (parseLanguagePreference(Astro.request.headers.get("cookie")) ?? "en");
+const switcherNext = Astro.url.pathname + Astro.url.search;
+const showGeoIpAttribution = isGeoIpLocaleRoutingEnabled();
 
 const siteHost = Astro.url.hostname || "web3main.pro";
 const siteUrl = PUBLIC_SITE_URL || `https://${siteHost}`;
@@ -29,8 +56,7 @@ const orgName = "Web3main LLC";
 const orgEmail = `info@${siteHost}`;
 const orgPhone = "+123 456 78900";
 const orgLogo = absoluteUrl("/storage/blog_images/logo.png");
-const defaultDescription =
-  "Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.";
+const defaultDescription = m.defaultDescription;
 const metaDescription = description ? description.trim() : defaultDescription;
 const metaImage = image
   ? image.trim()
@@ -92,7 +118,7 @@ const currentYear = new Date().getFullYear();
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -100,6 +126,7 @@ const currentYear = new Date().getFullYear();
 
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonicalUrl} />
+    {alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={absoluteUrl(alt.path)} />)}
     <meta name="robots" content="index,follow" />
     <meta
       name="googlebot"
@@ -115,7 +142,7 @@ const currentYear = new Date().getFullYear();
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={metaImage} />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={lang === "ru" ? "ru_RU" : "en_US"} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={metaTitle} />
@@ -165,9 +192,57 @@ const currentYear = new Date().getFullYear();
           />
         </a>
 
+        <!-- Language switcher -->
+        {
+          switcherLocales.length > 1 && (
+            <form
+              method="post"
+              action="/api/language-preference"
+              class="ml-auto mr-2 md:ml-0 md:mr-0 md:order-last flex items-center gap-1.5"
+              title="Language"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-400 flex-shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"></path>
+              </svg>
+              <label for="language-select" class="sr-only">Language</label>
+              <select
+                id="language-select"
+                name="locale"
+                class="bg-gray-700 border border-gray-600 text-gray-100 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onchange="this.form.submit()"
+              >
+                {switcherLocales.map((code) => (
+                  <option value={code} selected={code === switcherCurrent}>
+                    {LANGUAGE_LABELS[code]}
+                  </option>
+                ))}
+              </select>
+              {articleSlug ? (
+                <input type="hidden" name="slug" value={articleSlug} />
+              ) : (
+                <input type="hidden" name="next" value={switcherNext} />
+              )}
+              <noscript>
+                <button type="submit" class="text-sm text-blue-300 underline">OK</button>
+              </noscript>
+            </form>
+          )
+        }
+
         <!-- Burger button (mobile only) -->
         <button
-          aria-label="Toggle navigation menu"
+          aria-label={m.nav.menuToggle}
+          aria-controls="navbarMenu"
+          aria-expanded="false"
           class="md:hidden px-2 py-1 border border-gray-600 rounded text-gray-300 hover:bg-gray-700"
           type="button"
           onclick="toggleMenu()"
@@ -194,20 +269,20 @@ const currentYear = new Date().getFullYear();
         >
           <a
             class="text-gray-300 hover:text-blue-400 font-medium"
-            href="/">Homepage</a
+            href="/">{m.nav.home}</a
           >
           <a
             class="text-gray-300 hover:text-blue-400 font-medium"
-            href="/search">Search</a
+            href="/search">{m.nav.search}</a
           >
           <a
             class="text-gray-300 hover:text-blue-400 font-medium"
-            href="/contacts/">Contacts</a
+            href="/contacts/">{m.nav.contacts}</a
           >
 
           <a
             class="text-gray-300 hover:text-blue-400 font-medium"
-            href="/login">Login</a
+            href="/login">{m.nav.login}</a
           >
 
           <form
@@ -220,7 +295,7 @@ const currentYear = new Date().getFullYear();
               class="pl-8 pr-4 py-1 border border-gray-600 bg-gray-700 text-gray-100 rounded-full text-sm
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               type="text"
-              placeholder="Search..."
+              placeholder={m.searchPlaceholder}
               name="q"
             />
             <svg
@@ -245,7 +320,10 @@ const currentYear = new Date().getFullYear();
 
       <script is:inline>
         function toggleMenu() {
-          document.getElementById("navbarMenu").classList.toggle("hidden");
+          const hidden = document.getElementById("navbarMenu").classList.toggle("hidden");
+          document
+            .querySelector('[aria-controls="navbarMenu"]')
+            ?.setAttribute("aria-expanded", String(!hidden));
         }
 
         globalThis.toggleMenu = toggleMenu;
@@ -279,12 +357,9 @@ const currentYear = new Date().getFullYear();
                 class="h-12"
               />
             </div>
-            <p class="text-gray-300 mb-4">
-              Stay updated with the latest trends in Web3 development, software
-              engineering tips, and best coding practices for modern applications.
-            </p>
+            <p class="text-gray-300 mb-4">{m.footer.tagline}</p>
             <div>
-              <h4 class="text-lg font-semibold uppercase mb-2">Contact Info</h4>
+              <h4 class="text-lg font-semibold uppercase mb-2">{m.footer.contactInfo}</h4>
               <p class="text-gray-300 mb-1">10 Rustaveli Avenue, Tbilisi, Georgia</p>
               <p class="text-gray-300 mb-1">Phone: +123 456 78900</p>
               <p class="text-gray-300">info@{siteHost}</p>
@@ -293,10 +368,10 @@ const currentYear = new Date().getFullYear();
 
           <!-- Testimonials -->
           <div>
-            <h3 class="text-lg font-semibold uppercase mb-4">Testimonials</h3>
+            <h3 class="text-lg font-semibold uppercase mb-4">{m.footer.testimonials}</h3>
             <div class="bg-gray-700 p-4 rounded">
               <div class="text-gray-300 italic mb-4">
-                <p>A very good website, it really helped a lot!</p>
+                <p>{m.footer.testimonial}</p>
               </div>
               <div class="flex items-center">
                 <img
@@ -307,7 +382,7 @@ const currentYear = new Date().getFullYear();
                 />
                 <div>
                   <h4 class="font-semibold">Sophia</h4>
-                  <p class="text-sm text-gray-400">Client, Tech</p>
+                  <p class="text-sm text-gray-400">{m.footer.role}</p>
                 </div>
               </div>
             </div>
@@ -315,7 +390,7 @@ const currentYear = new Date().getFullYear();
 
           <!-- Custom Post Section -->
           <div>
-            <h3 class="text-lg font-semibold uppercase mb-4">Custom Category Post</h3>
+            <h3 class="text-lg font-semibold uppercase mb-4">{m.footer.customCategory}</h3>
             {
               footerPost ? (
                 <div class="flex items-start">
@@ -342,7 +417,7 @@ const currentYear = new Date().getFullYear();
                   </div>
                 </div>
               ) : (
-                <p class="text-sm text-gray-400">No published posts yet.</p>
+                <p class="text-sm text-gray-400">{m.footer.noPosts}</p>
               )
             }
           </div>
@@ -359,8 +434,16 @@ const currentYear = new Date().getFullYear();
             >
             &nbsp;·&nbsp;
             <a href="/privacy/" class="text-blue-400 hover:text-blue-300"
-              >Privacy Policy</a
+              >{m.footer.privacy}</a
             >
+            {showGeoIpAttribution && (
+              <>
+                &nbsp;·&nbsp;
+                <a href="https://db-ip.com" class="text-blue-400 hover:text-blue-300" rel="noopener noreferrer">
+                  IP Geolocation by DB-IP
+                </a>
+              </>
+            )}
           </div>
         </div>
       </div>

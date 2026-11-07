@@ -7,14 +7,17 @@ import LazyImage from "../components/LazyImage.astro";
 import { search, getHome } from "../lib/api";
 import { formatDate, excerpt } from "../lib/format";
 import { canonicalFor } from "../lib/url";
+import { parseLanguagePreference } from "../lib/language-choice";
 
+const preferredLang = parseLanguagePreference(Astro.request.headers.get("cookie")) ?? undefined;
+Astro.response.headers.set("Vary", "Cookie");
 const q = Astro.url.searchParams.get("q") ?? "";
 let data = null;
-let home = await getHome(1);
+let home = await getHome(1, preferredLang);
 
 if (q) {
   try {
-    data = await search(q);
+    data = await search(q, preferredLang);
   } catch {
   }
 }
