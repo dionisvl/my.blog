@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { PUBLIC_SITE_URL } from "astro:env/client";
+import { cookieDomain } from "../../lib/host";
 import { LANGUAGE_LABELS } from "../../lib/i18n";
 import { ARTICLE_LANGUAGE_COOKIE } from "../../lib/language-choice";
 
@@ -36,6 +37,7 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
 
   cookies.set(ARTICLE_LANGUAGE_COOKIE, locale, {
     path: "/",
+    domain: cookieDomain(),
     maxAge: 24 * 60 * 60,
     httpOnly: true,
     secure: PUBLIC_SITE_URL.startsWith("https://") || url.protocol === "https:",

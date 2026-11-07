@@ -4,3 +4,8 @@ allowBuilds:
   sharp: true
 strictDepBuilds: false
 confirmModulesPurge: false
+overrides:
+  "@emnapi/runtime": 1.11.3
+minimumReleaseAgeExclude:
+  - satteri
+  - "@bruits/satteri-*"
