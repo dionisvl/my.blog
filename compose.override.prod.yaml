@@ -50,11 +50,12 @@ services:
       - "traefik.http.middlewares.auth.basicauth.users=${DASHBOARD_AUTH}"
       - "traefik.http.routers.dashboard.tls.certresolver=myresolver"
 
-      # Canonical host: 301 www.MAIN_HOST and the retired OLD_HOST to https://MAIN_HOST, keeping path and query.
+      # Retired OLD_HOST (and its www) is redirected to https://MAIN_HOST, keeping path and query.
+      # www.MAIN_HOST is served directly for readers in Russia; Astro redirects everyone else (see docs/geoip-host-routing.md).
       - "traefik.http.middlewares.to-main-host.redirectregex.regex=^https?://[^/]+/(.*)$$"
       - "traefik.http.middlewares.to-main-host.redirectregex.replacement=https://${MAIN_HOST}/$${1}"
       - "traefik.http.middlewares.to-main-host.redirectregex.permanent=true"
-      - "traefik.http.routers.to-main-host.rule=Host(`www.${MAIN_HOST}`) || Host(`${OLD_HOST}`) || Host(`www.${OLD_HOST}`)"
+      - "traefik.http.routers.to-main-host.rule=Host(`${OLD_HOST}`) || Host(`www.${OLD_HOST}`)"
       - "traefik.http.routers.to-main-host.entrypoints=websecure"
       - "traefik.http.routers.to-main-host.priority=1000"
       - "traefik.http.routers.to-main-host.tls.certresolver=myresolver"
@@ -198,6 +199,10 @@ services:
         PUBLIC_SITE_AUTHOR: Web3main LLC
         PUBLIC_SITE_DESC: Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.
         PUBLIC_GOOGLE_SITE_VERIFICATION: ${PUBLIC_GOOGLE_SITE_VERIFICATION:-}
+    volumes:
+      - geoip_data:/geoip:ro
+    environment:
+      GEOIP_LOCALE_ROUTING_ENABLED: "${GEOIP_LOCALE_ROUTING_ENABLED:-false}"
     env_file:
       - ./frontend-astro/.env.production
     labels:
@@ -214,6 +219,24 @@ services:
       - "traefik.http.routers.astro.priority=10"
       - "traefik.http.routers.astro.service=astro"
       - "traefik.http.services.astro.loadbalancer.server.port=4321"
+
+  geoip-updater:
+    profiles: ["geoip"]
+    image: node:26-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216
+    restart: unless-stopped
+    command: ["node", "/opt/update-geoip.mjs"]
+    volumes:
+      - ./frontend-astro/scripts/update-geoip.mjs:/opt/update-geoip.mjs:ro
+      - geoip_data:/geoip:rw
+    environment:
+      GEOIP_DB_DIR: /geoip
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
 
   jaeger:
     labels:

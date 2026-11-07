@@ -14,6 +14,7 @@ import {
   planMissingLocaleRedirect,
   relativeTime,
 } from "../../../lib/articles-core";
+import { cookieDomain } from "../../../lib/host";
 import { messagesFor } from "../../../lib/i18n";
 import { absoluteUrl } from "../../../lib/url";
 
@@ -64,6 +65,7 @@ if (!Astro.cookies.get(viewCookieName)) {
     if (viewResult.counted && viewResult.post) {
       Astro.cookies.set(viewCookieName, new Date().toISOString(), {
         path: "/",
+        domain: cookieDomain(),
         maxAge: 24 * 60 * 60,
         httpOnly: true,
         secure: Astro.url.protocol === "https:",

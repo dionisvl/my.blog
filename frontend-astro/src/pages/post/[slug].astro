@@ -9,7 +9,7 @@ import type { PostResponse } from "../../lib/types";
 import { formatDate, fromNow, excerpt } from "../../lib/format";
 import { absoluteUrl } from "../../lib/url";
 import { resolveArticle } from "../../lib/articles";
-import { countryForRequest } from "../../lib/geoip-country";
+import { isWwwHost } from "../../lib/host";
 import {
   parseLanguagePreference,
   selectPublishedLocale,
@@ -30,10 +30,9 @@ if (resolution?.route_mode === "neutral") {
   const preference = parseLanguagePreference(Astro.request.headers.get("cookie"));
   const preferenceIsPublished =
     preference !== null && resolution.locales.some((locale) => locale.locale === preference);
+  // www.<host> only serves readers in Russia (the middleware sends everyone else away), so the host decides.
   const countryCode =
-    preferenceIsPublished || !isGeoIpLocaleRoutingEnabled()
-      ? null
-      : await countryForRequest(Astro.request.headers);
+    !preferenceIsPublished && isGeoIpLocaleRoutingEnabled() && isWwwHost(Astro.url.hostname) ? "RU" : null;
   const locale = selectPublishedLocale(resolution, preference, countryCode);
   if (!locale) {
     Astro.response.status = 404;

@@ -15,6 +15,10 @@ export default defineConfig({
   output: "server",
   adapter: node({ mode: "standalone" }),
   integrations: [],
+  // Without this Astro ignores the Host header and every URL reads as "localhost".
+  security: {
+    allowedDomains: [{ hostname: allowedHost }, { hostname: `www.${allowedHost}` }],
+  },
   markdown: {
     shikiConfig: {
       themes: { light: "min-light", dark: "github-dark-default" },

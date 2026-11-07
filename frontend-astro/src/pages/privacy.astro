@@ -26,12 +26,16 @@ const description = `Privacy Policy for ${host}`;
         </p>
 
         <p>
-          Optional country-based language selection for neutral modular-article URLs is
-          disabled unless explicitly enabled by the site operator. When enabled, the
-          approximate country is derived from your request IP using a local database;
-          the IP is not sent to a geolocation API and no separate geolocation record is
-          created. A language preference cookie is set only when you manually select
-          another article language and lasts for up to 24 hours.
+          Optional country-based routing is disabled unless explicitly enabled by the
+          site operator. When enabled, the approximate country is derived from your
+          request IP using a local database (the IP is not sent to a geolocation API
+          and no separate geolocation record is created). Readers from Russia are served
+          on the <strong>www</strong> address and all other readers on the main address,
+          and neutral article links open in the language of that address. A language
+          preference cookie is set only when you manually select a language, and a
+          technical cookie prevents repeated redirects between the two addresses; both
+          last up to 24 hours or less. The main address is served through Cloudflare,
+          which receives your IP address as part of the HTTP request.
         </p>
 
         <p>
