@@ -25,6 +25,36 @@
   --tw-prose-pre-bg: theme('colors.gray.800');
 }
 
+#navbarMenu {
+  display: none;
+}
+
+#navbarMenu:not(.hidden) {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  #navbarMenu {
+    display: flex;
+  }
+}
+
+.article-page .prose pre,
+.article-page .overflow-x-auto {
+  overscroll-behavior-x: contain;
+}
+
+@media (max-width: 639px) {
+  .article-page {
+    width: calc(100% + 16px);
+    margin-inline: -8px;
+  }
+
+  .article-page > article > .px-1 {
+    padding-inline: 3px;
+  }
+}
+
 .line-clamp-2 {
   @apply overflow-hidden text-ellipsis;
   display: -webkit-box;

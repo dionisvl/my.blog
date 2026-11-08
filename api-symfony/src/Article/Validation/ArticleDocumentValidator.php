@@ -14,8 +14,8 @@ use App\Article\ArticleContract;
  *    is rejected (unknown blocks/fields, wrong types, bad URLs, unsanitized HTML, sizes, duplicate ids,
  *    affiliate-link rules), but required properties may still be missing.
  *  - publication (forPublication = true): additionally requires completeness (required props,
- *    min counts, cross-references, cell counts) and the sponsored-link rule (a verified_at
- *    date).
+ *    min counts, cross-references and cell counts). verified_at is optional; when supplied it
+ *    must be a valid calendar date.
  */
 final readonly class ArticleDocumentValidator
 {
@@ -121,7 +121,7 @@ final readonly class ArticleDocumentValidator
 
         if ($run->strict) {
             $this->validateSelectorReferences($run);
-            $this->validateSponsoredRules($document, $run);
+
         }
     }
 
@@ -360,19 +360,6 @@ final readonly class ArticleDocumentValidator
         }
     }
 
-    /**
-     * @param array<mixed> $document
-     */
-    private function validateSponsoredRules(array $document, ValidationRun $run): void
-    {
-        if (null === $run->firstSponsoredBlock) {
-            return;
-        }
-
-        if (!isset($document['verified_at'])) {
-            $run->add('/verified_at', 'verified_at_missing', 'Documents with sponsored links need a verified_at date.');
-        }
-    }
 
     /**
      * @param array<string, mixed> $spec

@@ -71,9 +71,11 @@ export function getHome(page = 1, lang?: string): Promise<HomeResponse> {
 export function getPost(
   slug: string,
   ctx?: CookieContext,
+  lang?: string,
 ): Promise<PostResponse> {
+  const query = lang ? `?lang=${encodeURIComponent(lang)}` : "";
   return apiFetch<PostResponse>(
-    `/api/post/${encodeURIComponent(slug)}`,
+    `/api/post/${encodeURIComponent(slug)}${query}`,
     {},
     ctx,
   );

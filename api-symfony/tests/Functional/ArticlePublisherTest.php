@@ -192,19 +192,25 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
      */
     public static function refusedPublications(): iterable
     {
-        yield 'sponsored link without verification date' => [
-            'Summary',
-            [
-                'schema_version' => 1,
-                'locale' => 'en',
-                'blocks' => [
-                    ['id' => 'bar', 'type' => 'cta', 'props' => ['label' => 'Go', 'url' => 'https://partner.example.test/x', 'variant' => 'primary', 'sponsored' => true]],
-                ],
-            ],
-            ['verified_at_missing'],
-        ];
-
         yield 'empty summary' => ['', ContractFixtures::validDocument('minimal-en'), ['empty_value']];
+    }
+
+    public function testSponsoredArticlePublishesWithoutVerificationDate(): void
+    {
+        $anchor = $this->publisher->createAnchor('modular-sponsored-no-date', 'en', $this->author, 'Working title');
+        $document = [
+            'schema_version' => 1,
+            'locale' => 'en',
+            'blocks' => [
+                ['id' => 'bar', 'type' => 'cta', 'props' => ['label' => 'Go', 'url' => 'https://partner.example.test/x', 'variant' => 'primary', 'sponsored' => true]],
+            ],
+        ];
+        $this->publisher->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
+
+        $published = $this->publisher->publish($anchor, 'en');
+
+        self::assertArrayNotHasKey('verified_at', $published->getDocument());
+        self::assertNotNull($published->getPublishedAt());
     }
 
     public function testUnknownBlockTypeCannotBeSaved(): void

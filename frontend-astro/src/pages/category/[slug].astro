@@ -8,10 +8,10 @@ import { getCategory, getHome, ApiClientError } from "../../lib/api";
 import type { CategoryResponse, HomeResponse } from "../../lib/types";
 import { formatDate } from "../../lib/format";
 import { canonicalFor } from "../../lib/url";
-import { parseLanguagePreference } from "../../lib/language-choice";
+import { preferredLanguage } from "../../lib/host";
 
 const { slug } = Astro.params;
-const preferredLang = parseLanguagePreference(Astro.request.headers.get("cookie")) ?? undefined;
+const preferredLang = preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
 Astro.response.headers.set("Vary", "Cookie");
 const pageParam = Astro.url.searchParams.get("page");
 const page = Math.max(1, parseInt(pageParam || "1", 10));
