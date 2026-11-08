@@ -57,6 +57,28 @@ func TestSEOHandlerServesFilesForConfiguredHost(t *testing.T) {
 	}
 }
 
+func TestSEOHandlerUsesAllowlistedRequestHostForRobotsAndSitemap(t *testing.T) {
+	dir := t.TempDir()
+	robots := []byte("User-agent: *\nSitemap: https://example.com/sitemap.xml\n")
+	sitemap := []byte(`<urlset><url><loc>https://example.com/</loc></url></urlset>`)
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "robots-example.com.txt"), robots, 0o600))
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "sitemap-example.com.xml"), sitemap, 0o600))
+	h := NewSEOHandler(dir, "example.com", slog.New(slog.NewTextHandler(io.Discard, nil)), nil)
+
+	for _, tc := range []struct { host, path, want string }{
+		{"www.example.com", "/robots.txt", "Sitemap: https://www.example.com/sitemap.xml"},
+		{"www.example.com", "/sitemap.xml", "https://www.example.com/"},
+		{"evil.example", "/robots.txt", "Sitemap: https://example.com/sitemap.xml"},
+	} {
+		req := httptest.NewRequest(http.MethodGet, tc.path, nil)
+		req.Host = tc.host
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		require.Equal(t, http.StatusOK, rec.Code)
+		assert.Contains(t, rec.Body.String(), tc.want)
+	}
+}
+
 func TestSEOHandlerAddsPublishedArticleLocalesAndHreflang(t *testing.T) {
 	dir := t.TempDir()
 	static := []byte(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://example.com/old-post</loc></url></urlset>`)

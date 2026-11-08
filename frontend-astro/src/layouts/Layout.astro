@@ -3,7 +3,7 @@ import { PUBLIC_SITE_URL } from "astro:env/client";
 import type { Post } from "../lib/types";
 import type { ArticleLocale } from "../contracts/article-blocks/v1/types";
 import { LANGUAGE_LABELS, messagesFor } from "../lib/i18n";
-import { parseLanguagePreference } from "../lib/language-choice";
+import { preferredLanguage } from "../lib/host";
 import { absoluteUrl, canonicalFor } from "../lib/url";
 import { isGeoIpLocaleRoutingEnabled } from "../lib/geoip-config";
 import "../styles/global.css";
@@ -45,7 +45,7 @@ const switcherLocales = (
 ) as ArticleLocale[];
 const switcherCurrent: ArticleLocale = articleSlug
   ? lang
-  : (parseLanguagePreference(Astro.request.headers.get("cookie")) ?? "en");
+  : (preferredLanguage(Astro.request, Astro.url.hostname) ?? "en");
 const switcherNext = Astro.url.pathname + Astro.url.search;
 const showGeoIpAttribution = isGeoIpLocaleRoutingEnabled();
 
@@ -265,23 +265,23 @@ const currentYear = new Date().getFullYear();
 
         <div
           id="navbarMenu"
-          class="hidden md:flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 absolute sm:static top-full left-0 right-0 bg-gray-800 sm:bg-transparent p-4 sm:p-0 shadow sm:shadow-none text-center mx-3"
+          class="hidden flex flex-col items-stretch gap-3 md:flex md:flex-row md:items-center md:gap-4 absolute sm:static top-full left-0 right-0 bg-gray-800 sm:bg-transparent p-4 sm:p-0 shadow sm:shadow-none text-center mx-3"
         >
           <a
-            class="text-gray-300 hover:text-blue-400 font-medium"
+            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/">{m.nav.home}</a
           >
           <a
-            class="text-gray-300 hover:text-blue-400 font-medium"
+            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/search">{m.nav.search}</a
           >
           <a
-            class="text-gray-300 hover:text-blue-400 font-medium"
+            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/contacts/">{m.nav.contacts}</a
           >
 
           <a
-            class="text-gray-300 hover:text-blue-400 font-medium"
+            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/login">{m.nav.login}</a
           >
 
@@ -292,7 +292,7 @@ const currentYear = new Date().getFullYear();
             action="/search"
           >
             <input
-              class="pl-8 pr-4 py-1 border border-gray-600 bg-gray-700 text-gray-100 rounded-full text-sm
+              class="w-full md:w-auto pl-8 pr-4 py-2 md:py-1 border border-gray-600 bg-gray-700 text-gray-100 rounded-full text-sm
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               type="text"
               placeholder={m.searchPlaceholder}

@@ -2,7 +2,7 @@
 export const prerender = false;
 
 import Layout from "../../../layouts/Layout.astro";
-import Sidebar from "../../../components/Sidebar.astro";
+import LazyImage from "../../../components/LazyImage.astro";
 import BlockRenderer from "../../../components/article/BlockRenderer.astro";
 import { ApiClientError } from "../../../lib/api";
 import { getArticleLocale, recordArticleView, resolveArticle } from "../../../lib/articles";
@@ -100,12 +100,24 @@ const shareTitle = encodeURIComponent(article.title);
   alternates={alternates}
   articleSlug={slug}
 >
-  <div class="w-full md:w-3/4 pr-0 md:pr-6">
+  <div class="article-page mx-auto -mx-2 min-w-0 w-[calc(100%+1rem)] max-w-[760px] sm:mx-auto sm:w-full">
     <article
       class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700"
       lang={lang}
     >
-      <div class="p-6">
+      {
+        post.image_url && (
+          <div class="w-full h-64 md:h-96 flex items-center justify-center bg-gray-700 overflow-hidden [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+            <LazyImage
+              src={post.image_url}
+              alt={article.title}
+              class="w-full h-full object-contain"
+              height="384"
+            />
+          </div>
+        )
+      }
+      <div class="px-1 py-6 sm:p-6">
         <header class="text-center mb-6">
           {
             post.category && (
@@ -301,12 +313,23 @@ const shareTitle = encodeURIComponent(article.title);
         }
       </script>
     </div>
+  <div class="article-related mt-8 space-y-8">
+    {[{ title: m.sidebar.featured, posts: data.featured_posts }, { title: m.sidebar.recent, posts: data.recent_posts }].map((section) => (
+      <section>
+        <h2 class="text-xl font-semibold text-white mb-4">{section.title}</h2>
+        <div class="space-y-3">
+          {section.posts.map((item) => <a href={`/post/${item.slug}`} class="flex items-center gap-4 rounded-lg border border-gray-700 bg-gray-800 p-3 hover:border-gray-500">
+            {item.image_url && <img src={item.image_url} alt="" loading="lazy" class="h-16 w-24 rounded object-cover" />}
+            <span class="min-w-0 flex-1 font-medium text-gray-200">{item.title}</span>
+            <time class="shrink-0 text-xs text-gray-400">{formatLongDate(item.created_at, lang)}</time>
+          </a>)}
+        </div>
+      </section>
+    ))}
+    <section>
+      <h2 class="text-xl font-semibold text-white mb-4">{m.sidebar.categories}</h2>
+      <div class="flex flex-wrap gap-2">{data.categories.map((category) => <a href={`/category/${category.slug}`} class="rounded-full border border-gray-700 bg-gray-800 px-3 py-1 text-sm text-gray-300 hover:text-blue-400">{category.title} <span class="text-gray-500">({category.posts_count})</span></a>)}</div>
+    </section>
   </div>
-
-  <Sidebar
-    categories={data.categories}
-    featuredPosts={data.featured_posts}
-    recentPosts={data.recent_posts}
-    lang={lang}
-  />
+  </div>
 </Layout>

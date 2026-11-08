@@ -53,7 +53,7 @@ func (h *PostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	g, ctx := errgroup.WithContext(r.Context())
+	g, ctx := errgroup.WithContext(requestContext(r))
 
 	var categories []model.CategoryWithCount
 	var featured []model.Post

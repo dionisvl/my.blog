@@ -112,14 +112,13 @@ the sticky bar. Not yet verified (Story 5): financial facts, affiliate legality,
 `ArticleDocumentValidator` has two modes. **draft** (every save): safety only -- unknown blocks/fields,
 types, bounds, URL policy, affiliate rules, sanitized HTML, duplicate ids; missing required props allowed.
 **publication**: additionally required props, min counts, `no_blocks`, cross references (`bad_reference`:
-cardSelector -> comparisonTable -> columns), `cell_count_mismatch`, `empty_value`, and for documents with
-sponsored links a `verified_at` date (`verified_at_missing`). Metadata: title and summary non-empty.
+cardSelector -> comparisonTable -> columns), `cell_count_mismatch`, `empty_value`, Sponsored-link disclosure requirements remain unchanged; `verified_at` is optional even when sponsored links are present, and any supplied value must be a real calendar date. Metadata: title and summary non-empty.
 
 Codes: `invalid_type unknown_field missing_field empty_value too_long too_many_items too_few_items
 invalid_enum invalid_pattern invalid_date invalid_encoding control_characters bad_template
 unsupported_schema_version unsupported_locale locale_mismatch unknown_block_type duplicate_id
 invalid_url url_scheme_not_allowed affiliate_host_not_allowed affiliate_not_sponsored html_not_sanitized
-bad_reference cell_count_mismatch no_blocks verified_at_missing document_too_large`.
+bad_reference cell_count_mismatch no_blocks document_too_large`.
 
 Affiliate policy: hosts in `app.article.affiliate_hosts` (host names only) require links to be marked `sponsored: true` (`rel` contains `sponsored`), except clean citation URLs inside the `sources` block whose path matches `/help-center/article/<slug>` and has no query or fragment. Those help-center citations may remain unsponsored. Every other link to an affiliate host must be sponsored; a sponsored link may only target an allow-listed affiliate host.
 

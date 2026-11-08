@@ -93,10 +93,6 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
           cta.classList.add("hidden");
         }
       }
-      document.body.classList.toggle(
-        "has-card-selector-sticky",
-        Boolean(document.querySelector(".card-selector .selector-cta:not(.hidden)")),
-      );
     }
 
     buttons.forEach((button) => button.addEventListener("click", () => select(button)));
@@ -115,20 +111,7 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
     .card-selector { display: block; }
     .card-selector [role="group"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  @media (max-width: 640px) {
-    body.has-card-selector-sticky { padding-bottom: 84px; }
-    .card-selector .selector-cta:not(.hidden) {
-      display: flex;
-      position: fixed;
-      inset-inline: 0;
-      bottom: 0;
-      z-index: 40;
-      margin: 0;
-      border-radius: 0;
-      min-height: 52px;
-      justify-content: center;
-      align-items: center;
-      padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-    }
+  .card-selector .selector-cta:not(.hidden) {
+    display: block;
   }
 </style>

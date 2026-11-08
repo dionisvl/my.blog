@@ -1,4 +1,7 @@
 import { PUBLIC_SITE_URL } from "astro:env/client";
+import type { ArticleLocale } from "../contracts/article-blocks/v1/types";
+import { isGeoIpLocaleRoutingEnabled } from "./geoip-config";
+import { parseLanguagePreference } from "./language-choice";
 
 const siteHost = new URL(PUBLIC_SITE_URL).hostname;
 
@@ -14,4 +17,10 @@ export function isWwwHost(hostname: string): boolean {
 export function cookieDomain(): string | undefined {
   const isName = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(siteHost) && !/^\d+(\.\d+){3}$/.test(siteHost);
   return isName ? `.${siteHost}` : undefined;
+}
+
+export function preferredLanguage(request: Request, hostname: string): ArticleLocale | null {
+  const chosen = parseLanguagePreference(request.headers.get("cookie"));
+  if (chosen) return chosen;
+  return isGeoIpLocaleRoutingEnabled() && isWwwHost(hostname) ? "ru" : null;
 }

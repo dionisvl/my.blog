@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "locale": "en",
+  "blocks": [
+    {
+      "id": "disclosure",
+      "type": "sponsoredDisclosure",
+      "props": {"text": "Some links are sponsored."}
+    },
+    {
+      "id": "bar",
+      "type": "cta",
+      "props": {
+        "label": "Sign up",
+        "url": "https://partner.example.test/a",
+        "variant": "primary",
+        "sponsored": true
+      }
+    }
+  ]
+}

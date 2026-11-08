@@ -53,6 +53,12 @@ func (h *SEOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	requestHost := strings.ToLower(strings.TrimSuffix(r.Host, "."))
+	serveHost := h.host
+	if requestHost == "www."+strings.ToLower(h.host) {
+		serveHost = "www." + h.host
+	}
+
 	if fileType == "sitemap" && extNoDot == "xml" && h.articles != nil {
 		locales, queryErr := h.articles.FindPublishedSitemapLocales(r.Context())
 		if queryErr != nil {
@@ -65,6 +71,10 @@ func (h *SEOHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				data = dynamic
 			}
 		}
+	}
+
+	if serveHost != h.host {
+		data = bytes.ReplaceAll(data, []byte("https://"+h.host), []byte("https://"+serveHost))
 	}
 
 	contentType := "text/plain; charset=utf-8"
