@@ -9,10 +9,9 @@ use App\Entity\Product;
 use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
-use App\Service\FileNameGenerator;
-use App\Service\FileValidator;
+use App\Media\ImageUploader;
+use App\Media\MediaTarget;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -25,9 +24,7 @@ final readonly class AdminProductManager
         private CategoryRepository $categoryRepository,
         private SluggerInterface $slugger,
         private TokenStorageInterface $tokenStorage,
-        private FileValidator $fileValidator,
-        private FileNameGenerator $fileNameGenerator,
-        #[Autowire('%kernel.project_dir%')] private string $projectDir,
+        private ImageUploader $imageUploader,
     ) {
     }
 
@@ -87,24 +84,27 @@ final readonly class AdminProductManager
             }
         }
 
-        $uploadDir = $this->projectDir.'/public/storage/shop_uploads';
+        $newImages = [];
 
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
+        try {
+            if ($payload->previewPicture instanceof UploadedFile) {
+                $newImages[] = $filename = $this->imageUploader->upload($payload->previewPicture, MediaTarget::Product);
+                $product->setPreviewPicture($filename);
+            }
+
+            if ($payload->detailPicture instanceof UploadedFile) {
+                $newImages[] = $filename = $this->imageUploader->upload($payload->detailPicture, MediaTarget::Product);
+                $product->setDetailPicture($filename);
+            }
+
+            $this->entityManager->persist($product);
+            $this->entityManager->flush();
+        } catch (\Throwable $e) {
+            foreach ($newImages as $image) {
+                $this->imageUploader->discard(MediaTarget::Product, $image);
+            }
+            throw $e;
         }
-
-        if ($payload->previewPicture instanceof UploadedFile) {
-            $product->removeImage('preview_picture', $uploadDir);
-            $product->uploadImage($payload->previewPicture, 'preview_picture', $uploadDir, $this->fileValidator, $this->fileNameGenerator);
-        }
-
-        if ($payload->detailPicture instanceof UploadedFile) {
-            $product->removeImage('detail_picture', $uploadDir);
-            $product->uploadImage($payload->detailPicture, 'detail_picture', $uploadDir, $this->fileValidator, $this->fileNameGenerator);
-        }
-
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
 
         return $product;
     }
@@ -145,10 +145,6 @@ final readonly class AdminProductManager
 
     public function delete(Product $product): void
     {
-        $uploadDir = $this->projectDir.'/public/storage/shop_uploads';
-        $product->removeImage('preview_picture', $uploadDir);
-        $product->removeImage('detail_picture', $uploadDir);
-
         $this->entityManager->remove($product);
         $this->entityManager->flush();
     }

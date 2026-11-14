@@ -22,11 +22,11 @@ func NewHomeHandler(posts repository.PostRepository, categories repository.Categ
 }
 
 type homeResponse struct {
-	Posts         []model.Post                  `json:"posts"`
-	FeaturedPosts []model.Post                  `json:"featured_posts"`
-	RecentPosts   []model.Post                  `json:"recent_posts"`
-	Categories    []model.CategoryWithCount      `json:"categories"`
-	Pagination    Pagination                     `json:"pagination"`
+	Posts         []model.Post              `json:"posts"`
+	FeaturedPosts []model.Post              `json:"featured_posts"`
+	RecentPosts   []model.Post              `json:"recent_posts"`
+	Categories    []model.CategoryWithCount `json:"categories"`
+	Pagination    Pagination                `json:"pagination"`
 }
 
 func (h *HomeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

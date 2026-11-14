@@ -37,7 +37,7 @@
                                 <td>{{ product.title }}</td>
                                 <td>{{ product.category ? product.category.title : 'No category' }}</td>
                                 <td>
-                                    <img src="{{ product.getImage('preview_picture') }}" alt="" width="100">
+                                    <img src="{{ media_url(product.imageKey('preview_picture')) }}" alt="" width="100">
                                 </td>
                                 <td>
                                     <a href="{{ path('admin_products_edit', {id: product.id}) }}">

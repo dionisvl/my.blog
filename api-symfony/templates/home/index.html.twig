@@ -41,7 +41,7 @@
                         <!-- Post thumbnail with controlled height -->
                         <div class="flex-shrink-0 w-32 flex items-center justify-center p-1 px-3">
                             <div class="h-12 w-full flex items-center justify-center overflow-hidden">
-                                {{ lazy.lazy_img(post.image, post.title,
+                                {{ lazy.lazy_img(media_url(post.imageKey), post.title,
                                     'h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-110',
                                     '75', '50') }}
                             </div>

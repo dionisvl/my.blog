@@ -9,10 +9,9 @@ use App\Entity\Post;
 use App\Entity\User;
 use App\Repository\CategoryRepository;
 use App\Repository\TagRepository;
-use App\Service\FileNameGenerator;
-use App\Service\FileValidator;
+use App\Media\ImageUploader;
+use App\Media\MediaTarget;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -26,9 +25,7 @@ final readonly class AdminPostManager
         private TagRepository $tagRepository,
         private SluggerInterface $slugger,
         private TokenStorageInterface $tokenStorage,
-        private FileValidator $fileValidator,
-        private FileNameGenerator $fileNameGenerator,
-        #[Autowire('%kernel.project_dir%')] private string $projectDir,
+        private ImageUploader $imageUploader,
     ) {
     }
 
@@ -93,18 +90,20 @@ final readonly class AdminPostManager
             $post->setTags([]);
         }
 
+        $newImage = null;
+
         if ($payload->image instanceof UploadedFile) {
-            $uploadDir = $this->projectDir.'/public/storage/uploads';
-
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-
-            $post->uploadImage($payload->image, $uploadDir, $this->fileValidator, $this->fileNameGenerator);
+            $newImage = $this->imageUploader->upload($payload->image, MediaTarget::Post);
+            $post->setImage($newImage);
         }
 
-        $this->entityManager->persist($post);
-        $this->entityManager->flush();
+        try {
+            $this->entityManager->persist($post);
+            $this->entityManager->flush();
+        } catch (\Throwable $e) {
+            $this->imageUploader->discard(MediaTarget::Post, $newImage);
+            throw $e;
+        }
 
         return $post;
     }

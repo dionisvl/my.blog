@@ -151,11 +151,11 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $this->client->loginUser($user);
 
         $tmpPreview = tempnam(sys_get_temp_dir(), 'upl').'.png';
-        file_put_contents($tmpPreview, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='));
+        file_put_contents($tmpPreview, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC'));
         $previewFile = new \Symfony\Component\HttpFoundation\File\UploadedFile($tmpPreview, 'preview.png', 'image/png', null, true);
 
         $tmpDetail = tempnam(sys_get_temp_dir(), 'upl').'.png';
-        file_put_contents($tmpDetail, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='));
+        file_put_contents($tmpDetail, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC'));
         $detailFile = new \Symfony\Component\HttpFoundation\File\UploadedFile($tmpDetail, 'detail.png', 'image/png', null, true);
 
         try {

@@ -7,6 +7,15 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    env(MEDIA_DRIVER): local
+    env(MEDIA_BASE_URL): /storage
+    env(MEDIA_PRIVATE_DIR): var/media-private
+    env(MEDIA_S3_ENDPOINT): ''
+    env(MEDIA_S3_REGION): auto
+    env(MEDIA_S3_PUBLIC_BUCKET): ''
+    env(MEDIA_S3_PRIVATE_BUCKET): ''
+    env(MEDIA_S3_KEY): ''
+    env(MEDIA_S3_SECRET): ''
     app.secure_cookies: '%env(bool:APP_SECURE_COOKIES)%'
     # Hosts (no referral codes) of the existing affiliate destinations. Promotional links to these hosts must be
     # marked `sponsored`; clean help-center citations in the `sources` block are the documented exception.
@@ -34,3 +43,6 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Media\MediaStorage:
+        factory: ['@App\Media\MediaStorageFactory', 'create']

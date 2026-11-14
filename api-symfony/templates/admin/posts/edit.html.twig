@@ -33,7 +33,7 @@
 
                             <div class="form-group">
                                 {% if post.image %}
-                                    <img src="{{ post.image }}" alt="" class="img-responsive" width="200">
+                                    <img src="{{ media_url(post.imageKey) }}" alt="" class="img-responsive" width="200">
                                 {% endif %}
                                 <label for="image">Featured Image</label>
                                 <input type="file" id="image" name="image">

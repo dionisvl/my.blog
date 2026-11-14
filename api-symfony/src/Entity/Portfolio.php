@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\PortfolioRepository;
-use App\Service\FileNameGenerator;
-use App\Service\FileValidator;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: PortfolioRepository::class)]
 #[ORM\Table(name: 'portfolios')]
@@ -102,6 +99,11 @@ class Portfolio
         $this->content = $content;
 
         return $this;
+    }
+
+    public function getImageKey(): string
+    {
+        return null === $this->image ? 'blog_images/no-image.png' : 'uploads/portfolio/'.$this->image;
     }
 
     public function getImagePath(): string
@@ -205,31 +207,5 @@ class Portfolio
     public function getUpdatedAt(): \DateTimeInterface
     {
         return $this->updatedAt;
-    }
-
-    public function uploadImage(
-        UploadedFile $imageFile,
-        string $uploadDir,
-        FileValidator $fileValidator,
-        FileNameGenerator $fileNameGenerator,
-    ): void {
-        $fileValidator->validate($imageFile);
-
-        $filename = $fileNameGenerator->generate($imageFile);
-        $imageFile->move($uploadDir, $filename);
-        $this->image = $filename;
-    }
-
-    public function removeImage(string $uploadDir): void
-    {
-        if (null === $this->image) {
-            return;
-        }
-
-        $filepath = $uploadDir.'/'.$this->image;
-
-        if (file_exists($filepath)) {
-            unlink($filepath);
-        }
     }
 }
