@@ -147,6 +147,28 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         self::assertTrue($storage->exists(\App\Media\Visibility::Private, 'originals/uploads/'.hash_file('sha256', $src).'.png'));
     }
 
+    public function testCreatePostWithSvgImageIsRejectedWith422AndStoresNothing(): void
+    {
+        $user = $this->createAdminUser();
+        $category = $this->createCategory('Rejected', 'rejected');
+        $this->client->loginUser($user);
+
+        $src = (string) tempnam(sys_get_temp_dir(), 'svg').'.svg';
+        file_put_contents($src, '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
+        $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($src, 'x.svg', 'image/svg+xml', null, true);
+
+        $this->client->request(Request::METHOD_POST, '/admin/posts/store', [
+            'title' => 'Svg cover', 'content' => 'Body', 'description' => 'D', 'date' => '2026-01-01',
+            'category_id' => (string) $category->getId(), 'status' => '1', 'is_featured' => '0', 'tags' => [],
+        ], ['image' => $file]);
+
+        self::assertSame(422, $this->client->getResponse()->getStatusCode());
+        $body = json_decode((string) $this->client->getResponse()->getContent(), true);
+        self::assertSame('image', $body['errors'][0]['field']);
+        $this->em->clear();
+        self::assertNull($this->em->getRepository(Post::class)->findOneBy(['title' => 'Svg cover']));
+    }
+
     public function testLegacyAdminCannotReuseAModularArticleSlug(): void
     {
         $user = $this->createAdminUser();

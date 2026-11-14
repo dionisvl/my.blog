@@ -88,6 +88,7 @@ services:
     volumes:
       - /home/my.blog/data/media-private:/app/var/media-private
       - /home/my.blog/config/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
+      - /home/my.blog/config/php/media-upload.ini:/usr/local/etc/php/conf.d/zz-media-upload.ini:ro
     image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:${PHP_VERSION}
     build:
       context: ./api-symfony

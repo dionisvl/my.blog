@@ -23,9 +23,15 @@ final readonly class ImageUploader
     /** @return string file name to store in the entity (the key is {@see MediaTarget::key()} of it) */
     public function upload(UploadedFile $file, MediaTarget $target): string
     {
-        $this->validator->validate($file);
+        try {
+            $this->validator->validate($file);
+            $webp = $this->encoder->encode($file->getPathname());
+        } catch (MediaRejectedException $e) {
+            throw $e;
+        } catch (\InvalidArgumentException $e) {
+            throw new MediaRejectedException($e->getMessage(), 0, $e);
+        }
 
-        $webp = $this->encoder->encode($file->getPathname());
         $hash = hash('sha256', $webp);
         $filename = \sprintf('%s_%s.webp', (new \DateTimeImmutable())->format('Y-m-d_H-i-s'), substr($hash, 0, 16));
 
