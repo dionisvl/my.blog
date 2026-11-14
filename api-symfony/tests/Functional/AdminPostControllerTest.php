@@ -120,6 +120,33 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         self::assertCount(1, $post->getTags());
     }
 
+    public function testCreatePostWithImageStoresWebpAndKeepsOriginalPrivately(): void
+    {
+        $user = $this->createAdminUser();
+        $category = $this->createCategory('Images', 'images');
+        $this->client->loginUser($user);
+
+        $im = imagecreatetruecolor(20, 10);
+        $src = (string) tempnam(sys_get_temp_dir(), 'post').'.png';
+        imagepng($im, $src);
+        $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($src, 'cover.png', 'image/png', null, true);
+
+        $this->client->request(Request::METHOD_POST, '/admin/posts/store', [
+            'title' => 'With cover', 'content' => 'Body', 'description' => 'D', 'date' => '2026-01-01',
+            'category_id' => (string) $category->getId(), 'status' => '1', 'is_featured' => '0', 'tags' => [],
+        ], ['image' => $file]);
+
+        $this->assertResponseRedirects('/admin/posts/');
+        $this->em->clear();
+        $post = $this->em->getRepository(Post::class)->findOneBy(['title' => 'With cover']);
+        self::assertNotNull($post);
+        self::assertMatchesRegularExpression('/_[0-9a-f]{16}\.webp$/', $post->getImageFile());
+
+        $storage = self::getContainer()->get(\App\Media\MediaStorage::class);
+        self::assertTrue($storage->exists(\App\Media\Visibility::Public, 'uploads/'.$post->getImageFile()));
+        self::assertTrue($storage->exists(\App\Media\Visibility::Private, 'originals/uploads/'.hash_file('sha256', $src).'.png'));
+    }
+
     public function testLegacyAdminCannotReuseAModularArticleSlug(): void
     {
         $user = $this->createAdminUser();

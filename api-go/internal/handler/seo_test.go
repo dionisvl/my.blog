@@ -65,7 +65,7 @@ func TestSEOHandlerUsesAllowlistedRequestHostForRobotsAndSitemap(t *testing.T) {
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "sitemap-example.com.xml"), sitemap, 0o600))
 	h := NewSEOHandler(dir, "example.com", slog.New(slog.NewTextHandler(io.Discard, nil)), nil)
 
-	for _, tc := range []struct { host, path, want string }{
+	for _, tc := range []struct{ host, path, want string }{
 		{"www.example.com", "/robots.txt", "Sitemap: https://www.example.com/sitemap.xml"},
 		{"www.example.com", "/sitemap.xml", "https://www.example.com/"},
 		{"evil.example", "/robots.txt", "Sitemap: https://example.com/sitemap.xml"},

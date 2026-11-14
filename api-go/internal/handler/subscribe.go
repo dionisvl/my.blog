@@ -13,7 +13,7 @@ import (
 )
 
 const maxSubscribeBodyBytes = 1 << 10 // 1 KB
-const maxEmailLength = 254              // RFC 5321
+const maxEmailLength = 254            // RFC 5321
 
 var emailRe = regexp.MustCompile(`^[^@\s]+@[^@\s]+\.[^@\s]+$`)
 

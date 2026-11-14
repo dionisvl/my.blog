@@ -34,12 +34,12 @@
                                 <input type="number" name="price" id="price" class="form-control"
                                        value="{{ product.price }}">
 
-                                <img src="{{ product.getImage('preview_picture') }}" alt="" class="img-responsive"
+                                <img src="{{ media_url(product.imageKey('preview_picture')) }}" alt="" class="img-responsive"
                                      width="200">
                                 <label for="preview_picture">Preview Image</label>
                                 <input type="file" id="preview_picture" name="preview_picture">
 
-                                <img src="{{ product.getImage('detail_picture') }}" alt="" class="img-responsive"
+                                <img src="{{ media_url(product.imageKey('detail_picture')) }}" alt="" class="img-responsive"
                                      width="200">
                                 <label for="detail_picture">Detail Image</label>
                                 <input type="file" id="detail_picture" name="detail_picture">

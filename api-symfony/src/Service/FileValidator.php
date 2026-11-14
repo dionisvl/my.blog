@@ -14,10 +14,6 @@ final readonly class FileValidator
         'image/webp' => ['webp'],
         'image/gif' => ['gif'],
         'image/avif' => ['avif'],
-        'image/svg+xml' => ['svg'],
-        'image/x-icon' => ['ico'],
-        'image/bmp' => ['bmp'],
-        'image/tiff' => ['tiff', 'tif'],
     ];
 
     private const int MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB

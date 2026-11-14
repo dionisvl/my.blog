@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\PostRepository;
-use App\Service\FileNameGenerator;
-use App\Service\FileValidator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 #[ORM\Table(name: 'posts')]
@@ -151,6 +148,16 @@ class Post
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getImageFile(): ?string
+    {
+        return $this->image;
+    }
+
+    public function getImageKey(): string
+    {
+        return null === $this->image ? 'blog_images/no-image.png' : 'uploads/'.$this->image;
     }
 
     public function getImage(): string
@@ -330,30 +337,5 @@ class Post
         $this->status = true;
 
         return $this;
-    }
-
-    public function uploadImage(
-        UploadedFile $imageFile,
-        string $uploadDir,
-        FileValidator $fileValidator,
-        FileNameGenerator $fileNameGenerator,
-    ): void {
-        $fileValidator->validate($imageFile);
-        $this->removeImage($uploadDir);
-
-        $filename = $fileNameGenerator->generate($imageFile);
-        $imageFile->move($uploadDir, $filename);
-        $this->image = $filename;
-    }
-
-    public function removeImage(string $uploadDir): void
-    {
-        if (null !== $this->image) {
-            $filepath = $uploadDir.'/'.$this->image;
-
-            if (file_exists($filepath)) {
-                unlink($filepath);
-            }
-        }
     }
 }

@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
-use App\Service\FileNameGenerator;
-use App\Service\FileValidator;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'products')]
@@ -394,6 +391,13 @@ class Product
         return $this->updatedAt;
     }
 
+    public function getImageKey(string $type): string
+    {
+        $value = 'detail_picture' === $type ? $this->detailPicture : $this->previewPicture;
+
+        return null === $value ? 'shop_uploads/no-image.png' : 'shop_uploads/'.$value;
+    }
+
     public function getImage(string $type): string
     {
         $value = 'detail_picture' === $type ? $this->detailPicture : $this->previewPicture;
@@ -403,39 +407,5 @@ class Product
         }
 
         return '/storage/shop_uploads/'.$value;
-    }
-
-    public function uploadImage(
-        UploadedFile $imageFile,
-        string $type,
-        string $uploadDir,
-        FileValidator $fileValidator,
-        FileNameGenerator $fileNameGenerator,
-    ): void {
-        $fileValidator->validate($imageFile);
-
-        $filename = $fileNameGenerator->generate($imageFile);
-        $imageFile->move($uploadDir, $filename);
-
-        if ('detail_picture' === $type) {
-            $this->detailPicture = $filename;
-        } else {
-            $this->previewPicture = $filename;
-        }
-    }
-
-    public function removeImage(string $type, string $uploadDir): void
-    {
-        $value = 'detail_picture' === $type ? $this->detailPicture : $this->previewPicture;
-
-        if (null === $value) {
-            return;
-        }
-
-        $filepath = $uploadDir.'/'.$value;
-
-        if (file_exists($filepath)) {
-            unlink($filepath);
-        }
     }
 }
