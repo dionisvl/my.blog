@@ -23,9 +23,9 @@ func NewCategoryHandler(posts repository.PostRepository, categories repository.C
 }
 
 type categoryResponse struct {
-	Posts      []model.Post     `json:"posts"`
-	Category   *model.Category  `json:"category"`
-	Pagination Pagination       `json:"pagination"`
+	Posts      []model.Post    `json:"posts"`
+	Category   *model.Category `json:"category"`
+	Pagination Pagination      `json:"pagination"`
 }
 
 func (h *CategoryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {

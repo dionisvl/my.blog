@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"time"
 
 	"github.com/uptrace/bun"
@@ -45,11 +46,19 @@ func (p *Post) IsModular() bool {
 	return p.RouteMode == RouteModeNeutral
 }
 
+// MediaBaseURL is the public prefix of media files; set once at start-up from MEDIA_BASE_URL.
+var MediaBaseURL = "/storage"
+
+// MediaURL joins the configured base URL and a storage key such as "uploads/x.webp".
+func MediaURL(key string) string {
+	return strings.TrimRight(MediaBaseURL, "/") + "/" + key
+}
+
 func (p *Post) ResolveImageURL() {
 	if p.Image == nil || *p.Image == "" {
-		p.ImageURL = "/storage/blog_images/no-image.png"
+		p.ImageURL = MediaURL("blog_images/no-image.png")
 	} else {
-		p.ImageURL = "/storage/uploads/" + *p.Image
+		p.ImageURL = MediaURL("uploads/" + *p.Image)
 	}
 }
 

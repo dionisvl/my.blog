@@ -19,6 +19,8 @@ type Config struct {
 type FilesConfig struct {
 	SeoDir     string `mapstructure:"seo_dir"`
 	StorageDir string `mapstructure:"storage_dir"`
+	// MediaBaseURL is the public prefix of media files: "/storage" for the local driver, a CDN/bucket URL for S3.
+	MediaBaseURL string `mapstructure:"media_base_url"`
 }
 
 type ServerConfig struct {
@@ -65,6 +67,7 @@ func Load() (*Config, error) {
 	v.SetDefault("app.env", "dev")
 	v.SetDefault("files.seo_dir", "/seo")
 	v.SetDefault("files.storage_dir", "/storage")
+	v.SetDefault("files.media_base_url", "/storage")
 
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
@@ -76,6 +79,7 @@ func Load() (*Config, error) {
 	_ = v.BindEnv("server.cors_origins", "CORS_ALLOWED_ORIGINS")
 	_ = v.BindEnv("files.seo_dir", "SEO_DIR")
 	_ = v.BindEnv("files.storage_dir", "STORAGE_DIR")
+	_ = v.BindEnv("files.media_base_url", "MEDIA_BASE_URL")
 
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {

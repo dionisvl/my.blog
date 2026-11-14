@@ -11,6 +11,7 @@ import (
 	"api-go/internal/config"
 	"api-go/internal/handler"
 	mw "api-go/internal/middleware"
+	"api-go/internal/model"
 	"api-go/internal/repository"
 )
 
@@ -56,6 +57,7 @@ func NewRouter(
 	commentHandler := handler.NewCommentHandler(commentRepo, logger)
 	postLikeHandler := handler.NewPostLikeHandler(postLikeRepo, logger)
 	seoHandler := handler.NewSEOHandler(cfg.Files.SeoDir, cfg.App.MainHost, logger, articleRepo)
+	model.MediaBaseURL = cfg.Files.MediaBaseURL
 	storageHandler := handler.NewStorageHandler(cfg.Files.StorageDir)
 	incomingHandler := handler.NewIncomingHandler(incomingRepo, logger)
 	subscribeHandler := handler.NewSubscribeHandler(subscriptionRepo, logger)

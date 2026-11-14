@@ -86,7 +86,9 @@ services:
 
   symfony:
     volumes:
+      - /home/my.blog/data/media-private:/app/var/media-private
       - /home/my.blog/config/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
+      - /home/my.blog/config/php/media-upload.ini:/usr/local/etc/php/conf.d/zz-media-upload.ini:ro
     image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:${PHP_VERSION}
     build:
       context: ./api-symfony
@@ -254,6 +256,42 @@ services:
       - "traefik.http.routers.jaeger-https.service=jaeger"
       - "traefik.http.routers.jaeger-https.middlewares=jaeger-auth@docker"
       - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+
+  # Local S3-compatible storage for blog images (RustFS). Public bucket is served at https://${MAIN_HOST}/media/*,
+  # the private bucket (original uploads) has no route.
+  media-s3:
+    image: rustfs/rustfs@sha256:b81d16a90ee25bd9511280127ca1471788c6e874cf0f0da759645f46b2dc1d74
+    user: root
+    command: /data
+    environment:
+      RUSTFS_ACCESS_KEY: ${MEDIA_S3_KEY:?set MEDIA_S3_KEY in .env}
+      RUSTFS_SECRET_KEY: ${MEDIA_S3_SECRET:?set MEDIA_S3_SECRET in .env}
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_VOLUMES: /data
+    volumes:
+      - /home/my.blog/data/media-s3:/data
+    expose:
+      - "9000"
+    networks:
+      - app-network
+    restart: unless-stopped
+    mem_limit: 512m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.middlewares.media-rewrite.replacepathregex.regex=^/media/(.*)"
+      - "traefik.http.middlewares.media-rewrite.replacepathregex.replacement=/media-public/$${1}"
+      - "traefik.http.routers.media-http.rule=(Host(`${MAIN_HOST}`) || Host(`www.${MAIN_HOST}`)) && PathPrefix(`/media/`)"
+      - "traefik.http.routers.media-http.priority=60"
+      - "traefik.http.routers.media-http.entrypoints=web"
+      - "traefik.http.routers.media-http.middlewares=media-rewrite"
+      - "traefik.http.routers.media-http.service=media-s3"
+      - "traefik.http.routers.media.rule=(Host(`${MAIN_HOST}`) || Host(`www.${MAIN_HOST}`)) && PathPrefix(`/media/`)"
+      - "traefik.http.routers.media.priority=60"
+      - "traefik.http.routers.media.entrypoints=websecure"
+      - "traefik.http.routers.media.tls.certresolver=myresolver"
+      - "traefik.http.routers.media.middlewares=media-rewrite"
+      - "traefik.http.routers.media.service=media-s3"
+      - "traefik.http.services.media-s3.loadbalancer.server.port=9000"
 
 volumes:
   astro_node_modules:
