@@ -3,7 +3,7 @@ FROM node:${NODE_VERSION}-alpine AS deps
 
 WORKDIR /app
 
-RUN corepack enable pnpm
+RUN npm install -g corepack && corepack enable pnpm
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile

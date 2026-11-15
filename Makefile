@@ -25,7 +25,7 @@ astro-build-local:
 		--env-from-file ./frontend-astro/.env \
 		-p 4321:4321 \
 		astro-frontend \
-		sh -c "corepack enable pnpm && pnpm install --frozen-lockfile && pnpm build && node dist/server/entry.mjs"
+		sh -c "npm install -g corepack && corepack enable pnpm && pnpm install --frozen-lockfile && pnpm build && node dist/server/entry.mjs"
 
 docker-down-clear:
 	$(COMPOSE_DEV) down -v --remove-orphans
