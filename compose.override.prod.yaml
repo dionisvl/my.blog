@@ -197,6 +197,7 @@ services:
       target: prod
       args:
         NODE_VERSION: ${IMAGE_NODE_VERSION:?set IMAGE_NODE_VERSION in .env}
+        PNPM_VERSION: ${IMAGE_PNPM_VERSION:?set IMAGE_PNPM_VERSION in .env}
         PUBLIC_SITE_URL: https://${MAIN_HOST}
         PUBLIC_SITE_TITLE: ${MAIN_HOST}
         PUBLIC_SITE_AUTHOR: Web3main LLC

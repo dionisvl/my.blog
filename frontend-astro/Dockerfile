@@ -1,9 +1,11 @@
 ARG NODE_VERSION=26.13.1
+ARG PNPM_VERSION=10.34.9
 FROM node:${NODE_VERSION}-alpine AS deps
 
 WORKDIR /app
 
-RUN npm install -g corepack && corepack enable pnpm
+ARG PNPM_VERSION
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
