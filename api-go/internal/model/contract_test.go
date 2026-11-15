@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
 	"testing"
 
@@ -39,7 +39,7 @@ func readManifest(t *testing.T, dir string) (map[string]string, []string) {
 
 	entries := map[string]string{}
 	var order []string
-	for _, line := range strings.Split(strings.TrimSpace(string(raw)), "\n") {
+	for line := range strings.SplitSeq(strings.TrimSpace(string(raw)), "\n") {
 		match := manifestLine.FindStringSubmatch(line)
 		require.NotNil(t, match, "malformed manifest line %q", line)
 		entries[match[2]] = match[1]
@@ -69,7 +69,7 @@ func TestContract_ManifestMatchesFiles(t *testing.T) {
 			onDisk = append(onDisk, "fixtures/"+kind+"/"+filepath.Base(f))
 		}
 	}
-	sort.Strings(onDisk)
+	slices.Sort(onDisk)
 
 	assert.Equal(t, onDisk, order, "MANIFEST.sha256 must list exactly the contract files, sorted")
 	for relative, want := range entries {

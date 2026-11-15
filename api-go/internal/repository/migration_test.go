@@ -83,7 +83,7 @@ func TestMigration_AdditiveOnProductionBaseline(t *testing.T) {
 	})
 
 	t.Run("the Go post model matches the migrated production-shaped table", func(t *testing.T) {
-		assertModelColumnsExist(t, tdb, "posts", reflect.TypeOf(model.Post{}))
+		assertModelColumnsExist(t, tdb, "posts", reflect.TypeFor[model.Post]())
 	})
 
 	t.Run("a neutral anchor cannot be inserted with the default (published) status", func(t *testing.T) {
@@ -219,7 +219,7 @@ func TestMigration_ConstraintsAndTriggers(t *testing.T) {
 func TestMigration_GoModelColumnsExistInTestSchema(t *testing.T) {
 	tdb := testhelper.NewTestDB(t)
 
-	assertModelColumnsExist(t, tdb, "posts", reflect.TypeOf(model.Post{}))
+	assertModelColumnsExist(t, tdb, "posts", reflect.TypeFor[model.Post]())
 }
 
 func assertModelColumnsExist(t *testing.T, tdb *testhelper.TestDB, table string, modelType reflect.Type) {

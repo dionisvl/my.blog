@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strings"
 	"time"
 
@@ -144,7 +144,7 @@ func addArticleLocalesToSitemap(source []byte, host string, locales []model.Publ
 	for slug := range articles {
 		slugs = append(slugs, slug)
 	}
-	sort.Strings(slugs)
+	slices.Sort(slugs)
 
 	var additions bytes.Buffer
 	for _, slug := range slugs {

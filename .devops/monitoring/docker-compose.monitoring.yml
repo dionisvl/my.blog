@@ -1,6 +1,6 @@
 services:
   prometheus:
-    image: prom/prometheus:v3.9.1
+    image: prom/prometheus:${PROMETHEUS_VERSION:?set PROMETHEUS_VERSION in .env}
     container_name: prometheus
     expose:
       - "9090"
@@ -22,7 +22,7 @@ services:
       - "traefik.enable=true"
 
   grafana:
-    image: grafana/grafana:12.3.2
+    image: grafana/grafana:${GRAFANA_VERSION:?set GRAFANA_VERSION in .env}
     container_name: grafana
     expose:
       - "3000"
@@ -60,7 +60,7 @@ services:
       - "traefik.enable=false"
 
   alertmanager:
-    image: prom/alertmanager:v0.30.1
+    image: prom/alertmanager:${ALERTMANAGER_VERSION:?set ALERTMANAGER_VERSION in .env}
     container_name: alertmanager
     expose:
       - "9093"
@@ -77,7 +77,7 @@ services:
       - "traefik.enable=true"
 
   node-exporter:
-    image: prom/node-exporter:v1.10.2
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION:?set NODE_EXPORTER_VERSION in .env}
     container_name: node-exporter
     expose:
       - "9100"
@@ -96,7 +96,7 @@ services:
       - "traefik.enable=false"
 
   cadvisor:
-    image: ghcr.io/google/cadvisor:0.56
+    image: ghcr.io/google/cadvisor:${CADVISOR_VERSION:?set CADVISOR_VERSION in .env}
     container_name: cadvisor
     expose:
       - "8080"

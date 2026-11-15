@@ -1,4 +1,5 @@
-FROM golang:1.26-alpine AS builder
+ARG GO_VERSION=1.27.4
+FROM golang:${GO_VERSION}-alpine AS builder
 
 RUN apk add --no-cache git ca-certificates
 

@@ -9,48 +9,40 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestLoadRejectsEmptyAPIKey(t *testing.T) {
-	dir := t.TempDir()
-	writeConfigFile(t, dir, "app:\n  env: prod\n")
-	chdir(t, dir)
-	t.Setenv("API_KEY", "")
-	t.Setenv("MAIN_HOST", "example.com")
+func TestLoad(t *testing.T) {
+	tests := []struct {
+		name     string
+		apiKey   string
+		mainHost string
+		wantErr  string
+	}{
+		{name: "valid", apiKey: "secret", mainHost: "example.com"},
+		{name: "empty API key", apiKey: "", mainHost: "example.com", wantErr: "API_KEY must not be empty"},
+		{name: "empty main host", apiKey: "secret", mainHost: "", wantErr: "MAIN_HOST must not be empty"},
+	}
 
-	cfg, err := Load()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			writeConfigFile(t, dir, "app:\n  env: prod\n")
+			chdir(t, dir)
+			t.Setenv("API_KEY", tt.apiKey)
+			t.Setenv("MAIN_HOST", tt.mainHost)
 
-	require.Error(t, err)
-	assert.Nil(t, cfg)
-	assert.EqualError(t, err, "API_KEY must not be empty")
-}
+			cfg, err := Load()
 
-func TestLoadAcceptsNonEmptyAPIKey(t *testing.T) {
-	dir := t.TempDir()
-	writeConfigFile(t, dir, "app:\n  env: prod\n")
-	chdir(t, dir)
-	t.Setenv("API_KEY", "secret")
-	t.Setenv("MAIN_HOST", "example.com")
-
-	cfg, err := Load()
-
-	require.NoError(t, err)
-	require.NotNil(t, cfg)
-	assert.Equal(t, "secret", cfg.Auth.APIKey)
-	assert.Equal(t, "prod", cfg.App.Env)
-	assert.Equal(t, "example.com", cfg.App.MainHost)
-}
-
-func TestLoadRejectsEmptyMainHost(t *testing.T) {
-	dir := t.TempDir()
-	writeConfigFile(t, dir, "app:\n  env: prod\n")
-	chdir(t, dir)
-	t.Setenv("API_KEY", "secret")
-	t.Setenv("MAIN_HOST", "")
-
-	cfg, err := Load()
-
-	require.Error(t, err)
-	assert.Nil(t, cfg)
-	assert.EqualError(t, err, "MAIN_HOST must not be empty")
+			if tt.wantErr != "" {
+				assert.EqualError(t, err, tt.wantErr)
+				assert.Nil(t, cfg)
+				return
+			}
+			require.NoError(t, err)
+			require.NotNil(t, cfg)
+			assert.Equal(t, tt.apiKey, cfg.Auth.APIKey)
+			assert.Equal(t, "prod", cfg.App.Env)
+			assert.Equal(t, tt.mainHost, cfg.App.MainHost)
+		})
+	}
 }
 
 func writeConfigFile(t *testing.T, dir, content string) {

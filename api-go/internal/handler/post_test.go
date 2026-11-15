@@ -72,86 +72,55 @@ func (f *fakeAphorismRepo) FindRandom(ctx context.Context) (*model.Aphorism, err
 	return nil, nil
 }
 
-// TestPostHandler_IncrementsViewsWithoutCookie verifies that a request without
-// the viewedPostToday cookie increments views and sets the cookie.
-func TestPostHandler_IncrementsViewsWithoutCookie(t *testing.T) {
-	postRepo := &fakePostRepo{
-		post: &model.Post{
-			ID:    42,
-			Title: "Test Post",
-			Slug:  "test-post",
+func TestPostHandler_ViewCounting(t *testing.T) {
+	tests := []struct {
+		name          string
+		cookie        *http.Cookie
+		wantIncrement int
+		wantSetCookie bool
+	}{
+		{name: "no cookie counts the view and sets the cookie", wantIncrement: 1, wantSetCookie: true},
+		{
+			name:          "cookie from today suppresses the view",
+			cookie:        &http.Cookie{Name: "viewedPostToday42", Value: "2006-01-02 15:04:05"},
+			wantIncrement: 0,
 		},
 	}
-	catRepo := &fakeCategoryRepo{}
-	aphorismRepo := &fakeAphorismRepo{}
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 
-	handler := NewPostHandler(postRepo, catRepo, aphorismRepo, logger)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			postRepo := &fakePostRepo{post: &model.Post{ID: 42, Title: "Test Post", Slug: "test-post"}}
+			logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+			handler := NewPostHandler(postRepo, &fakeCategoryRepo{}, &fakeAphorismRepo{}, logger)
 
-	// Create a chi router and mount the handler to populate the slug URL param.
-	router := chi.NewRouter()
-	router.Get("/api/post/{slug}", handler.ServeHTTP)
+			router := chi.NewRouter()
+			router.Get("/api/post/{slug}", handler.ServeHTTP)
 
-	// Create a request without the viewedPostToday cookie.
-	req := httptest.NewRequest("GET", "/api/post/test-post", nil)
-	w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodGet, "/api/post/test-post", nil)
+			if tt.cookie != nil {
+				req.AddCookie(tt.cookie)
+			}
+			w := httptest.NewRecorder()
+			router.ServeHTTP(w, req)
 
-	router.ServeHTTP(w, req)
+			assert.Equal(t, http.StatusOK, w.Code)
+			assert.Equal(t, tt.wantIncrement, postRepo.incrementCalls)
 
-	// Assert HTTP 200 response
-	assert.Equal(t, http.StatusOK, w.Code, "expected HTTP 200")
-
-	// Assert IncrementViews was called exactly once
-	assert.Equal(t, 1, postRepo.incrementCalls, "expected IncrementViews to be called once")
-
-	// Assert Set-Cookie header is present with the expected cookie name
-	cookies := w.Result().Cookies()
-	found := false
-	for _, cookie := range cookies {
-		if strings.HasPrefix(cookie.Name, "viewedPostToday") {
-			found = true
-			assert.Equal(t, "viewedPostToday42", cookie.Name, "expected cookie name viewedPostToday42")
-			assert.True(t, cookie.HttpOnly, "expected HttpOnly flag to be set")
-			assert.NotZero(t, cookie.Expires, "expected Expires to be set")
-			break
-		}
+			var viewCookie *http.Cookie
+			for _, c := range w.Result().Cookies() {
+				if strings.HasPrefix(c.Name, "viewedPostToday") {
+					viewCookie = c
+				}
+			}
+			if !tt.wantSetCookie {
+				assert.Nil(t, viewCookie)
+				return
+			}
+			if assert.NotNil(t, viewCookie) {
+				assert.Equal(t, "viewedPostToday42", viewCookie.Name)
+				assert.True(t, viewCookie.HttpOnly)
+				assert.NotZero(t, viewCookie.Expires)
+			}
+		})
 	}
-	assert.True(t, found, "expected Set-Cookie header with viewedPostToday cookie")
-}
-
-// TestPostHandler_DoesNotIncrementWithCookie verifies that a request with
-// the viewedPostToday cookie does not increment views.
-func TestPostHandler_DoesNotIncrementWithCookie(t *testing.T) {
-	postRepo := &fakePostRepo{
-		post: &model.Post{
-			ID:    42,
-			Title: "Test Post",
-			Slug:  "test-post",
-		},
-	}
-	catRepo := &fakeCategoryRepo{}
-	aphorismRepo := &fakeAphorismRepo{}
-	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-
-	handler := NewPostHandler(postRepo, catRepo, aphorismRepo, logger)
-
-	// Create a chi router and mount the handler to populate the slug URL param.
-	router := chi.NewRouter()
-	router.Get("/api/post/{slug}", handler.ServeHTTP)
-
-	// Create a request with the viewedPostToday cookie already set.
-	req := httptest.NewRequest("GET", "/api/post/test-post", nil)
-	req.AddCookie(&http.Cookie{
-		Name:  "viewedPostToday42",
-		Value: "2006-01-02 15:04:05",
-	})
-	w := httptest.NewRecorder()
-
-	router.ServeHTTP(w, req)
-
-	// Assert HTTP 200 response
-	assert.Equal(t, http.StatusOK, w.Code, "expected HTTP 200")
-
-	// Assert IncrementViews was NOT called
-	assert.Equal(t, 0, postRepo.incrementCalls, "expected IncrementViews to not be called")
 }

@@ -47,8 +47,19 @@ func TestSearchEmptyResultMarshalsAsArray(t *testing.T) {
 }
 
 func TestEmptyIfNil(t *testing.T) {
-	assert.Equal(t, []int{}, EmptyIfNil[int](nil))
+	tests := []struct {
+		name string
+		in   []int
+		want []int
+	}{
+		{"nil becomes empty slice", nil, []int{}},
+		{"empty stays empty", []int{}, []int{}},
+		{"values are kept", []int{1, 2}, []int{1, 2}},
+	}
 
-	existing := []int{1, 2}
-	assert.Equal(t, existing, EmptyIfNil(existing))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, EmptyIfNil(tt.in))
+		})
+	}
 }

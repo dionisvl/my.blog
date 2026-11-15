@@ -25,7 +25,7 @@ type TestDB struct {
 	container testcontainers.Container
 }
 
-// NewTestDB starts a disposable PostgreSQL 17, creates the legacy tables below and applies the
+// NewTestDB starts a disposable PostgreSQL 18, creates the legacy tables below and applies the
 // modular-articles migration (api-symfony/migrations/sql/modular_articles.up.sql) on top of them.
 func NewTestDB(t *testing.T) *TestDB {
 	t.Helper()
@@ -37,14 +37,14 @@ func NewTestDB(t *testing.T) *TestDB {
 	return tdb
 }
 
-// NewBareTestDB starts a disposable PostgreSQL 17 with NO tables, so a test can restore its own
+// NewBareTestDB starts a disposable PostgreSQL 18 with NO tables, so a test can restore its own
 // baseline (e.g. testdata/prod_baseline.sql) and exercise the migration scripts on it.
 func NewBareTestDB(t *testing.T) *TestDB {
 	t.Helper()
 	ctx := context.Background()
 
 	req := testcontainers.ContainerRequest{
-		Image:        "postgres:17-alpine",
+		Image:        "postgres:18.7-alpine",
 		ExposedPorts: []string{"5432/tcp"},
 		Env: map[string]string{
 			"POSTGRES_DB":       "testdb",

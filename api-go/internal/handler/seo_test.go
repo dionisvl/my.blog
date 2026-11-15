@@ -65,17 +65,21 @@ func TestSEOHandlerUsesAllowlistedRequestHostForRobotsAndSitemap(t *testing.T) {
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "sitemap-example.com.xml"), sitemap, 0o600))
 	h := NewSEOHandler(dir, "example.com", slog.New(slog.NewTextHandler(io.Discard, nil)), nil)
 
-	for _, tc := range []struct{ host, path, want string }{
-		{"www.example.com", "/robots.txt", "Sitemap: https://www.example.com/sitemap.xml"},
-		{"www.example.com", "/sitemap.xml", "https://www.example.com/"},
-		{"evil.example", "/robots.txt", "Sitemap: https://example.com/sitemap.xml"},
-	} {
-		req := httptest.NewRequest(http.MethodGet, tc.path, nil)
-		req.Host = tc.host
-		rec := httptest.NewRecorder()
-		h.ServeHTTP(rec, req)
-		require.Equal(t, http.StatusOK, rec.Code)
-		assert.Contains(t, rec.Body.String(), tc.want)
+	tests := []struct{ name, host, path, want string }{
+		{"www robots", "www.example.com", "/robots.txt", "Sitemap: https://www.example.com/sitemap.xml"},
+		{"www sitemap", "www.example.com", "/sitemap.xml", "https://www.example.com/"},
+		{"unknown host falls back to main host", "evil.example", "/robots.txt", "Sitemap: https://example.com/sitemap.xml"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tc.path, nil)
+			req.Host = tc.host
+			rec := httptest.NewRecorder()
+			h.ServeHTTP(rec, req)
+			require.Equal(t, http.StatusOK, rec.Code)
+			assert.Contains(t, rec.Body.String(), tc.want)
+		})
 	}
 }
 

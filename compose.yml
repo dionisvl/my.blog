@@ -40,7 +40,7 @@ services:
         required: true
     environment:
       PHP_IDE_CONFIG: serverName=${MAIN_HOST}
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?serverVersion=17&charset=utf8"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?serverVersion=${IMAGE_POSTGRES_VERSION}&charset=utf8"
       SERVER_NAME: ":80"
       MAX_REQUESTS: "500"
       GOMEMLIMIT: "512MiB"
@@ -77,6 +77,8 @@ services:
     build:
       context: ./api-go
       dockerfile: ./Dockerfile
+      args:
+        GO_VERSION: ${IMAGE_GO_VERSION:?set IMAGE_GO_VERSION in .env}
     env_file:
       - path: ./.env
         required: true
@@ -122,14 +124,14 @@ services:
 
   postgres:
     restart: unless-stopped
-    image: postgres:17.11-alpine
+    image: postgres:${IMAGE_POSTGRES_VERSION:?set IMAGE_POSTGRES_VERSION in .env}-alpine
     env_file:
       - path: ./.env
         required: true
       - path: ./.env.local
         required: false
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres18_data:/var/lib/postgresql
     networks:
       - app-network
     healthcheck:
@@ -139,7 +141,7 @@ services:
       retries: 5
 
   victoria-logs:
-    image: victoriametrics/victoria-logs:v1.53.0
+    image: victoriametrics/victoria-logs:${VICTORIA_LOGS_VERSION:?set VICTORIA_LOGS_VERSION in .env}
     expose:
       - "9428"
     volumes:
@@ -152,7 +154,7 @@ services:
     restart: unless-stopped
 
   vector:
-    image: timberio/vector:0.60.0-alpine
+    image: timberio/vector:${VECTOR_VERSION:?set VECTOR_VERSION in .env}-alpine
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./.devops/vmetrics/vector.toml:/etc/vector/vector.toml:ro
@@ -169,7 +171,7 @@ services:
       - "traefik.enable=false"
 
   vmauth:
-    image: victoriametrics/vmauth:v1.154.1
+    image: victoriametrics/vmauth:${VMAUTH_VERSION:?set VMAUTH_VERSION in .env}
     expose:
       - "8427"
     volumes:
@@ -187,7 +189,7 @@ services:
       - victoria-logs
 
   jaeger:
-    image: jaegertracing/jaeger:2.22.0
+    image: jaegertracing/jaeger:${JAEGER_VERSION:?set JAEGER_VERSION in .env}
     command:
       - "--set=receivers.otlp.protocols.grpc.endpoint=0.0.0.0:4317"
       - "--set=receivers.otlp.protocols.http.endpoint=0.0.0.0:4318"
@@ -218,7 +220,7 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  postgres18_data:
   victoria_logs_data:
   astro_node_modules:
   geoip_data:

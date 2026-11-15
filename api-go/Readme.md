@@ -7,7 +7,7 @@ Shares the same PostgreSQL database (read-only for most tables, writes to `comme
 ## Stack
 
 - **Routing**: chi v5
-- **Database**: PostgreSQL 17 + pgx v5 + bun ORM
+- **Database**: PostgreSQL 18 + pgx v5 + bun ORM
 - **Logging**: log/slog (text in dev, JSON in prod)
 - **Config**: viper (YAML + env vars)
 - **Tests**: testify + testcontainers-go (real PostgreSQL per test)

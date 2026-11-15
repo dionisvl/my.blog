@@ -95,7 +95,7 @@ services:
       - "traefik.http.services.api-go.loadbalancer.server.port=8081"
 
   astro-frontend:
-    image: node:24-alpine
+    image: node:${IMAGE_NODE_VERSION:?set IMAGE_NODE_VERSION in .env}-alpine
     working_dir: /app
     command: sh -c "corepack enable pnpm && pnpm install && pnpm dev --host 0.0.0.0 --port 4321"
     env_file:

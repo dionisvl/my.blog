@@ -14,7 +14,7 @@ jobs:
       DEFAULT_URI: http://localhost
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres:18.7-alpine
         env:
           POSTGRES_DB: article_ci
           POSTGRES_USER: article
@@ -57,7 +57,7 @@ jobs:
       - name: Run PostgreSQL publishing tests
         working-directory: api-symfony
         env:
-          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_ci?serverVersion=17.0.0
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_ci?serverVersion=18.0.0
         run: ./vendor/bin/phpunit tests/Functional/ArticlePublisherTest.php --no-progress
 
       - name: Setup Go for cross-runtime verification
@@ -69,7 +69,7 @@ jobs:
       - name: Publish fixture with Symfony
         working-directory: api-symfony
         env:
-          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_ci?serverVersion=17.0.0
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_ci?serverVersion=18.0.0
         run: ./vendor/bin/phpunit tests/Functional/ArticlePublisherTest.php --filter testPublishMakesTheAnchorVisibleWithEscapedCardFields --no-progress
 
       - name: Read Symfony publication with Go
@@ -101,13 +101,13 @@ jobs:
       - name: Migrate migrated-schema smoke database with Doctrine
         working-directory: api-symfony
         env:
-          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=18.0.0
         run: php bin/console doctrine:migrations:migrate --no-interaction
 
       - name: Publish migrated-schema smoke fixture with Symfony
         working-directory: api-symfony
         env:
-          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=18.0.0
         run: php tests/Support/article_migrated_schema_smoke.php publish
 
       - name: Read migrated-schema smoke publication with Go
@@ -123,13 +123,13 @@ jobs:
       - name: Unpublish migrated-schema smoke fixture with Symfony
         working-directory: api-symfony
         env:
-          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=18.0.0
         run: php tests/Support/article_migrated_schema_smoke.php unpublish
 
       - name: Roll back migrated-schema smoke database with Doctrine
         working-directory: api-symfony
         env:
-          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=17.0.0
+          DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=18.0.0
         run: php bin/console doctrine:migrations:execute --down --no-interaction 'DoctrineMigrations\Version20261102120000'
 
       - name: Verify migrated-schema smoke rollback

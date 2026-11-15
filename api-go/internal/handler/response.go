@@ -40,20 +40,11 @@ func PageFromQuery(r *http.Request, defaultPage int) int {
 }
 
 func BuildPagination(page, perPage, total int) Pagination {
-	totalPages := (total + perPage - 1) / perPage
-	if totalPages < 1 {
-		totalPages = 1
-	}
+	totalPages := max((total+perPage-1)/perPage, 1)
 
-	prevPage := page - 1
-	if prevPage < 1 {
-		prevPage = 1
-	}
+	prevPage := max(page-1, 1)
 
-	nextPage := page + 1
-	if nextPage > totalPages {
-		nextPage = totalPages
-	}
+	nextPage := min(page+1, totalPages)
 
 	return Pagination{
 		CurrentPage: page,

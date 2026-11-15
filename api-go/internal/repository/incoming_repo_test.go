@@ -13,34 +13,29 @@ import (
 
 func TestIncomingRepository_Create(t *testing.T) {
 	tdb := testhelper.NewTestDB(t)
-	tdb.Truncate(t, "incomings")
-
-	ctx := context.Background()
 	repo := repository.NewIncomingRepository(tdb.DB)
 
-	incoming, err := repo.Create(ctx, "Alice", "alice@example.com", "+79001234567", "Hello!")
-	require.NoError(t, err)
-	assert.NotZero(t, incoming.ID)
-	assert.Equal(t, "Alice", incoming.Name)
-	assert.Equal(t, "alice@example.com", incoming.Email)
-	assert.Equal(t, "+79001234567", incoming.Phone)
-	assert.Equal(t, "Hello!", incoming.Message)
-	assert.Equal(t, 0, incoming.Status)
-	assert.False(t, incoming.CreatedAt.IsZero())
-}
+	tests := []struct {
+		name                          string
+		author, email, phone, message string
+	}{
+		{"all fields", "Alice", "alice@example.com", "+79001234567", "Hello!"},
+		{"empty optional fields", "Bob", "", "", "Just a message"},
+	}
 
-func TestIncomingRepository_Create_EmptyOptionalFields(t *testing.T) {
-	tdb := testhelper.NewTestDB(t)
-	tdb.Truncate(t, "incomings")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tdb.Truncate(t, "incomings")
 
-	ctx := context.Background()
-	repo := repository.NewIncomingRepository(tdb.DB)
-
-	incoming, err := repo.Create(ctx, "Bob", "", "", "Just a message")
-	require.NoError(t, err)
-	assert.NotZero(t, incoming.ID)
-	assert.Equal(t, "Bob", incoming.Name)
-	assert.Equal(t, "", incoming.Email)
-	assert.Equal(t, "", incoming.Phone)
-	assert.Equal(t, 0, incoming.Status)
+			incoming, err := repo.Create(context.Background(), tt.author, tt.email, tt.phone, tt.message)
+			require.NoError(t, err)
+			assert.NotZero(t, incoming.ID)
+			assert.Equal(t, tt.author, incoming.Name)
+			assert.Equal(t, tt.email, incoming.Email)
+			assert.Equal(t, tt.phone, incoming.Phone)
+			assert.Equal(t, tt.message, incoming.Message)
+			assert.Equal(t, 0, incoming.Status)
+			assert.False(t, incoming.CreatedAt.IsZero())
+		})
+	}
 }

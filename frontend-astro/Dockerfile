@@ -1,4 +1,5 @@
-FROM node:24-alpine AS deps
+ARG NODE_VERSION=26.13.1
+FROM node:${NODE_VERSION}-alpine AS deps
 
 WORKDIR /app
 
@@ -25,7 +26,7 @@ ENV PUBLIC_SITE_URL=${PUBLIC_SITE_URL} \
 COPY . .
 RUN pnpm build
 
-FROM node:24-alpine AS prod
+FROM node:${NODE_VERSION}-alpine AS prod
 
 # The runtime only needs node; drop npm/corepack so their bundled deps are not shipped
 RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack

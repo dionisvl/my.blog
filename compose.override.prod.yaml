@@ -196,6 +196,7 @@ services:
       dockerfile: ./Dockerfile
       target: prod
       args:
+        NODE_VERSION: ${IMAGE_NODE_VERSION:?set IMAGE_NODE_VERSION in .env}
         PUBLIC_SITE_URL: https://${MAIN_HOST}
         PUBLIC_SITE_TITLE: ${MAIN_HOST}
         PUBLIC_SITE_AUTHOR: Web3main LLC
@@ -224,7 +225,7 @@ services:
 
   geoip-updater:
     profiles: ["geoip"]
-    image: node:26-alpine@sha256:8996bb5821d62a8fd9bb27c1cb07462f3fdce6e47d640c6a881ead0b064ce216
+    image: node:${IMAGE_NODE_VERSION:?set IMAGE_NODE_VERSION in .env}-alpine@${IMAGE_NODE_DIGEST:?set IMAGE_NODE_DIGEST in .env}
     restart: unless-stopped
     command: ["node", "/opt/update-geoip.mjs"]
     volumes:

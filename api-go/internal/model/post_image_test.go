@@ -6,22 +6,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestResolveImageURLUsesMediaBaseURL(t *testing.T) {
-	old := MediaBaseURL
-	t.Cleanup(func() { MediaBaseURL = old })
-
+func TestResolveImageURL(t *testing.T) {
 	name := "a.webp"
-	p := &Post{Image: &name}
 
-	MediaBaseURL = "/storage"
-	p.ResolveImageURL()
-	assert.Equal(t, "/storage/uploads/a.webp", p.ImageURL)
+	tests := []struct {
+		name    string
+		base    string
+		image   *string
+		wantURL string
+	}{
+		{"relative base", "/storage", &name, "/storage/uploads/a.webp"},
+		{"absolute base with trailing slash", "https://cdn.example.test/", &name, "https://cdn.example.test/uploads/a.webp"},
+		{"no image falls back to placeholder", "https://cdn.example.test/", nil, "https://cdn.example.test/blog_images/no-image.png"},
+	}
 
-	MediaBaseURL = "https://cdn.example.test/"
-	p.ResolveImageURL()
-	assert.Equal(t, "https://cdn.example.test/uploads/a.webp", p.ImageURL)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			old := MediaBaseURL
+			t.Cleanup(func() { MediaBaseURL = old })
+			MediaBaseURL = tt.base
 
-	p.Image = nil
-	p.ResolveImageURL()
-	assert.Equal(t, "https://cdn.example.test/blog_images/no-image.png", p.ImageURL)
+			p := &Post{Image: tt.image}
+			p.ResolveImageURL()
+
+			assert.Equal(t, tt.wantURL, p.ImageURL)
+		})
+	}
 }
