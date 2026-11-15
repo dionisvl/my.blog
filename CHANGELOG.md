@@ -5,6 +5,14 @@
 - Turbo pages export via API instead of RSS
 - Ajax full-text search
 
+### 2026-11-15
+
+- PostgreSQL 17 → 18 (new volume `postgres18_data`, migration via dump: `docs/deploy-postgres-18.md`)
+- Go 1.27.4, Node 26, pnpm 12 (installed via npm: corepack is not shipped since Node 25)
+- All image versions moved to `.env` (`IMAGE_*`, `*_VERSION`); monitoring stack updated (Grafana 13)
+- Go tests converted to table-driven, `BuildPagination` and `PageFromQuery` covered
+- Traefik prod: Prometheus metrics entrypoint restored
+
 ### 2026-02-01
 
 - Jaeger distributed tracing: OTLP from Traefik with internal spans
