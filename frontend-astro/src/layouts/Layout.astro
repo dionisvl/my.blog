@@ -40,7 +40,9 @@ const m = messagesFor(lang);
 // Article pages offer only the languages that article is published in; other pages offer every site language.
 const switcherLocales = (
   articleSlug
-    ? alternates.map((alt) => alt.hreflang).filter((code) => code in LANGUAGE_LABELS)
+    ? alternates
+        .map(alt => alt.hreflang)
+        .filter(code => code in LANGUAGE_LABELS)
     : Object.keys(LANGUAGE_LABELS)
 ) as ArticleLocale[];
 const switcherCurrent: ArticleLocale = articleSlug
@@ -126,7 +128,15 @@ const currentYear = new Date().getFullYear();
 
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonicalUrl} />
-    {alternates.map((alt) => <link rel="alternate" hreflang={alt.hreflang} href={absoluteUrl(alt.path)} />)}
+    {
+      alternates.map(alt => (
+        <link
+          rel="alternate"
+          hreflang={alt.hreflang}
+          href={absoluteUrl(alt.path)}
+        />
+      ))
+    }
     <meta name="robots" content="index,follow" />
     <meta
       name="googlebot"
@@ -149,10 +159,14 @@ const currentYear = new Date().getFullYear();
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={metaImage} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)}>
-    </script>
-    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)}>
-    </script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(organizationSchema)}
+    />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(websiteSchema)}
+    />
 
     <!-- Shared front-end styles -->
     <link rel="stylesheet" href="/css/front.css" />
@@ -176,9 +190,9 @@ const currentYear = new Date().getFullYear();
 
   <body class="bg-gray-900 text-gray-100">
     <!-- Navigation -->
-    <nav class="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+    <nav class="sticky top-0 z-50 border-b border-gray-700 bg-gray-800">
       <div
-        class="container mx-auto px-4 py-2 relative flex items-center justify-between"
+        class="relative container mx-auto flex items-center justify-between px-4 py-2"
       >
         <!-- Logo -->
         <a class="flex-shrink-0" href="/">
@@ -198,29 +212,31 @@ const currentYear = new Date().getFullYear();
             <form
               method="post"
               action="/api/language-preference"
-              class="ml-auto mr-2 md:ml-0 md:mr-0 md:order-last flex items-center gap-1.5"
+              class="mr-2 ml-auto flex items-center gap-1.5 md:order-last md:mr-0 md:ml-0"
               title="Language"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-gray-400 flex-shrink-0"
+                class="h-5 w-5 flex-shrink-0 text-gray-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
                 stroke-width="2"
                 aria-hidden="true"
               >
-                <circle cx="12" cy="12" r="9"></circle>
-                <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"></path>
+                <circle cx="12" cy="12" r="9" />
+                <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" />
               </svg>
-              <label for="language-select" class="sr-only">Language</label>
+              <label for="language-select" class="sr-only">
+                Language
+              </label>
               <select
                 id="language-select"
                 name="locale"
-                class="bg-gray-700 border border-gray-600 text-gray-100 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="rounded border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 onchange="this.form.submit()"
               >
-                {switcherLocales.map((code) => (
+                {switcherLocales.map(code => (
                   <option value={code} selected={code === switcherCurrent}>
                     {LANGUAGE_LABELS[code]}
                   </option>
@@ -232,7 +248,9 @@ const currentYear = new Date().getFullYear();
                 <input type="hidden" name="next" value={switcherNext} />
               )}
               <noscript>
-                <button type="submit" class="text-sm text-blue-300 underline">OK</button>
+                <button type="submit" class="text-sm text-blue-300 underline">
+                  OK
+                </button>
               </noscript>
             </form>
           )
@@ -243,7 +261,7 @@ const currentYear = new Date().getFullYear();
           aria-label={m.nav.menuToggle}
           aria-controls="navbarMenu"
           aria-expanded="false"
-          class="md:hidden px-2 py-1 border border-gray-600 rounded text-gray-300 hover:bg-gray-700"
+          class="rounded border border-gray-600 px-2 py-1 text-gray-300 hover:bg-gray-700 md:hidden"
           type="button"
           onclick="toggleMenu()"
         >
@@ -258,30 +276,29 @@ const currentYear = new Date().getFullYear();
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            ></path>
+              d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         </button>
 
         <div
           id="navbarMenu"
-          class="hidden flex flex-col items-stretch gap-3 md:flex md:flex-row md:items-center md:gap-4 absolute sm:static top-full left-0 right-0 bg-gray-800 sm:bg-transparent p-4 sm:p-0 shadow sm:shadow-none text-center mx-3"
+          class="absolute top-full right-0 left-0 mx-3 flex hidden flex-col items-stretch gap-3 bg-gray-800 p-4 text-center shadow sm:static sm:bg-transparent sm:p-0 sm:shadow-none md:flex md:flex-row md:items-center md:gap-4"
         >
           <a
-            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
+            class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/">{m.nav.home}</a
           >
           <a
-            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
+            class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/search">{m.nav.search}</a
           >
           <a
-            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
+            class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/contacts/">{m.nav.contacts}</a
           >
 
           <a
-            class="block w-full rounded px-2 py-2 text-gray-300 hover:text-blue-400 font-medium md:w-auto md:rounded-none md:px-0 md:py-0"
+            class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
             href="/login">{m.nav.login}</a
           >
 
@@ -292,8 +309,7 @@ const currentYear = new Date().getFullYear();
             action="/search"
           >
             <input
-              class="w-full md:w-auto pl-8 pr-4 py-2 md:py-1 border border-gray-600 bg-gray-700 text-gray-100 rounded-full text-sm
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              class="w-full rounded-full border border-gray-600 bg-gray-700 py-2 pr-4 pl-8 text-sm text-gray-100 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:w-auto md:py-1"
               type="text"
               placeholder={m.searchPlaceholder}
               name="q"
@@ -302,7 +318,7 @@ const currentYear = new Date().getFullYear();
               xmlns="http://www.w3.org/2000/svg"
               width="16"
               height="16"
-              class="h-4 w-4 absolute left-2.5 top-2 text-gray-400"
+              class="absolute top-2 left-2.5 h-4 w-4 text-gray-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -311,8 +327,7 @@ const currentYear = new Date().getFullYear();
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </form>
         </div>
@@ -320,7 +335,9 @@ const currentYear = new Date().getFullYear();
 
       <script is:inline>
         function toggleMenu() {
-          const hidden = document.getElementById("navbarMenu").classList.toggle("hidden");
+          const hidden = document
+            .getElementById("navbarMenu")
+            .classList.toggle("hidden");
           document
             .querySelector('[aria-controls="navbarMenu"]')
             ?.setAttribute("aria-expanded", String(!hidden));
@@ -332,8 +349,8 @@ const currentYear = new Date().getFullYear();
 
     <!-- Main Content -->
     <main role="main">
-      <div class="bg-gray-900 mt-6">
-        <div class="container mx-auto px-4 max-w-7xl">
+      <div class="mt-6 bg-gray-900">
+        <div class="container mx-auto max-w-7xl px-4">
           <div class="flex flex-wrap">
             <slot />
           </div>
@@ -342,9 +359,9 @@ const currentYear = new Date().getFullYear();
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white pt-12 mt-12 border-t border-gray-700">
+    <footer class="mt-12 border-t border-gray-700 bg-gray-800 pt-12 text-white">
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
           <!-- About Section -->
           <div>
             <div class="mb-4">
@@ -357,20 +374,26 @@ const currentYear = new Date().getFullYear();
                 class="h-12"
               />
             </div>
-            <p class="text-gray-300 mb-4">{m.footer.tagline}</p>
+            <p class="mb-4 text-gray-300">{m.footer.tagline}</p>
             <div>
-              <h4 class="text-lg font-semibold uppercase mb-2">{m.footer.contactInfo}</h4>
-              <p class="text-gray-300 mb-1">10 Rustaveli Avenue, Tbilisi, Georgia</p>
-              <p class="text-gray-300 mb-1">Phone: +123 456 78900</p>
+              <h4 class="mb-2 text-lg font-semibold uppercase">
+                {m.footer.contactInfo}
+              </h4>
+              <p class="mb-1 text-gray-300">
+                10 Rustaveli Avenue, Tbilisi, Georgia
+              </p>
+              <p class="mb-1 text-gray-300">Phone: +123 456 78900</p>
               <p class="text-gray-300">info@{siteHost}</p>
             </div>
           </div>
 
           <!-- Testimonials -->
           <div>
-            <h3 class="text-lg font-semibold uppercase mb-4">{m.footer.testimonials}</h3>
-            <div class="bg-gray-700 p-4 rounded">
-              <div class="text-gray-300 italic mb-4">
+            <h3 class="mb-4 text-lg font-semibold uppercase">
+              {m.footer.testimonials}
+            </h3>
+            <div class="rounded bg-gray-700 p-4">
+              <div class="mb-4 text-gray-300 italic">
                 <p>{m.footer.testimonial}</p>
               </div>
               <div class="flex items-center">
@@ -378,7 +401,7 @@ const currentYear = new Date().getFullYear();
                   src="/storage/blog_images/author.png"
                   alt=""
                   loading="lazy"
-                  class="w-10 h-10 rounded-full mr-3"
+                  class="mr-3 h-10 w-10 rounded-full"
                 />
                 <div>
                   <h4 class="font-semibold">Sophia</h4>
@@ -390,28 +413,30 @@ const currentYear = new Date().getFullYear();
 
           <!-- Custom Post Section -->
           <div>
-            <h3 class="text-lg font-semibold uppercase mb-4">{m.footer.customCategory}</h3>
+            <h3 class="mb-4 text-lg font-semibold uppercase">
+              {m.footer.customCategory}
+            </h3>
             {
               footerPost ? (
                 <div class="flex items-start">
-                  <div class="flex-shrink-0 mr-3">
+                  <div class="mr-3 flex-shrink-0">
                     <a href={`/post/${footerPost.slug}`}>
                       <img
                         src={footerPost.image_url}
                         alt={footerPost.title}
                         loading="lazy"
-                        class="w-20 h-20 object-cover rounded"
+                        class="h-20 w-20 rounded object-cover"
                       />
                     </a>
                   </div>
                   <div>
                     <a
                       href={`/post/${footerPost.slug}`}
-                      class="text-white hover:text-blue-300 font-medium"
+                      class="font-medium text-white hover:text-blue-300"
                     >
                       {footerPost.title}
                     </a>
-                    <p class="text-sm text-gray-400 mt-1">
+                    <p class="mt-1 text-sm text-gray-400">
                       {formatFooterDate(footerPost.created_at)}
                     </p>
                   </div>
@@ -425,25 +450,33 @@ const currentYear = new Date().getFullYear();
       </div>
 
       <!-- Copyright -->
-      <div class="py-4 mt-8 bg-gray-900">
+      <div class="mt-8 bg-gray-900 py-4">
         <div class="container mx-auto px-4">
           <div class="text-center text-gray-400">
             &copy; 2019-{currentYear}
             <a href="#" class="hover:text-white">Web3 blog, </a> Designed with
-            <i class="fas fa-heart text-red-500"></i> and <a href="#" class="hover:text-white">Astro</a
+            <i class="fas fa-heart text-red-500"></i> and <a
+              href="#"
+              class="hover:text-white">Astro</a
             >
             &nbsp;·&nbsp;
             <a href="/privacy/" class="text-blue-400 hover:text-blue-300"
               >{m.footer.privacy}</a
             >
-            {showGeoIpAttribution && (
-              <>
-                &nbsp;·&nbsp;
-                <a href="https://db-ip.com" class="text-blue-400 hover:text-blue-300" rel="noopener noreferrer">
-                  IP Geolocation by DB-IP
-                </a>
-              </>
-            )}
+            {
+              showGeoIpAttribution && (
+                <>
+                  &nbsp;·&nbsp;
+                  <a
+                    href="https://db-ip.com"
+                    class="text-blue-400 hover:text-blue-300"
+                    rel="noopener noreferrer"
+                  >
+                    IP Geolocation by DB-IP
+                  </a>
+                </>
+              )
+            }
           </div>
         </div>
       </div>

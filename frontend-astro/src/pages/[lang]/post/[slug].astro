@@ -5,7 +5,11 @@ import Layout from "../../../layouts/Layout.astro";
 import LazyImage from "../../../components/LazyImage.astro";
 import BlockRenderer from "../../../components/article/BlockRenderer.astro";
 import { ApiClientError } from "../../../lib/api";
-import { getArticleLocale, recordArticleView, resolveArticle } from "../../../lib/articles";
+import {
+  getArticleLocale,
+  recordArticleView,
+  resolveArticle,
+} from "../../../lib/articles";
 import type { ArticleLocaleResponse } from "../../../lib/articles";
 import {
   buildAlternates,
@@ -46,7 +50,10 @@ try {
   try {
     plan = planMissingLocaleRedirect(await resolveArticle(slug), lang);
   } catch (resolveError) {
-    if (!(resolveError instanceof ApiClientError) || resolveError.status !== 404) {
+    if (
+      !(resolveError instanceof ApiClientError) ||
+      resolveError.status !== 404
+    ) {
       throw resolveError;
     }
   }
@@ -100,35 +107,40 @@ const shareTitle = encodeURIComponent(article.title);
   alternates={alternates}
   articleSlug={slug}
 >
-  <div class="article-page mx-auto -mx-2 min-w-0 w-[calc(100%+1rem)] max-w-[760px] sm:mx-auto sm:w-full">
+  <div
+    class="article-page -mx-2 mx-auto w-[calc(100%+1rem)] max-w-[760px] min-w-0 sm:mx-auto sm:w-full"
+  >
     <article
-      class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700"
+      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 shadow-sm"
       lang={lang}
     >
       {
         post.image_url && (
-          <div class="w-full h-64 md:h-96 flex items-center justify-center bg-gray-700 overflow-hidden [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+          <div class="flex h-64 w-full items-center justify-center overflow-hidden bg-gray-700 md:h-96 [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full">
             <LazyImage
               src={post.image_url}
               alt={article.title}
-              class="w-full h-full object-contain"
+              class="h-full w-full object-contain"
               height="384"
             />
           </div>
         )
       }
       <div class="px-1 py-6 sm:p-6">
-        <header class="text-center mb-6">
+        <header class="mb-6 text-center">
           {
             post.category && (
-              <h6 class="text-sm mb-2">
-                <a href={`/category/${post.category.slug}`} class="text-blue-500 hover:text-blue-700">
+              <h6 class="mb-2 text-sm">
+                <a
+                  href={`/category/${post.category.slug}`}
+                  class="text-blue-500 hover:text-blue-700"
+                >
                   {post.category.title}
                 </a>
               </h6>
             )
           }
-          <h1 class="text-3xl font-bold text-white mb-2">{article.title}</h1>
+          <h1 class="mb-2 text-3xl font-bold text-white">{article.title}</h1>
           {article.summary && <p class="text-gray-300">{article.summary}</p>}
         </header>
 
@@ -139,8 +151,10 @@ const shareTitle = encodeURIComponent(article.title);
         {
           data.aphorism && (
             <div class="mt-8">
-              <h4 class="font-semibold mb-2 text-white">{m.article.quoteOfTheDay}</h4>
-              <div class="border-2 rounded-sm p-2 m-2 flex items-center bg-gray-700 text-white">
+              <h4 class="mb-2 font-semibold text-white">
+                {m.article.quoteOfTheDay}
+              </h4>
+              <div class="m-2 flex items-center rounded-sm border-2 bg-gray-700 p-2 text-white">
                 {data.aphorism.text}
               </div>
             </div>
@@ -149,11 +163,11 @@ const shareTitle = encodeURIComponent(article.title);
 
         {
           post.tags && post.tags.length > 0 && (
-            <div class="flex flex-wrap mt-6 mb-4">
-              {post.tags.map((tag) => (
+            <div class="mt-6 mb-4 flex flex-wrap">
+              {post.tags.map(tag => (
                 <a
                   href={`/tag/${tag.slug}`}
-                  class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-sm mr-2 mb-2 transition text-white"
+                  class="mr-2 mb-2 rounded-full bg-gray-700 px-3 py-1 text-sm text-white transition hover:bg-gray-600"
                 >
                   {tag.title}
                 </a>
@@ -162,29 +176,37 @@ const shareTitle = encodeURIComponent(article.title);
           )
         }
 
-        <div class="flex justify-between items-center text-sm text-gray-400 pt-4 border-t border-gray-700">
+        <div
+          class="flex items-center justify-between border-t border-gray-700 pt-4 text-sm text-gray-400"
+        >
           <span>
             {
               post.author && (
                 <>
-                  {m.article.by} <span class="text-gray-300">{post.author.name}</span>{" "}
+                  {m.article.by}{" "}
+                  <span class="text-gray-300">{post.author.name}</span>{" "}
                 </>
               )
             }
-            {m.article.on} <b>{formatLongDate(article.published_at, lang)}</b>
+            {m.article.on}
+            <b>{formatLongDate(article.published_at, lang)}</b>
           </span>
 
           <div class="flex items-center">
-            <span class="flex items-center mr-4">{post.views_count}</span>
+            <span class="mr-4 flex items-center">{post.views_count}</span>
             <a
-              class="flex items-center w-full sm:w-auto group"
+              class="group flex w-full items-center sm:w-auto"
               onclick="Likes.toggle(this,event);"
               data-post_id={post.id}
               href="#"
               title="Like"
             >
-              <i class="far fa-heart text-red-500 mr-1 heart-icon transition-transform duration-500"></i>
-              <span class="like_button_count transition-colors duration-500 group-hover:text-blue-400">
+              <i
+                class="far fa-heart heart-icon mr-1 text-red-500 transition-transform duration-500"
+              ></i>
+              <span
+                class="like_button_count transition-colors duration-500 group-hover:text-blue-400"
+              >
                 {post.likes_count}
               </span>
             </a>
@@ -194,7 +216,7 @@ const shareTitle = encodeURIComponent(article.title);
                 href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors"
+                class="text-gray-400 transition-colors hover:text-blue-400"
                 title={m.article.shareTelegram}
                 aria-label={m.article.shareTelegram}
               >
@@ -204,7 +226,7 @@ const shareTitle = encodeURIComponent(article.title);
                 href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors"
+                class="text-gray-400 transition-colors hover:text-blue-400"
                 title={m.article.shareX}
                 aria-label={m.article.shareX}
               >
@@ -214,7 +236,7 @@ const shareTitle = encodeURIComponent(article.title);
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors"
+                class="text-gray-400 transition-colors hover:text-blue-400"
                 title={m.article.shareLinkedIn}
                 aria-label={m.article.shareLinkedIn}
               >
@@ -228,18 +250,20 @@ const shareTitle = encodeURIComponent(article.title);
 
     <div class="mt-8">
       {
-        post.comments?.map((comment) => (
-          <div class="bg-gray-800 p-4 mb-4 rounded-lg border border-gray-700 flex">
+        post.comments?.map(comment => (
+          <div class="mb-4 flex rounded-lg border border-gray-700 bg-gray-800 p-4">
             <div class="mr-4 flex-shrink-0">
               <img
-                class="rounded-full w-12 h-12 object-cover"
+                class="h-12 w-12 rounded-full object-cover"
                 src="/storage/blog_images/comment.jpg"
                 alt={comment.author_name}
               />
             </div>
             <div>
               <h5 class="font-semibold text-white">{comment.author_name}</h5>
-              <p class="text-xs text-gray-400 mb-2">{relativeTime(comment.created_at, lang)}</p>
+              <p class="mb-2 text-xs text-gray-400">
+                {relativeTime(comment.created_at, lang)}
+              </p>
               <p class="text-gray-300">{comment.text}</p>
             </div>
           </div>
@@ -247,8 +271,10 @@ const shareTitle = encodeURIComponent(article.title);
       }
     </div>
 
-    <div class="bg-gray-800 p-6 mt-8 rounded-lg border border-gray-700">
-      <h4 class="text-xl font-semibold mb-4 text-white">{m.article.leaveReply}</h4>
+    <div class="mt-8 rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <h4 class="mb-4 text-xl font-semibold text-white">
+        {m.article.leaveReply}
+      </h4>
 
       <div id="comment-flash"></div>
 
@@ -268,19 +294,23 @@ const shareTitle = encodeURIComponent(article.title);
 
           <textarea
             required
-            class="w-full border border-gray-600 bg-gray-700 text-white rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+            class="w-full rounded-md border border-gray-600 bg-gray-700 p-3 text-white placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             rows="4"
             name="message"
             placeholder={m.article.writeComment}
             onkeyup="count_keyup()"></textarea>
         </div>
-        <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition duration-200 font-medium">
+        <button
+          class="rounded-md bg-blue-500 px-6 py-2 font-medium text-white transition duration-200 hover:bg-blue-600"
+        >
           {m.article.postComment}
         </button>
       </form>
 
       <script>
-        const form = document.getElementById("comment-form") as HTMLFormElement | null;
+        const form = document.getElementById(
+          "comment-form"
+        ) as HTMLFormElement | null;
         const flashDiv = document.getElementById("comment-flash");
 
         function flash(kind: "ok" | "error", text: string): void {
@@ -292,17 +322,20 @@ const shareTitle = encodeURIComponent(article.title);
         }
 
         if (form) {
-          form.addEventListener("submit", async (event) => {
+          form.addEventListener("submit", async event => {
             event.preventDefault();
             try {
-              const response = await fetch("/api/comment", { method: "POST", body: new FormData(form) });
+              const response = await fetch("/api/comment", {
+                method: "POST",
+                body: new FormData(form),
+              });
               const result = await response.json().catch(() => ({}));
               if (response.ok) {
                 flash("ok", result.message || form.dataset.soon || "");
                 form.reset();
                 form
                   .querySelectorAll<HTMLInputElement>('input[name="countMe"]')
-                  .forEach((input) => (input.value = "0"));
+                  .forEach(input => (input.value = "0"));
               } else {
                 flash("error", result.message || form.dataset.failed || "");
               }
@@ -313,23 +346,60 @@ const shareTitle = encodeURIComponent(article.title);
         }
       </script>
     </div>
-  <div class="article-related mt-8 space-y-8">
-    {[{ title: m.sidebar.featured, posts: data.featured_posts }, { title: m.sidebar.recent, posts: data.recent_posts }].map((section) => (
+    <div class="article-related mt-8 space-y-8">
+      {
+        [
+          { title: m.sidebar.featured, posts: data.featured_posts },
+          { title: m.sidebar.recent, posts: data.recent_posts },
+        ].map(section => (
+          <section>
+            <h2 class="mb-4 text-xl font-semibold text-white">
+              {section.title}
+            </h2>
+            <div class="space-y-3">
+              {section.posts.map(item => (
+                <a
+                  href={`/post/${item.slug}`}
+                  class="flex items-center gap-4 rounded-lg border border-gray-700 bg-gray-800 p-3 hover:border-gray-500"
+                >
+                  {item.image_url && (
+                    <img
+                      src={item.image_url}
+                      alt=""
+                      loading="lazy"
+                      class="h-16 w-24 rounded object-cover"
+                    />
+                  )}
+                  <span class="min-w-0 flex-1 font-medium text-gray-200">
+                    {item.title}
+                  </span>
+                  <time class="shrink-0 text-xs text-gray-400">
+                    {formatLongDate(item.created_at, lang)}
+                  </time>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+      }
       <section>
-        <h2 class="text-xl font-semibold text-white mb-4">{section.title}</h2>
-        <div class="space-y-3">
-          {section.posts.map((item) => <a href={`/post/${item.slug}`} class="flex items-center gap-4 rounded-lg border border-gray-700 bg-gray-800 p-3 hover:border-gray-500">
-            {item.image_url && <img src={item.image_url} alt="" loading="lazy" class="h-16 w-24 rounded object-cover" />}
-            <span class="min-w-0 flex-1 font-medium text-gray-200">{item.title}</span>
-            <time class="shrink-0 text-xs text-gray-400">{formatLongDate(item.created_at, lang)}</time>
-          </a>)}
+        <h2 class="mb-4 text-xl font-semibold text-white">
+          {m.sidebar.categories}
+        </h2>
+        <div class="flex flex-wrap gap-2">
+          {
+            data.categories.map(category => (
+              <a
+                href={`/category/${category.slug}`}
+                class="rounded-full border border-gray-700 bg-gray-800 px-3 py-1 text-sm text-gray-300 hover:text-blue-400"
+              >
+                {category.title}{" "}
+                <span class="text-gray-500">({category.posts_count})</span>
+              </a>
+            ))
+          }
         </div>
       </section>
-    ))}
-    <section>
-      <h2 class="text-xl font-semibold text-white mb-4">{m.sidebar.categories}</h2>
-      <div class="flex flex-wrap gap-2">{data.categories.map((category) => <a href={`/category/${category.slug}`} class="rounded-full border border-gray-700 bg-gray-800 px-3 py-1 text-sm text-gray-300 hover:text-blue-400">{category.title} <span class="text-gray-500">({category.posts_count})</span></a>)}</div>
-    </section>
-  </div>
+    </div>
   </div>
 </Layout>

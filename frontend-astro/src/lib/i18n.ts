@@ -1,7 +1,13 @@
 import type { ArticleLocale } from "../contracts/article-blocks/v1/types";
 
 export interface Messages {
-  nav: { home: string; search: string; contacts: string; login: string; menuToggle: string };
+  nav: {
+    home: string;
+    search: string;
+    contacts: string;
+    login: string;
+    menuToggle: string;
+  };
   defaultDescription: string;
   searchPlaceholder: string;
   sidebar: { categories: string; featured: string; recent: string };
@@ -43,7 +49,11 @@ export const MESSAGES: Record<ArticleLocale, Messages> = {
     defaultDescription:
       "Stay updated with the latest trends in Web3 development, software engineering tips, and best coding practices for modern applications.",
     searchPlaceholder: "Search...",
-    sidebar: { categories: "Categories", featured: "Featured Posts", recent: "Recent Posts" },
+    sidebar: {
+      categories: "Categories",
+      featured: "Featured Posts",
+      recent: "Recent Posts",
+    },
     footer: {
       contactInfo: "Contact Info",
       testimonials: "Testimonials",
@@ -81,7 +91,11 @@ export const MESSAGES: Record<ArticleLocale, Messages> = {
     defaultDescription:
       "Следите за новостями Web3-разработки, советами по программной инженерии и лучшими практиками создания современных приложений.",
     searchPlaceholder: "Поиск...",
-    sidebar: { categories: "Категории", featured: "Избранные статьи", recent: "Новые статьи" },
+    sidebar: {
+      categories: "Категории",
+      featured: "Избранные статьи",
+      recent: "Новые статьи",
+    },
     footer: {
       contactInfo: "Контакты",
       testimonials: "Отзывы",

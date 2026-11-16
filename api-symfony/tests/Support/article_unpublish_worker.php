@@ -24,6 +24,7 @@ try {
     $entityManager->getConnection()->executeStatement("SET application_name = 'article-publisher-race'");
 
     $post = $entityManager->find(Post::class, (int) $argv[1]);
+
     if (!$post instanceof Post) {
         throw new RuntimeException('The test post is missing.');
     }
@@ -35,9 +36,10 @@ try {
         new ArticleDocumentValidator(ContractFixtures::urlPolicy(), $sanitizer),
         new SearchTextExtractor(),
     );
-    $publisher->unpublish($post, 'en', 2);
+    $publisher->unpublish($post, 'en');
 } catch (Throwable $e) {
-    fwrite(STDERR, get_class($e).': '.$e->getMessage()."\n");
+    fwrite(\STDERR, $e::class.': '.$e->getMessage()."\n");
+
     exit(1);
 } finally {
     $kernel->shutdown();

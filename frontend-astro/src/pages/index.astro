@@ -21,18 +21,22 @@ const description = `Stay updated with the latest trends in Web3 development, so
 }`;
 ---
 
-<Layout title={title} description={description} canonical={canonicalFor(Astro.url.pathname)}>
-  <div class="w-full md:w-3/4 pr-0 md:pr-6 space-y-3">
+<Layout
+  title={title}
+  description={description}
+  canonical={canonicalFor(Astro.url.pathname)}
+>
+  <div class="w-full space-y-3 pr-0 md:w-3/4 md:pr-6">
     {
-      data.posts.map((post) => (
-        <article class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700">
+      data.posts.map(post => (
+        <article class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 shadow-sm">
           <a
             href={`/post/${post.slug}`}
             class="flex flex-col transition-all duration-200 hover:bg-gray-700 hover:shadow-md"
           >
             <div class="flex flex-row">
-              <div class="flex-shrink-0 w-32 flex items-center justify-center p-1 px-3">
-                <div class="h-12 w-full flex items-center justify-center overflow-hidden">
+              <div class="flex w-32 flex-shrink-0 items-center justify-center p-1 px-3">
+                <div class="flex h-12 w-full items-center justify-center overflow-hidden">
                   <LazyImage
                     src={post.image_url}
                     alt={post.title}
@@ -42,40 +46,41 @@ const description = `Stay updated with the latest trends in Web3 development, so
                   />
                 </div>
               </div>
-              <header class="flex-grow flex items-center p-1 px-3">
-                <h3 class="text-lg font-semibold text-gray-100 group-hover:text-blue-400 transition">
+              <header class="flex flex-grow items-center p-1 px-3">
+                <h3 class="text-lg font-semibold text-gray-100 transition group-hover:text-blue-400">
                   {post.title}
                 </h3>
               </header>
             </div>
             {post.description && (
               <div class="px-4 pb-4">
-                <div class="prose max-w-none text-gray-300 text-sm line-clamp-2 hover:text-blue-300 transition-colors">
+                <div class="prose line-clamp-2 max-w-none text-sm text-gray-300 transition-colors hover:text-blue-300">
                   <Fragment set:html={post.description} />
                 </div>
               </div>
             )}
           </a>
-          <div class="flex justify-between items-center text-sm text-gray-400 pl-4 p-1 border-t border-gray-700">
+          <div class="flex items-center justify-between border-t border-gray-700 p-1 pl-4 text-sm text-gray-400">
             <span>
-              By <a href="#" class="hover:text-blue-400">
+              By{" "}
+              <a href="#" class="hover:text-blue-400">
                 {post.author?.name}
-              </a>
-              {" "}on {formatDate(post.created_at)}
+              </a>{" "}
+              on {formatDate(post.created_at)}
             </span>
-            <div class="flex flex-wrap items-center space-x-0 sm:space-x-4 sm:mr-4">
-              <span class="flex items-center w-full sm:w-auto">
-                <i class="fas fa-eye mr-1"></i>
+            <div class="flex flex-wrap items-center space-x-0 sm:mr-4 sm:space-x-4">
+              <span class="flex w-full items-center sm:w-auto">
+                <i class="fas fa-eye mr-1" />
                 {post.views_count}
               </span>
               <a
-                class="flex items-center w-full sm:w-auto group"
+                class="group flex w-full items-center sm:w-auto"
                 onclick="Likes.toggle(this,event);"
                 data-post_id={post.id}
                 href="#"
                 title="Like"
               >
-                <i class="far fa-heart text-red-500 mr-1 heart-icon transition-transform duration-500"></i>
+                <i class="far fa-heart heart-icon mr-1 text-red-500 transition-transform duration-500" />
                 <span class="like_button_count transition-colors duration-500 group-hover:text-blue-400">
                   {post.likes_count}
                 </span>
@@ -86,44 +91,50 @@ const description = `Stay updated with the latest trends in Web3 development, so
       ))
     }
 
-    {data.pagination.total_pages > 1 && (
-      <nav class="flex justify-center items-center space-x-2 my-6">
-        {data.pagination.has_prev && (
-          <a
-            href={data.pagination.prev_page === 1 ? "/" : `/?page=${data.pagination.prev_page}`}
-            class="px-3 py-2 rounded border border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400 transition"
-          >
-            Previous
-          </a>
-        )}
-
-        {Array.from({ length: data.pagination.total_pages }, (_, i) => {
-          const pageNum = i + 1;
-          const isActive = pageNum === data.pagination.current_page;
-          return (
+    {
+      data.pagination.total_pages > 1 && (
+        <nav class="my-6 flex items-center justify-center space-x-2">
+          {data.pagination.has_prev && (
             <a
-              href={pageNum === 1 ? "/" : `/?page=${pageNum}`}
-              class={`px-3 py-2 rounded border transition ${
-                isActive
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400"
-              }`}
+              href={
+                data.pagination.prev_page === 1
+                  ? "/"
+                  : `/?page=${data.pagination.prev_page}`
+              }
+              class="rounded border border-gray-700 px-3 py-2 text-gray-300 transition hover:border-blue-400 hover:text-blue-400"
             >
-              {pageNum}
+              Previous
             </a>
-          );
-        })}
+          )}
 
-        {data.pagination.has_next && (
-          <a
-            href={`/?page=${data.pagination.next_page}`}
-            class="px-3 py-2 rounded border border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400 transition"
-          >
-            Next
-          </a>
-        )}
-      </nav>
-    )}
+          {Array.from({ length: data.pagination.total_pages }, (_, i) => {
+            const pageNum = i + 1;
+            const isActive = pageNum === data.pagination.current_page;
+            return (
+              <a
+                href={pageNum === 1 ? "/" : `/?page=${pageNum}`}
+                class={`rounded border px-3 py-2 transition ${
+                  isActive
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-gray-700 text-gray-300 hover:border-blue-400 hover:text-blue-400"
+                }`}
+              >
+                {pageNum}
+              </a>
+            );
+          })}
+
+          {data.pagination.has_next && (
+            <a
+              href={`/?page=${data.pagination.next_page}`}
+              class="rounded border border-gray-700 px-3 py-2 text-gray-300 transition hover:border-blue-400 hover:text-blue-400"
+            >
+              Next
+            </a>
+          )}
+        </nav>
+      )
+    }
   </div>
 
   <Sidebar

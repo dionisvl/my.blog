@@ -354,7 +354,7 @@ func TestArticles_ConsumePhpPublishedLocale(t *testing.T) {
 	}
 
 	db := bun.NewDB(sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(dsn))), pgdialect.New())
-	defer db.Close()
+	t.Cleanup(func() { assert.NoError(t, db.Close()) })
 	db.RegisterModel((*model.PostTag)(nil))
 	ctx := context.Background()
 

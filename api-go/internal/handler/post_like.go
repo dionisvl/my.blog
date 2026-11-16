@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
 	"api-go/internal/repository"
 )
@@ -80,8 +81,11 @@ func (h *PostLikeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		req.DeviceMemory = nil
 	}
 
-	ip := r.RemoteAddr
-	like, err := h.likes.Create(r.Context(), postID, &ip, req.DeviceMemory)
+	var ip *string
+	if clientIP := middleware.GetClientIP(r.Context()); clientIP != "" {
+		ip = &clientIP
+	}
+	like, err := h.likes.Create(r.Context(), postID, ip, req.DeviceMemory)
 	if err != nil {
 		h.logger.Error("create like failed", slog.String("error", err.Error()))
 		RespondError(w, http.StatusInternalServerError, "internal server error")

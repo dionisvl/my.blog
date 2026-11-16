@@ -1,5 +1,5 @@
-import type {APIRoute} from "astro";
-import {ApiClientError, postComment} from "../../lib/api";
+import type { APIRoute } from "astro";
+import { ApiClientError, postComment } from "../../lib/api";
 
 export const prerender = false;
 
@@ -19,7 +19,7 @@ export const POST: APIRoute = async ({ request }) => {
     } catch {
       return new Response(
         JSON.stringify({ status: "error", message: "Invalid JSON body" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
+        { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
     message = String(b.message ?? "");
@@ -50,7 +50,7 @@ export const POST: APIRoute = async ({ request }) => {
         {
           status: error.status,
           headers: { "Content-Type": "application/json" },
-        },
+        }
       );
     }
     return new Response(
@@ -58,7 +58,7 @@ export const POST: APIRoute = async ({ request }) => {
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
-      },
+      }
     );
   }
 };

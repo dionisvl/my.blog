@@ -17,15 +17,18 @@ const buttonClass =
 <!-- A sticky CTA is a bar pinned to the bottom on small screens and an ordinary block from md up. -->
 <div
   id={`block-${id}`}
-  class={
-    sticky
-      ? "fixed inset-x-0 bottom-0 z-40 border-t border-gray-600 bg-gray-900 p-3 text-center md:static md:z-auto md:my-6 md:rounded-lg md:border md:bg-gray-800 md:p-5"
-      : "my-6 rounded-lg border border-gray-600 bg-gray-800 p-5 text-center"
-  }
+  class={sticky
+    ? "fixed inset-x-0 bottom-0 z-40 border-t border-gray-600 bg-gray-900 p-3 text-center md:static md:z-auto md:my-6 md:rounded-lg md:border md:bg-gray-800 md:p-5"
+    : "my-6 rounded-lg border border-gray-600 bg-gray-800 p-5 text-center"}
 >
   {title && <p class="font-semibold text-white">{title}</p>}
-  {text && <p class="text-sm text-gray-300 mb-2">{text}</p>}
-  <a href={safeHref(url)} rel={relFor(sponsored, url) || undefined} target="_blank" class={buttonClass}>
+  {text && <p class="mb-2 text-sm text-gray-300">{text}</p>}
+  <a
+    href={safeHref(url)}
+    rel={relFor(sponsored, url) || undefined}
+    target="_blank"
+    class={buttonClass}
+  >
     {label}
   </a>
 </div>

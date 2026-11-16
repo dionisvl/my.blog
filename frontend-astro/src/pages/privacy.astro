@@ -9,44 +9,48 @@ const description = `Privacy Policy for ${host}`;
 ---
 
 <Layout title={title} description={description}>
-  <div class="w-full max-w-2xl mx-auto py-8">
-    <div class="bg-gray-800 rounded-lg shadow-sm border border-gray-700 p-8">
-      <h1 class="text-2xl font-bold mb-2 text-white">Privacy Policy</h1>
-      <p class="text-gray-500 text-sm mb-6">Last updated: May 1, 2026</p>
+  <div class="mx-auto w-full max-w-2xl py-8">
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-8 shadow-sm">
+      <h1 class="mb-2 text-2xl font-bold text-white">Privacy Policy</h1>
+      <p class="mb-6 text-sm text-gray-500">Last updated: May 1, 2026</p>
 
-      <div class="text-gray-300 space-y-4 leading-relaxed">
+      <div class="space-y-4 leading-relaxed text-gray-300">
         <p>
-          This site does not intentionally collect personal information and has no
-          registration or contact forms. By using
+          This site does not intentionally collect personal information and has
+          no registration or contact forms. By using
           <strong>{host}</strong>
           you agree that we may process technical data strictly necessary for site
           operation: server logs (IP address, browser, requested page) retained for
-          up to 90 days, and short-lived technical cookies for site operation
-          retained for up to 24 hours.
+          up to 90 days, and short-lived technical cookies for site operation retained
+          for up to 24 hours.
         </p>
 
         <p>
-          Optional country-based routing is disabled unless explicitly enabled by the
-          site operator. When enabled, the approximate country is derived from your
-          request IP using a local database (the IP is not sent to a geolocation API
-          and no separate geolocation record is created). Readers from Russia are served
-          on the <strong>www</strong> address and all other readers on the main address,
-          and neutral article links open in the language of that address. A language
-          preference cookie is set only when you manually select a language, and a
-          technical cookie prevents repeated redirects between the two addresses; both
-          last up to 24 hours or less. The main address is served through Cloudflare,
-          which receives your IP address as part of the HTTP request.
+          Optional country-based routing is disabled unless explicitly enabled
+          by the site operator. When enabled, the approximate country is derived
+          from your request IP using a local database (the IP is not sent to a
+          geolocation API and no separate geolocation record is created).
+          Readers from Russia are served on the <strong>www</strong> address and all
+          other readers on the main address, and neutral article links open in the
+          language of that address. A language preference cookie is set only when
+          you manually select a language, and a technical cookie prevents repeated
+          redirects between the two addresses; both last up to 24 hours or less. The
+          main address is served through Cloudflare, which receives your IP address
+          as part of the HTTP request.
         </p>
 
         <p>
           Third-party CDN services deliver static assets and may receive your IP
-          address as part of the HTTP request. Maps on the Contacts page loads only
-          when you interact with it.
+          address as part of the HTTP request. Maps on the Contacts page loads
+          only when you interact with it.
         </p>
 
         <p>
           Questions or requests:
-          <a href={`mailto:info@${host}`} class="text-blue-400 hover:text-blue-300">
+          <a
+            href={`mailto:info@${host}`}
+            class="text-blue-400 hover:text-blue-300"
+          >
             info@{host}
           </a>
         </p>

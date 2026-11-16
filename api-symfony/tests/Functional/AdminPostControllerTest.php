@@ -127,6 +127,11 @@ final class AdminPostControllerTest extends DatabaseWebTestCase
         $this->client->loginUser($user);
 
         $im = imagecreatetruecolor(20, 10);
+
+        if (false === $im) {
+            throw new \RuntimeException('Failed to create image.');
+        }
+
         $src = (string) tempnam(sys_get_temp_dir(), 'post').'.png';
         imagepng($im, $src);
         $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($src, 'cover.png', 'image/png', null, true);

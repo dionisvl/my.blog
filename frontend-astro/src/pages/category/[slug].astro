@@ -11,7 +11,8 @@ import { canonicalFor } from "../../lib/url";
 import { preferredLanguage } from "../../lib/host";
 
 const { slug } = Astro.params;
-const preferredLang = preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
+const preferredLang =
+  preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
 Astro.response.headers.set("Vary", "Cookie");
 const pageParam = Astro.url.searchParams.get("page");
 const page = Math.max(1, parseInt(pageParam || "1", 10));
@@ -31,111 +32,128 @@ try {
 
 const category = data.category;
 const title = `${category.title}${page > 1 ? `, page ${page}` : ""} - Web3 Blog`;
-const description = category.preview_text || `Browse articles in ${category.title}. Explore our curated collection of posts on this topic.`;
+const description =
+  category.preview_text ||
+  `Browse articles in ${category.title}. Explore our curated collection of posts on this topic.`;
 ---
 
-<Layout title={title} description={description} canonical={canonicalFor(Astro.url.pathname)}>
-  <div class="w-full md:w-3/4 pr-0 md:pr-6 space-y-3">
-    <div class="p-4 rounded-lg mb-6">
-      <h1 class="text-2xl font-semibold text-white mb-3">{category.title}</h1>
+<Layout
+  title={title}
+  description={description}
+  canonical={canonicalFor(Astro.url.pathname)}
+>
+  <div class="w-full space-y-3 pr-0 md:w-3/4 md:pr-6">
+    <div class="mb-6 rounded-lg p-4">
+      <h1 class="mb-3 text-2xl font-semibold text-white">{category.title}</h1>
       <blockquote class="text-gray-300">all posts by filter</blockquote>
     </div>
 
-    {data.posts.length === 0 ? (
-      <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-6">
-        <p class="text-gray-300">No posts found for this filter.</p>
-      </div>
-    ) : (
-      data.posts.map((post) => (
-        <article class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700">
-          <a
-            href={`/post/${post.slug}`}
-            class="flex flex-col transition-all duration-200 hover:bg-gray-700 hover:shadow-md"
-          >
-            <div class="flex flex-row">
-              <div class="flex-shrink-0 w-32 flex items-center justify-center p-1">
-                <div class="h-12 w-full flex items-center justify-center overflow-hidden">
-                  <LazyImage
-                    src={post.image_url}
-                    alt={post.title}
-                    class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
-                    width="100"
-                    height="50"
-                  />
-                </div>
-              </div>
-              <header class="flex-grow flex items-center p-1 px-3">
-                <h3 class="text-lg font-semibold text-white group-hover:text-blue-400 transition">
-                  {post.title}
-                </h3>
-              </header>
-            </div>
-            {post.description && (
-              <div class="px-4 pb-4">
-                <div class="prose max-w-none text-gray-300 text-sm line-clamp-2 hover:text-blue-300 transition-colors">
-                  <Fragment set:html={post.description} />
-                </div>
-              </div>
-            )}
-          </a>
-          <div class="flex justify-between items-center text-sm text-gray-400 pl-4 p-1 border-t border-gray-700">
-            <span>
-              By
-              {" "}
-              <a href="#" class="hover:text-blue-400">
-                {post.author?.name}
-              </a>
-              {" "}on {formatDate(post.created_at)}
-            </span>
-            <div class="flex flex-wrap items-center space-x-0 sm:space-x-4 sm:mr-4">
-              <span class="flex items-center w-full sm:w-auto">
-                <i class="fas fa-eye mr-1"></i>
-                {post.views_count}
-              </span>
-            </div>
-          </div>
-        </article>
-      ))
-    )}
-
-    {data.pagination.total_pages > 1 && (
-      <nav class="flex justify-center items-center space-x-2 my-6">
-        {data.pagination.has_prev && (
-          <a
-            href={data.pagination.prev_page === 1 ? `/category/${slug}` : `/category/${slug}?page=${data.pagination.prev_page}`}
-            class="px-3 py-2 rounded border border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400 transition"
-          >
-            Previous
-          </a>
-        )}
-
-        {Array.from({ length: data.pagination.total_pages }, (_, i) => {
-          const pageNum = i + 1;
-          const isActive = pageNum === data.pagination.current_page;
-          return (
+    {
+      data.posts.length === 0 ? (
+        <div class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-6 shadow-sm">
+          <p class="text-gray-300">No posts found for this filter.</p>
+        </div>
+      ) : (
+        data.posts.map(post => (
+          <article class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 shadow-sm">
             <a
-              href={pageNum === 1 ? `/category/${slug}` : `/category/${slug}?page=${pageNum}`}
-              class={`px-3 py-2 rounded border transition ${
-                isActive
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400"
-              }`}
+              href={`/post/${post.slug}`}
+              class="flex flex-col transition-all duration-200 hover:bg-gray-700 hover:shadow-md"
             >
-              {pageNum}
+              <div class="flex flex-row">
+                <div class="flex w-32 flex-shrink-0 items-center justify-center p-1">
+                  <div class="flex h-12 w-full items-center justify-center overflow-hidden">
+                    <LazyImage
+                      src={post.image_url}
+                      alt={post.title}
+                      class="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-110"
+                      width="100"
+                      height="50"
+                    />
+                  </div>
+                </div>
+                <header class="flex flex-grow items-center p-1 px-3">
+                  <h3 class="text-lg font-semibold text-white transition group-hover:text-blue-400">
+                    {post.title}
+                  </h3>
+                </header>
+              </div>
+              {post.description && (
+                <div class="px-4 pb-4">
+                  <div class="prose line-clamp-2 max-w-none text-sm text-gray-300 transition-colors hover:text-blue-300">
+                    <Fragment set:html={post.description} />
+                  </div>
+                </div>
+              )}
             </a>
-          );
-        })}
+            <div class="flex items-center justify-between border-t border-gray-700 p-1 pl-4 text-sm text-gray-400">
+              <span>
+                By{" "}
+                <a href="#" class="hover:text-blue-400">
+                  {post.author?.name}
+                </a>{" "}
+                on {formatDate(post.created_at)}
+              </span>
+              <div class="flex flex-wrap items-center space-x-0 sm:mr-4 sm:space-x-4">
+                <span class="flex w-full items-center sm:w-auto">
+                  <i class="fas fa-eye mr-1" />
+                  {post.views_count}
+                </span>
+              </div>
+            </div>
+          </article>
+        ))
+      )
+    }
 
-        {data.pagination.has_next && (
-          <a
-            href={`/category/${slug}?page=${data.pagination.next_page}`}
-            class="px-3 py-2 rounded border border-gray-700 text-gray-300 hover:text-blue-400 hover:border-blue-400 transition"
-          >
-            Next
-          </a>
-        )}
-      </nav>
-    )}
+    {
+      data.pagination.total_pages > 1 && (
+        <nav class="my-6 flex items-center justify-center space-x-2">
+          {data.pagination.has_prev && (
+            <a
+              href={
+                data.pagination.prev_page === 1
+                  ? `/category/${slug}`
+                  : `/category/${slug}?page=${data.pagination.prev_page}`
+              }
+              class="rounded border border-gray-700 px-3 py-2 text-gray-300 transition hover:border-blue-400 hover:text-blue-400"
+            >
+              Previous
+            </a>
+          )}
+
+          {Array.from({ length: data.pagination.total_pages }, (_, i) => {
+            const pageNum = i + 1;
+            const isActive = pageNum === data.pagination.current_page;
+            return (
+              <a
+                href={
+                  pageNum === 1
+                    ? `/category/${slug}`
+                    : `/category/${slug}?page=${pageNum}`
+                }
+                class={`rounded border px-3 py-2 transition ${
+                  isActive
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : "border-gray-700 text-gray-300 hover:border-blue-400 hover:text-blue-400"
+                }`}
+              >
+                {pageNum}
+              </a>
+            );
+          })}
+
+          {data.pagination.has_next && (
+            <a
+              href={`/category/${slug}?page=${data.pagination.next_page}`}
+              class="rounded border border-gray-700 px-3 py-2 text-gray-300 transition hover:border-blue-400 hover:text-blue-400"
+            >
+              Next
+            </a>
+          )}
+        </nav>
+      )
+    }
   </div>
 
   <Sidebar

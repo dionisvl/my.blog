@@ -1,6 +1,14 @@
-include .env
+-include .env
 
 COMPOSE_DEV=docker compose -f compose.yml -f compose.override.dev.yaml
+COMPOSE_PROD=docker compose -f compose.yml -f compose.override.prod.yaml
+MONITORING=.devops/monitoring/docker-compose.monitoring
+PHPUNIT=$(COMPOSE_DEV) exec -e APP_ENV=test -e APP_DEBUG=1 -e DATABASE_URL='sqlite:///%kernel.project_dir%/var/data_test.db' symfony ./vendor/bin/phpunit -c phpunit.dist.xml
+
+.PHONY: init up up-prod restart-symfony-dev rebuild down build astro-build-local \
+	docker-down-clear composer-install db-drop migrates bash sh routes \
+	test test-filter test-coverage test-go rector rector-fix phpstan phpstan-symfony-full \
+	cs-fix cache-clear aphorizm monitoring-up monitoring-up-prod monitoring-down
 
 init: docker-down-clear \
 	composer-install \
@@ -9,7 +17,7 @@ init: docker-down-clear \
 up:
 	$(COMPOSE_DEV) up -d
 up-prod:
-	docker compose -f compose.yml -f compose.override.prod.yaml up -d
+	$(COMPOSE_PROD) up -d
 restart-symfony-dev:
 	$(COMPOSE_DEV) up -d --force-recreate symfony
 rebuild:
@@ -25,7 +33,7 @@ astro-build-local:
 		--env-from-file ./frontend-astro/.env \
 		-p 4321:4321 \
 		astro-frontend \
-		sh -c "npm install -g pnpm@$(IMAGE_PNPM_VERSION) && pnpm install --frozen-lockfile && pnpm build && node dist/server/entry.mjs"
+		sh -c "pnpm install --frozen-lockfile --store-dir /pnpm/store && pnpm build && node dist/server/entry.mjs"
 
 docker-down-clear:
 	$(COMPOSE_DEV) down -v --remove-orphans
@@ -50,13 +58,13 @@ routes:
 
 # Testing
 test:
-	$(COMPOSE_DEV) exec -e APP_ENV=test -e APP_DEBUG=1 -e DATABASE_URL='sqlite:///%kernel.project_dir%/var/data_test.db' symfony ./vendor/bin/phpunit -c phpunit.dist.xml
+	$(PHPUNIT)
 
 test-filter:
-	$(COMPOSE_DEV) exec -e APP_ENV=test -e APP_DEBUG=1 -e DATABASE_URL='sqlite:///%kernel.project_dir%/var/data_test.db' symfony ./vendor/bin/phpunit -c phpunit.dist.xml --filter $(FILTER)
+	$(PHPUNIT) --filter $(FILTER)
 
 test-coverage:
-	$(COMPOSE_DEV) exec -e APP_ENV=test -e APP_DEBUG=1 -e DATABASE_URL='sqlite:///%kernel.project_dir%/var/data_test.db' symfony ./vendor/bin/phpunit -c phpunit.dist.xml --coverage-html coverage
+	$(PHPUNIT) --coverage-html coverage
 
 # Go API tests (run natively on host; testcontainers starts its own postgres)
 test-go:
@@ -93,10 +101,10 @@ aphorizm:
 
 # Monitoring Stack
 monitoring-up:
-	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-dev.yml up -d
+	docker compose -f compose.yml -f $(MONITORING).yml -f $(MONITORING).traefik-dev.yml up -d
 
 monitoring-up-prod:
-	docker compose -f compose.yml -f compose.override.prod.yaml -f .devops/monitoring/docker-compose.monitoring.yml -f .devops/monitoring/docker-compose.monitoring.traefik-prod.yml up -d
+	$(COMPOSE_PROD) -f $(MONITORING).yml -f $(MONITORING).traefik-prod.yml up -d
 
 monitoring-down:
-	docker compose -f compose.yml -f .devops/monitoring/docker-compose.monitoring.yml down
+	docker compose -f compose.yml -f $(MONITORING).yml down

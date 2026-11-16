@@ -12,3 +12,5 @@
 !.prettierrc
 !eslint.config.js
 !README.md
+# Vendored contract copy must stay byte-identical with api-go and api-symfony
+/src/contracts

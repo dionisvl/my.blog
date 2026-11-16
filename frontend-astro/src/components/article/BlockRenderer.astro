@@ -32,13 +32,15 @@ const KNOWN = new Set([
 
 for (const block of blocks) {
   if (!KNOWN.has(block.type)) {
-    console.warn(`article: skipping unknown block type "${String(block.type)}"`);
+    console.warn(
+      `article: skipping unknown block type "${String(block.type)}"`
+    );
   }
 }
 ---
 
 {
-  blocks.map((block) => {
+  blocks.map(block => {
     switch (block.type) {
       case "richText":
         return <RichText id={block.id} {...block.props} />;

@@ -40,7 +40,7 @@ func TestMigration_AdditiveOnProductionBaseline(t *testing.T) {
 	readPosts := func() []snapshot {
 		rows, err := tdb.SQLDB().QueryContext(ctx, `SELECT id, slug, status FROM posts ORDER BY id`)
 		require.NoError(t, err)
-		defer rows.Close()
+		defer func() { assert.NoError(t, rows.Close()) }()
 
 		var out []snapshot
 		for rows.Next() {
@@ -228,7 +228,7 @@ func assertModelColumnsExist(t *testing.T, tdb *testhelper.TestDB, table string,
 	rows, err := tdb.SQLDB().QueryContext(context.Background(),
 		`SELECT column_name FROM information_schema.columns WHERE table_name = $1`, table)
 	require.NoError(t, err)
-	defer rows.Close()
+	defer func() { assert.NoError(t, rows.Close()) }()
 
 	have := map[string]bool{}
 	for rows.Next() {

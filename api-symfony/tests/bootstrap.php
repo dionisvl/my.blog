@@ -20,6 +20,6 @@ if (!isset($_SERVER['APP_DEBUG'])) {
 
 new Dotenv()->bootEnv(dirname(__DIR__).'/.env');
 
-if ($_SERVER['APP_DEBUG']) {
+if ((bool) $_SERVER['APP_DEBUG']) {
     umask(0000);
 }

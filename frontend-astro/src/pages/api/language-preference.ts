@@ -16,7 +16,9 @@ export const POST: APIRoute = async ({ request, cookies, url }) => {
   const slug = typeof slugField === "string" && slugField ? slugField : null;
   // Same-origin path only: a single leading slash, no scheme-relative or backslash tricks.
   const next =
-    typeof nextField === "string" && /^\/(?![/\\])/.test(nextField) ? nextField : "/";
+    typeof nextField === "string" && /^\/(?![/\\])/.test(nextField)
+      ? nextField
+      : "/";
 
   if (
     typeof locale !== "string" ||

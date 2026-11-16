@@ -16,7 +16,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const { request, url, cookies } = context;
   if (!isGeoIpLocaleRoutingEnabled() || !isWwwHost(url.hostname)) return next();
   if (request.method !== "GET" && request.method !== "HEAD") return next();
-  if (EXCLUDED.test(url.pathname) || cookies.has(GEO_STAY_COOKIE)) return next();
+  if (EXCLUDED.test(url.pathname) || cookies.has(GEO_STAY_COOKIE))
+    return next();
   if ((await countryForRequest(request.headers)) === "RU") return next();
 
   // Assign parts separately: "//evil.example" as a path must not become a protocol-relative URL.

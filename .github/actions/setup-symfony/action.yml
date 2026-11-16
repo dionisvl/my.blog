@@ -1,0 +1,33 @@
+name: Setup Symfony app
+description: Install PHP, the test env file and Composer dependencies for api-symfony
+
+runs:
+  using: composite
+  steps:
+    - name: Setup PHP 8.4
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.4
+        extensions: gd, zip, pdo, pdo_sqlite, pdo_pgsql, mbstring, curl, xml, bcmath, exif, intl, opcache
+
+    - name: Copy environment file
+      shell: bash
+      run: cp api-symfony/.env.test api-symfony/.env
+
+    - name: Locate Composer cache
+      id: composer-cache
+      shell: bash
+      working-directory: api-symfony
+      run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Composer downloads
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: composer-${{ runner.os }}-${{ hashFiles('api-symfony/composer.lock') }}
+        restore-keys: composer-${{ runner.os }}-
+
+    - name: Install Composer dependencies
+      shell: bash
+      working-directory: api-symfony
+      run: composer install --prefer-dist --no-progress --no-interaction

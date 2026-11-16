@@ -53,7 +53,7 @@ class Comment
 
     public function getAuthorName(): string
     {
-        if (!isset($this->authorName) || '' === $this->authorName) {
+        if ('' === $this->authorName) {
             return 'anon';
         }
 

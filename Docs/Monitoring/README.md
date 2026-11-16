@@ -1,88 +1,53 @@
-# Monitoring Stack
+# Monitoring
 
-Complete monitoring solution with **Prometheus**, **Grafana**, and **Alertmanager**.
-
-## Architecture
+Optional stack, separate from `make up`: Prometheus, Grafana, Alertmanager, node-exporter and
+cAdvisor. Compose files live in `.devops/monitoring/`; image versions are pinned in `.env`.
 
 ```
-┌─────────────┐
-│   Traefik   │ ──► :8082/metrics
-└─────────────┘            │
-                           │
-┌─────────────┐            ▼
-│node_exporter│ ──► ┌───────────────┐      ┌──────────────┐
-└─────────────┘     │  Prometheus   │ ───► │ Alertmanager │
-                    │ (time series) │      │ (alerts)     │
-┌─────────────┐     └───────────────┘      └──────────────┘
-│  cAdvisor   │ ──►         │
-└─────────────┘             │
-                            ▼
-                    ┌──────────────┐
-                    │   Grafana    │
-                    │(dashboards)  │
-                    └──────────────┘
+Traefik :8082/metrics ─┐
+node-exporter ─────────┼─▶ Prometheus ─▶ Alertmanager
+cAdvisor ──────────────┘        │
+                                ▼
+                             Grafana
 ```
 
-## Components
+## Run
 
-| Service | Image | Port | Purpose |
-|---------|-------|------|---------|
-| Prometheus | prom/prometheus:v3.9.1 | 9090 | Time series database, alerting |
-| Grafana | grafana/grafana:12.3.2 | 3000 | Visualization, dashboards |
-| Alertmanager | prom/alertmanager:v0.30.1 | 9093 | Alert routing |
-| node-exporter | prom/node-exporter:v1.10.2 | 9100 | Host metrics |
-| cAdvisor | gcr.io/cadvisor/cadvisor:latest | 8080 | Container metrics |
+```bash
+make monitoring-up        # dev
+make monitoring-up-prod   # prod
+make monitoring-down
+```
 
-## Metrics
+Set `GRAFANA_ADMIN_USER` and `GRAFANA_ADMIN_PASSWORD` in `.env` first.
 
-- **Traefik**: RPS, HTTP status codes, latency (p50/p95/p99)
-- **Host**: CPU, RAM, disk, load, network throughput
-- **Containers**: CPU, RAM, network I/O, disk I/O
+| Service      | Dev                           | Prod                                               |
+| ------------ | ----------------------------- | -------------------------------------------------- |
+| Grafana      | http://grafana.localhost      | HTTPS + BasicAuth (`GRAFANA_AUTH`)                 |
+| Prometheus   | http://prometheus.localhost   | HTTPS + BasicAuth (`PROMETHEUS_AUTH`)              |
+| Alertmanager | http://alertmanager.localhost | HTTPS + BasicAuth (`ALERTMANAGER_AUTH`)            |
+
+Prod hostnames are set in `docker-compose.monitoring.traefik-prod.yml`.
 
 ## Dashboards
 
-Automatically provisioned on startup:
+Loaded automatically from `.devops/monitoring/grafana/dashboards/`:
 
-1. **Traefik Dashboard** - Reverse proxy metrics
-2. **Host Metrics Dashboard** - Server performance
-3. **Containers Dashboard** - Per-container stats (Linux only)
+- **Traefik** — requests per second, status codes, latency percentiles
+- **Host** — CPU, memory, disk, load, network
+- **Containers** — CPU, memory, network and disk I/O per container
+
+To change one, export its JSON from Grafana into that directory and run `make monitoring-up` again.
 
 ## Alerts
 
-Single baseline alert:
-- **HostHighCpu**: CPU > 80% for 5 minutes
-
-Alertmanager configured for extensibility (Slack, Email, Telegram, PagerDuty).
-
-## Configuration
-
-### Development
-
-```bash
-make monitoring-up
-```
-
-Access at:
-- Grafana: http://grafana.localhost (admin / SecureGrafanaPass123!)
-- Prometheus: http://prometheus.localhost
-- Alertmanager: http://alertmanager.localhost
-
-### Production
-
-```bash
-make monitoring-up-prod
-```
-
-HTTPS + BasicAuth via Traefik. Credentials in `.env`.
-
-## Data Retention
-
-- Prometheus: 30 days (configurable)
-- Grafana: persistent volume
-- Alertmanager: persistent volume
+One rule, `HostHighCpu`: CPU above 80% for 5 minutes (`prometheus/alerts/rules.yml`).
+Alertmanager has no receiver configured yet, so alerts are visible in its UI but are not sent
+anywhere.
 
 ## Notes
 
-- **macOS**: cAdvisor cannot access Docker daemon; Traefik and Host dashboards work
-- **Linux**: All dashboards fully functional
-- Dashboards automatically loaded via provisioning script on startup
+- Prometheus keeps 30 days of data. Data lives in `data/prometheus`, `data/grafana` and
+  `data/alertmanager`.
+- On macOS with Docker Desktop cAdvisor cannot see the containers, so the Containers dashboard
+  stays empty. Check scrape targets at http://prometheus.localhost/targets.

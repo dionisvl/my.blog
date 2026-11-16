@@ -7,10 +7,10 @@ namespace App\Manager;
 use App\Dto\AdminProductPayload;
 use App\Entity\Product;
 use App\Entity\User;
-use App\Repository\CategoryRepository;
-use App\Repository\ProductRepository;
 use App\Media\ImageUploader;
 use App\Media\MediaTarget;
+use App\Repository\CategoryRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -103,6 +103,7 @@ final readonly class AdminProductManager
             foreach ($newImages as $image) {
                 $this->imageUploader->discard(MediaTarget::Product, $image);
             }
+
             throw $e;
         }
 

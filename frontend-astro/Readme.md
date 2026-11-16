@@ -1,146 +1,93 @@
-# web3main.pro — Astro Frontend
+# frontend-astro
 
-SSR blog frontend built with Astro 5, TailwindCSS v4, and `@astrojs/node` adapter (standalone mode).
-Proxies API requests to the Go backend (`api-go`) inside the Docker network.
-
----
+Public site: Astro 7 in SSR mode on the `@astrojs/node` standalone adapter. Pages are rendered
+from the Go API (`api-go`); the frontend has no database access.
 
 ## Stack
 
-- **Astro 5** — SSR, `@astrojs/node` standalone adapter
-- **TailwindCSS v4** — via `@tailwindcss/vite`
-- **Shiki** — syntax highlighting (`min-light` / `github-dark-default`)
-- **pnpm** — package manager
-- **Node 24**
+- **Astro 7**, `output: "server"`
+- **Tailwind CSS v4** via `@tailwindcss/vite`, dark theme
+- **Shiki** for code highlighting
+- **pnpm**, **Node 26**
 
----
+## Running
 
-## Running via Docker (recommended)
-
-All services are orchestrated from the repo root.
+From the repo root, with the rest of the stack:
 
 ```bash
-# Dev (HMR, no bundling — many files in DevTools is normal)
-make up
-
-# Stop
-make down
+make up                  # dev server with HMR at http://$MAIN_HOST
+make astro-build-local   # production build served locally in place of the dev server
 ```
 
-Dev URL: `http://<MAIN_HOST>` (set via `MAIN_HOST` in root `.env`, default: `phpqas.local`)
-
-### Test production build locally
-
-In dev mode Vite serves ~50 individual unbundled modules — this is expected behaviour, not a problem. Production build outputs a handful of minified chunks.
-
-To run a prod build locally against your dev environment (from repo root):
+Standalone, without Docker:
 
 ```bash
-make astro-build-local
-```
-
-Site will be available at `http://$MAIN_HOST` as usual. To go back to dev mode — `make up`.
-
----
-
-## Running locally (without Docker)
-
-```bash
-cp .env.example .env
-# fill in API_URL, API_KEY, PUBLIC_SITE_URL, etc.
-
+cp .env.example .env     # API_URL must point at a reachable api-go
 pnpm install
 pnpm dev
 ```
 
----
-
 ## Environment variables
 
-Configured via `.env` (dev) or `.env.production` (prod). See `.env.example` for the full list.
+| Variable                          | Description                                               |
+| --------------------------------- | --------------------------------------------------------- |
+| `API_URL`                         | Go API URL, e.g. `http://api-go:8081`                     |
+| `API_KEY`                         | API key; compose sets it from `GO_API_KEY` in root `.env` |
+| `PUBLIC_SITE_URL`                 | Canonical site URL; its host is the only one Astro trusts |
+| `PUBLIC_SITE_TITLE`               | Site title                                                |
+| `PUBLIC_SITE_AUTHOR`              | Site author                                               |
+| `PUBLIC_SITE_DESC`                | Meta description                                          |
+| `PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console meta tag (optional)                 |
+| `GEOIP_LOCALE_ROUTING_ENABLED`    | Geo-IP host routing, off by default (prod only)           |
 
-| Variable | Description |
-|----------|-------------|
-| `API_URL` | Go API URL, e.g. `http://api-go:8081` |
-| `API_KEY` | API key, must match `GO_API_KEY` in root `.env` |
-| `PUBLIC_SITE_URL` | Canonical site URL, used in OG/meta tags |
-| `PUBLIC_SITE_TITLE` | Site title |
-| `PUBLIC_SITE_AUTHOR` | Site author |
-| `PUBLIC_SITE_DESC` | Meta description |
-| `PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console meta tag (optional) |
-
-Server-side variables (`API_URL`, `API_KEY`) are never exposed to the client.
-
----
+`API_URL` and `API_KEY` are server-only and never reach the browser. In production the
+`PUBLIC_*` values are baked in at build time.
 
 ## Scripts
 
 ```bash
-pnpm dev          # Start dev server
-pnpm build        # Type-check + build for production
-pnpm preview      # Preview production build locally
-pnpm lint         # ESLint
-pnpm format       # Prettier (write)
-pnpm format:check # Prettier (dry-run)
-pnpm sync         # Regenerate Astro type declarations (.astro/)
+pnpm dev            # dev server
+pnpm build          # type-check + production build
+pnpm test           # unit tests (node --test)
+pnpm lint           # ESLint
+pnpm format         # Prettier (write)
+pnpm format:check   # Prettier (check)
+pnpm sync           # regenerate Astro types
 ```
-
----
 
 ## Project structure
 
 ```
-frontend-astro/
-├── src/
-│   ├── config.ts              # SITE constants (reads from env)
-│   ├── lib/
-│   │   ├── api.ts             # API client (apiFetch + all endpoints)
-│   │   └── types.ts           # TypeScript types for all API responses
-│   ├── pages/
-│   │   ├── index.astro        # / — Hero + Featured + Recent posts
-│   │   ├── 404.astro
-│   │   ├── search.astro       # /search?q=
-│   │   ├── contacts.astro     # /contacts
-│   │   ├── posts/
-│   │   │   ├── index.astro               # /posts/ (page 1)
-│   │   │   ├── page/[page].astro         # /posts/page/N/
-│   │   │   └── [...slug]/index.astro     # /posts/<slug>/
-│   │   ├── tags/
-│   │   │   └── [tag]/[...page].astro     # /tags/<slug>/
-│   │   ├── categories/
-│   │   │   └── [slug]/[...page].astro    # /categories/<slug>/
-│   │   └── api/
-│   │       ├── comment.ts               # POST /api/comment → api-go
-│   │       ├── subscribe.ts             # POST /api/subscribe → api-go
-│   │       ├── send-contact.ts          # POST /api/send-contact → api-go
-│   │       └── postlike/[postId].ts     # POST /api/postlike/:id → api-go
-│   ├── components/
-│   │   ├── Header.astro, Footer.astro, MobileMenu.astro
-│   │   ├── Card.astro         # Post card
-│   │   ├── Pagination.astro
-│   │   ├── Breadcrumb.astro
-│   │   ├── Tag.astro
-│   │   ├── Datetime.astro     # Client-side date formatting (user's locale/timezone)
-│   │   └── ...
-│   └── assets/
-│       └── fonts/             # Local fonts (woff2)
-├── public/                    # Static assets
-├── astro.config.ts
-├── .env                       # Dev secrets (gitignored)
-├── .env.production            # Prod secrets (gitignored)
-└── .env.example               # Template
+src/
+├── pages/
+│   ├── index.astro                 /            home, paginated with ?page=N
+│   ├── post/[slug].astro           /post/<slug>
+│   ├── [lang]/post/[slug].astro    /<ru|en>/post/<slug>
+│   ├── category/[slug].astro       /category/<slug>
+│   ├── tag/[slug].astro            /tag/<slug>
+│   ├── search.astro                /search?q=
+│   ├── contacts.astro, privacy.astro, 404.astro
+│   └── api/                        browser-facing endpoints that proxy to api-go
+│       ├── comment.ts
+│       ├── postlike/[postId].ts
+│       └── language-preference.ts
+├── components/article/             renderers for article blocks
+├── contracts/article-blocks/v1/    JSON contract shared with Symfony
+├── layouts/Layout.astro
+├── lib/                            API client, types, i18n, geo-IP, URL helpers
+├── middleware.ts                   geo-IP host routing
+└── styles/global.css
+public/                             static CSS, JS, icons
+scripts/update-geoip.mjs            downloads the DB-IP Lite country database
+tests/                              unit tests
 ```
 
----
+## Notes
 
-## Traefik routing (inside Docker)
-
-| Host | Service | Notes |
-|------|---------|-------|
-| `$MAIN_HOST` | `astro-frontend` | catch-all, priority 10 |
-| `$MAIN_HOST` + `/admin/*`, `/login`, `/logout` | `symfony` | priority 50 |
-| `$API_GO_HOST` | `api-go` | dedicated subdomain, all paths |
-
-Hosts are configured via `MAIN_HOST` and `API_GO_HOST` in the root `.env`.
-
-Astro proxies API calls server-side to `api-go` via `API_URL` (see `frontend-astro/.env`). Write endpoints (`/api/comment`, `/api/subscribe`, `/api/send-contact`, `/api/postlike/*`) are handled by Astro API routes — the browser never calls `api-go` directly and never sees `API_KEY`.
+- The browser never calls `api-go` directly: writes go through the `src/pages/api/` routes,
+  which add the API key server-side.
+- Modular articles are stored as typed blocks. The contract in `src/contracts/article-blocks/v1/`
+  mirrors `api-symfony/contracts/article-blocks/v1/`.
+- Article language and geo-IP host routing are described in
+  [Docs/geoip-host-routing.md](../Docs/geoip-host-routing.md).
+- Traefik sends everything on `MAIN_HOST` to Astro except the admin, storage and SEO paths.

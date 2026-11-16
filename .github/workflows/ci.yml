@@ -6,8 +6,52 @@ on:
   pull_request:
     branches: [ master ]
 
+# A newer push to the same PR supersedes the running one; master runs always finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  test:
+  php-test:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      DEFAULT_URI: http://localhost
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-symfony
+
+      - name: Run SQLite tests
+        working-directory: api-symfony
+        env:
+          DATABASE_URL: sqlite:///${{ runner.temp }}/article-ci.sqlite
+        run: ./vendor/bin/phpunit --testdox
+
+  php-lint:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: test
+      APP_DEBUG: '1'
+      DEFAULT_URI: http://localhost
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-symfony
+
+      - name: Warm up the test container for PHPStan
+        working-directory: api-symfony
+        run: php bin/console cache:warmup
+
+      - name: PHPStan
+        working-directory: api-symfony
+        run: ./vendor/bin/phpstan analyse --memory-limit=2048M --no-progress
+
+      - name: PHP CS Fixer
+        working-directory: api-symfony
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
+
+  cross-runtime:
     runs-on: ubuntu-latest
     env:
       APP_ENV: test
@@ -30,24 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.4
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.4
-          extensions: gd, zip, pdo, pdo_sqlite, pdo_pgsql, pdo_mysql, mbstring, curl, xml, bcmath, exif, intl, opcache
-
-      - name: Copy environment file
-        run: cp api-symfony/.env.test api-symfony/.env
-
-      - name: Install Composer dependencies
-        working-directory: api-symfony
-        run: composer install --prefer-dist --no-progress --no-interaction
-
-      - name: Run SQLite tests
-        working-directory: api-symfony
-        env:
-          DATABASE_URL: sqlite:///${{ runner.temp }}/article-ci.sqlite
-        run: ./vendor/bin/phpunit --testdox
+      - uses: ./.github/actions/setup-symfony
 
       - name: Create PostgreSQL test database
         env:
@@ -168,12 +195,50 @@ jobs:
         working-directory: api-go
         run: go vet ./...
 
+      - name: Lint Go API
+        run: docker run --rm -v "$PWD/api-go:/src" -w /src golangci/golangci-lint:v2.15.0 golangci-lint run ./...
+
   docker-build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - context: api-symfony
+            target: prod
+            smoke: php -v
+          - context: api-go
+            target: ''
+            smoke: ''
+          - context: frontend-astro
+            target: prod
+            smoke: node --version
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build ${{ matrix.context }} image
+        run: docker build ${{ matrix.target && format('--target {0}', matrix.target) || '' }} -t ci-image ${{ matrix.context }}
+
+      - name: Smoke-run ${{ matrix.context }} image
+        if: matrix.smoke != ''
+        run: docker run --rm ci-image ${{ matrix.smoke }}
+
+  frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Test Docker build
-        run: |
-          docker build -f api-symfony/Dockerfile api-symfony/ -t phpqa-test
-          docker run --rm phpqa-test php -v
+      - name: Type-check Astro frontend
+        run: docker build --target check frontend-astro/
+
+      - name: Build frontend source image
+        run: docker build --target source -t frontend-src frontend-astro/
+
+      - name: Run frontend tests
+        run: docker run --rm frontend-src pnpm test
+
+      - name: Prettier
+        run: docker run --rm frontend-src pnpm format:check
+
+      - name: ESLint
+        run: docker run --rm frontend-src pnpm lint

@@ -14,7 +14,7 @@ func APIKeyAuth(apiKey string) func(http.Handler) http.Handler {
 			if strings.TrimSpace(apiKey) == "" || subtle.ConstantTimeCompare([]byte(key), []byte(apiKey)) != 1 {
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(map[string]string{"error": "invalid API key"})
+				_ = json.NewEncoder(w).Encode(map[string]string{"error": "invalid API key"})
 				return
 			}
 			next.ServeHTTP(w, r)

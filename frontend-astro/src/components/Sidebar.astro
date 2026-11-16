@@ -27,20 +27,24 @@ function formatPostDate(createdAt: string): string {
 <div class="w-full md:w-1/4">
   <div class="sticky top-4 space-y-3">
     <!-- Categories Widget -->
-    <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
-      <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">
+    <div
+      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm"
+    >
+      <h3 class="mb-4 text-center text-lg font-semibold text-gray-100">
         {m.sidebar.categories}
       </h3>
       <ul class="space-y-2">
         {
-          categories.map((category) => (
+          categories.map(category => (
             <li class="border-b border-gray-700 pb-2 last:border-0 last:pb-0">
               <a
                 href={`/category/${category.slug}`}
-                class="text-gray-300 hover:text-blue-400 transition flex justify-between"
+                class="flex justify-between text-gray-300 transition hover:text-blue-400"
               >
                 <span class="text-sm">{category.title}</span>
-                <span class="text-gray-400 text-sm">({category.posts_count})</span>
+                <span class="text-sm text-gray-400">
+                  ({category.posts_count})
+                </span>
               </a>
             </li>
           ))
@@ -49,25 +53,27 @@ function formatPostDate(createdAt: string): string {
     </div>
 
     <!-- Featured Posts Widget -->
-    <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
-      <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">
+    <div
+      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm"
+    >
+      <h3 class="mb-4 text-center text-lg font-semibold text-gray-100">
         {m.sidebar.featured}
       </h3>
 
       <div class="space-y-4">
         {
-          featuredPosts.map((post) => (
+          featuredPosts.map(post => (
             <div class="flex space-x-3">
-              <div class="flex-shrink-0 w-20 h-20 relative group overflow-hidden rounded">
+              <div class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded">
                 <a
                   href={`/post/${post.slug}`}
                   aria-label={post.title}
-                  class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full"
+                  class="relative block h-full w-full [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full"
                 >
                   <LazyImage
                     src={post.image_url}
                     alt={post.title}
-                    class="w-full h-full object-cover group-hover:brightness-60 transition-all"
+                    class="h-full w-full object-cover transition-all group-hover:brightness-60"
                     width="20"
                     height="20"
                   />
@@ -76,7 +82,7 @@ function formatPostDate(createdAt: string): string {
               <div>
                 <a
                   href={`/post/${post.slug}`}
-                  class="font-medium text-gray-200 hover:text-blue-400 transition text-sm block mb-1"
+                  class="mb-1 block text-sm font-medium text-gray-200 transition hover:text-blue-400"
                 >
                   {post.title}
                 </a>
@@ -96,24 +102,26 @@ function formatPostDate(createdAt: string): string {
     </div>
 
     <!-- Recent Posts Widget -->
-    <div class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700 p-4">
-      <h3 class="text-lg font-semibold text-center mb-4 text-gray-100">
+    <div
+      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm"
+    >
+      <h3 class="mb-4 text-center text-lg font-semibold text-gray-100">
         {m.sidebar.recent}
       </h3>
       <div class="space-y-4">
         {
-          recentPosts.map((post) => (
+          recentPosts.map(post => (
             <div class="flex space-x-3">
-              <div class="flex-shrink-0 w-20 h-20 relative group overflow-hidden rounded">
+              <div class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded">
                 <a
                   href={`/post/${post.slug}`}
                   aria-label={post.title}
-                  class="block w-full h-full relative [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full"
+                  class="relative block h-full w-full [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full"
                 >
                   <LazyImage
                     src={post.image_url}
                     alt={post.title}
-                    class="w-full h-full object-cover group-hover:brightness-60 transition-all"
+                    class="h-full w-full object-cover transition-all group-hover:brightness-60"
                     width="20"
                     height="20"
                   />
@@ -122,7 +130,7 @@ function formatPostDate(createdAt: string): string {
               <div>
                 <a
                   href={`/post/${post.slug}`}
-                  class="font-medium text-gray-200 hover:text-blue-400 transition text-sm block mb-1"
+                  class="mb-1 block text-sm font-medium text-gray-200 transition hover:text-blue-400"
                 >
                   {post.title}
                 </a>

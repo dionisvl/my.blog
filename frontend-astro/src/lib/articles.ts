@@ -31,12 +31,16 @@ async function articleFetch<T>(path: string): Promise<T> {
 
 export async function getArticleLocale(
   slug: string,
-  locale: ArticleLocale,
+  locale: ArticleLocale
 ): Promise<ArticleLocaleResponse> {
   const path = `/api/post/${encodeURIComponent(slug)}/locale/${locale}`;
   const data = await articleFetch<unknown>(path);
   if (!isArticleLocaleShape(data)) {
-    throw new ApiClientError(502, "", `API returned a malformed article locale: ${path}`);
+    throw new ApiClientError(
+      502,
+      "",
+      `API returned a malformed article locale: ${path}`
+    );
   }
   return data as ArticleLocaleResponse;
 }
@@ -44,13 +48,13 @@ export async function getArticleLocale(
 /** Side-effect free (no view counter, no cookie), so it is safe for redirect decisions. */
 export function resolveArticle(slug: string): Promise<ArticleResolution> {
   return articleFetch<ArticleResolution>(
-    `/api/post/${encodeURIComponent(slug)}/resolve`,
+    `/api/post/${encodeURIComponent(slug)}/resolve`
   );
 }
 
 /** Trigger the legacy daily view-count behavior for a rendered modular locale page. */
 export async function recordArticleView(
-  slug: string,
+  slug: string
 ): Promise<{ post?: PostResponse["post"]; counted: boolean }> {
   const path = `/api/post/${encodeURIComponent(slug)}`;
   const res = await fetch(`${API_URL}${path}`, {
@@ -62,7 +66,11 @@ export async function recordArticleView(
   try {
     const data = (await res.json()) as PostResponse;
     const post = data?.post;
-    if (!post || typeof post.views_count !== "number" || !Number.isFinite(post.views_count)) {
+    if (
+      !post ||
+      typeof post.views_count !== "number" ||
+      !Number.isFinite(post.views_count)
+    ) {
       return { counted: false };
     }
     return { post, counted: headerSaysCounted };

@@ -5,9 +5,18 @@ interface Props extends CardSelectorProps {
   id: string;
 }
 
-const { id, heading, groupLabel, targetBlockId, defaultOptionId, options, labels } = Astro.props;
+const {
+  id,
+  heading,
+  groupLabel,
+  targetBlockId,
+  defaultOptionId,
+  options,
+  labels,
+} = Astro.props;
 
-const defaultOption = options.find((option) => option.id === defaultOptionId) ?? options[0];
+const defaultOption =
+  options.find(option => option.id === defaultOptionId) ?? options[0];
 ---
 
 <!--
@@ -17,7 +26,7 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
 -->
 <section
   id={`block-${id}`}
-  class="my-6 card-selector"
+  class="card-selector my-6"
   data-card-selector
   data-target={`block-${targetBlockId}`}
   data-default-column={defaultOption?.columnId}
@@ -25,30 +34,34 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
   data-label-sticky={labels.stickyCaption}
   data-label-cta-aria={labels.ctaAria}
 >
-  <h2 class="text-xl font-bold text-white mb-2">{heading}</h2>
+  <h2 class="mb-2 text-xl font-bold text-white">{heading}</h2>
   <div role="group" aria-label={groupLabel} class="flex flex-wrap gap-2">
     {
-      options.map((option) => (
+      options.map(option => (
         <button
           type="button"
           data-column={option.columnId}
           data-name={option.label}
           aria-pressed={option.id === defaultOption?.id ? "true" : "false"}
-          class="rounded-full border border-gray-500 px-3 py-1 text-sm text-gray-100 aria-pressed:bg-blue-500 aria-pressed:border-blue-500"
+          class="rounded-full border border-gray-500 px-3 py-1 text-sm text-gray-100 aria-pressed:border-blue-500 aria-pressed:bg-blue-500"
         >
           {option.label}
         </button>
       ))
     }
   </div>
-  <p class="mt-2 text-sm text-gray-300" data-selected-caption aria-live="polite"></p>
+  <p
+    class="mt-2 text-sm text-gray-300"
+    data-selected-caption
+    aria-live="polite"
+  >
+  </p>
   <p class="mt-1 text-xs text-gray-400">{labels.mobileHint}</p>
   <a
     data-selector-cta
     class="selector-cta mt-3 hidden rounded-md bg-blue-500 px-4 py-2 text-center text-white"
     target="_blank"
-    rel="noopener noreferrer"
-  ></a>
+    rel="noopener noreferrer"></a>
 </section>
 
 <script>
@@ -56,38 +69,54 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
 
   function init(root: HTMLElement): void {
     const table = document.querySelector<HTMLTableElement>(
-      `#${CSS.escape(root.dataset.target ?? "")} table.comparison-table`,
+      `#${CSS.escape(root.dataset.target ?? "")} table.comparison-table`
     );
     if (!table) return;
 
     const caption = root.querySelector<HTMLElement>("[data-selected-caption]");
     const cta = root.querySelector<HTMLAnchorElement>("[data-selector-cta]");
-    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("button[data-column]"));
+    const buttons = Array.from(
+      root.querySelectorAll<HTMLButtonElement>("button[data-column]")
+    );
 
     function select(button: HTMLButtonElement): void {
       const columnId = button.dataset.column ?? "";
       const name = button.dataset.name ?? "";
 
       table!.setAttribute("data-selector-active", "");
-      table!.querySelectorAll<HTMLElement>("[data-col]").forEach((cell) => {
+      table!.querySelectorAll<HTMLElement>("[data-col]").forEach(cell => {
         cell.classList.toggle("is-selected-col", cell.dataset.col === columnId);
       });
-      buttons.forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+      buttons.forEach(other =>
+        other.setAttribute("aria-pressed", String(other === button))
+      );
 
       const source = table!.querySelector<HTMLAnchorElement>(
-        `a[data-cta-for="${CSS.escape(columnId)}"]`,
+        `a[data-cta-for="${CSS.escape(columnId)}"]`
       );
       const ctaLabel = source?.textContent?.trim() ?? "";
 
       if (caption) {
-        caption.textContent = fillTemplate(root.dataset.labelSelected ?? "", { name, cta: ctaLabel });
+        caption.textContent = fillTemplate(root.dataset.labelSelected ?? "", {
+          name,
+          cta: ctaLabel,
+        });
       }
       if (cta) {
         if (source) {
           cta.href = source.href;
           cta.rel = source.rel;
-          cta.textContent = fillTemplate(root.dataset.labelSticky ?? "", { name, cta: ctaLabel });
-          cta.setAttribute("aria-label", fillTemplate(root.dataset.labelCtaAria ?? "", { name, cta: ctaLabel }));
+          cta.textContent = fillTemplate(root.dataset.labelSticky ?? "", {
+            name,
+            cta: ctaLabel,
+          });
+          cta.setAttribute(
+            "aria-label",
+            fillTemplate(root.dataset.labelCtaAria ?? "", {
+              name,
+              cta: ctaLabel,
+            })
+          );
           cta.classList.remove("hidden");
         } else {
           cta.classList.add("hidden");
@@ -95,10 +124,14 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
       }
     }
 
-    buttons.forEach((button) => button.addEventListener("click", () => select(button)));
+    buttons.forEach(button =>
+      button.addEventListener("click", () => select(button))
+    );
 
     const initial =
-      buttons.find((button) => button.dataset.column === root.dataset.defaultColumn) ?? buttons[0];
+      buttons.find(
+        button => button.dataset.column === root.dataset.defaultColumn
+      ) ?? buttons[0];
     if (initial) select(initial);
   }
 
@@ -106,10 +139,17 @@ const defaultOption = options.find((option) => option.id === defaultOptionId) ??
 </script>
 
 <style is:global>
-  .card-selector { display: none; }
+  .card-selector {
+    display: none;
+  }
   @media (max-width: 980px) {
-    .card-selector { display: block; }
-    .card-selector [role="group"] { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card-selector {
+      display: block;
+    }
+    .card-selector [role="group"] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   .card-selector .selector-cta:not(.hidden) {
     display: block;

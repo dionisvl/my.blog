@@ -16,7 +16,7 @@ final class S3MediaStorageTest extends TestCase
     use MediaStorageContractTrait;
 
     private ?S3MediaStorage $s3 = null;
-    private S3Client $client;
+    private ?S3Client $client = null;
 
     protected function setUp(): void
     {
@@ -32,12 +32,19 @@ final class S3MediaStorageTest extends TestCase
         ]);
 
         foreach (['media-public', 'media-private'] as $bucket) {
-            if (!$this->client->doesBucketExistV2($bucket)) {
-                $this->client->createBucket(['Bucket' => $bucket]);
+            if (!$this->client()->doesBucketExistV2($bucket)) {
+                $this->client()->createBucket(['Bucket' => $bucket]);
             }
         }
 
-        $this->s3 = new S3MediaStorage($this->client, 'media-public', 'media-private', 'https://cdn.example.test');
+        $this->s3 = new S3MediaStorage($this->client(), 'media-public', 'media-private', 'https://cdn.example.test');
+    }
+
+    private function client(): S3Client
+    {
+        \assert(null !== $this->client);
+
+        return $this->client;
     }
 
     protected function storage(): MediaStorage
@@ -50,14 +57,14 @@ final class S3MediaStorageTest extends TestCase
     public function testSameBucketForBothAreasIsRefused(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        new S3MediaStorage($this->client, 'same', 'same', 'https://x');
+        new S3MediaStorage($this->client(), 'same', 'same', 'https://x');
     }
 
     public function testHashedWebpGetsImmutableCacheControlAndContentType(): void
     {
         $key = 'uploads/2026-11-13_10-00-00_0123456789abcdef.webp';
         $this->storage()->put(Visibility::Public, $key, MediaTestImages::file('webp'), 'image/webp');
-        $head = $this->client->headObject(['Bucket' => 'media-public', 'Key' => $key]);
+        $head = $this->client()->headObject(['Bucket' => 'media-public', 'Key' => $key]);
 
         self::assertSame('image/webp', $head['ContentType']);
         self::assertSame('public, max-age=31536000, immutable', $head['CacheControl']);
@@ -69,8 +76,8 @@ final class S3MediaStorageTest extends TestCase
         $key = 'originals/uploads/'.bin2hex(random_bytes(4)).'.png';
         $this->storage()->put(Visibility::Private, $key, MediaTestImages::file('png'), 'image/png');
 
-        self::assertFalse($this->client->doesObjectExistV2('media-public', $key));
-        self::assertTrue($this->client->doesObjectExistV2('media-private', $key));
+        self::assertFalse($this->client()->doesObjectExistV2('media-public', $key));
+        self::assertTrue($this->client()->doesObjectExistV2('media-private', $key));
         $this->storage()->delete(Visibility::Private, $key);
     }
 }

@@ -32,13 +32,13 @@ final class MediaRejectedTest extends TestCase
 
     public function testSubscriberAnswers422OnlyForAdminPaths(): void
     {
-        $kernel = $this->createStub(HttpKernelInterface::class);
+        $kernel = self::createStub(HttpKernelInterface::class);
         $subscriber = new MediaRejectedSubscriber();
 
         $admin = new ExceptionEvent($kernel, Request::create('/admin/posts/store', 'POST'), HttpKernelInterface::MAIN_REQUEST, new MediaRejectedException('Image type is not allowed.'));
         $subscriber->onKernelException($admin);
         self::assertSame(422, $admin->getResponse()?->getStatusCode());
-        self::assertStringContainsString('Image type is not allowed.', (string) $admin->getResponse()?->getContent());
+        self::assertStringContainsString('Image type is not allowed.', (string) $admin->getResponse()->getContent());
 
         $other = new ExceptionEvent($kernel, Request::create('/api/x', 'POST'), HttpKernelInterface::MAIN_REQUEST, new MediaRejectedException('x'));
         $subscriber->onKernelException($other);

@@ -31,6 +31,7 @@ services:
       - ./api-symfony:/app:rw
       - ./api-symfony/Caddyfile.dev:/etc/caddy/Caddyfile:ro
       - ./api-symfony/php/conf.d/opcache.dev.ini:/usr/local/etc/php/conf.d/opcache.dev.ini:ro
+      - ./.docker/php/media-upload.ini:/usr/local/etc/php/conf.d/zz-media-upload.ini:ro
     labels:
       - "traefik.enable=true"
       # Symfony serves ONLY admin/login/logout; the public front is Astro.
@@ -95,37 +96,24 @@ services:
       - "traefik.http.services.api-go.loadbalancer.server.port=8081"
 
   astro-frontend:
-    image: node:${IMAGE_NODE_VERSION:?set IMAGE_NODE_VERSION in .env}-alpine
-    working_dir: /app
-    command: sh -c "npm install -g pnpm@${IMAGE_PNPM_VERSION:?set IMAGE_PNPM_VERSION in .env} && pnpm install && pnpm dev --host 0.0.0.0 --port 4321"
+    build:
+      context: ./frontend-astro
+      dockerfile: ./Dockerfile
+      target: base
+      args:
+        NODE_VERSION: ${IMAGE_NODE_VERSION:?set IMAGE_NODE_VERSION in .env}
+        PNPM_VERSION: ${IMAGE_PNPM_VERSION:?set IMAGE_PNPM_VERSION in .env}
+    command: sh -c "pnpm install --store-dir /pnpm/store && pnpm dev --host 0.0.0.0 --port 4321"
     env_file:
       - ./frontend-astro/.env
     volumes:
       - ./frontend-astro:/app:rw
       - astro_node_modules:/app/node_modules
+      # Keeps the pnpm store off the slow host bind mount.
+      - astro_pnpm_store:/pnpm/store
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.astro.rule=Host(`${MAIN_HOST}`)"
       - "traefik.http.routers.astro.priority=10"
       - "traefik.http.routers.astro.entrypoints=web"
       - "traefik.http.services.astro.loadbalancer.server.port=4321"
-
-#  mailer:
-#    image: mailhog/mailhog
-#    environment:
-#      MAILER_HOST: ${MAILER_HOST}
-#      MAILER_PORT: ${MAILER_PORT}
-#      MAILER_USER: ${MAILER_USER}
-#      MAILER_PASSWORD: ${MAILER_PASSWORD}
-#      MAILER_ENCRYPTION: ${MAILER_ENCRYPTION}
-#      MAILER_FROM_EMAIL: ${MAILER_FROM_EMAIL}
-#    ports:
-#      - "1025:1025"
-#      - "8025:8025"
-#    networks:
-#      - app-network
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.mailhog.rule=Host(`mail.localhost`)"
-#      - "traefik.http.routers.mailhog.entrypoints=web"
-#      - "traefik.http.services.mailhog.loadbalancer.server.port=8025"

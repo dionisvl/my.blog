@@ -8,7 +8,14 @@ interface Props {
   srcset?: string;
 }
 
-const { src, alt = "", class: className = "", width, height, srcset } = Astro.props;
+const {
+  src,
+  alt = "",
+  class: className = "",
+  width,
+  height,
+  srcset,
+} = Astro.props;
 const classes = ["lazy-real", className].filter(Boolean).join(" ");
 ---
 
@@ -17,10 +24,10 @@ const classes = ["lazy-real", className].filter(Boolean).join(" ");
     class={classes}
     src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
     data-src={src}
-    {...(srcset && { "data-srcset": srcset })}
+    {...srcset && { "data-srcset": srcset }}
     alt={alt}
-    {...(width && { width: String(width) })}
-    {...(height && { height: String(height) })}
+    {...width && { width: String(width) }}
+    {...height && { height: String(height) }}
   />
   <span class="lazy-placeholder" aria-hidden="true"></span>
 </span>

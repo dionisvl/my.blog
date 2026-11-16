@@ -184,9 +184,10 @@ func TestPostRepository_FindFeatured_WithLikeCounts(t *testing.T) {
 	assert.Len(t, posts, 2)
 
 	for _, p := range posts {
-		if p.ID == featured1ID {
+		switch p.ID {
+		case featured1ID:
 			assert.Equal(t, 2, p.LikesCount)
-		} else if p.ID == featured2ID {
+		case featured2ID:
 			assert.Equal(t, 1, p.LikesCount)
 		}
 	}

@@ -1,20 +1,19 @@
 <div align="center">
 
-# Blog Platform — Go API + Astro FE + Symfony Admin
+# Blog Platform — Go API + Astro Frontend + Symfony Admin
 
-[![Go](https://img.shields.io/badge/Go-1.27-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev)
-[![Astro](https://img.shields.io/badge/Astro-5-BC52EE?style=for-the-badge&logo=astro&logoColor=white)](https://astro.build)
-[![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?style=for-the-badge&logo=symfony&logoColor=white)](https://symfony.com)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![Traefik](https://img.shields.io/badge/Traefik-v3-24A1C1?style=for-the-badge&logo=traefikproxy&logoColor=white)](https://traefik.io)
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![CI](https://github.com/dionisvl/my.blog/actions/workflows/ci.yml/badge.svg)](https://github.com/dionisvl/my.blog/actions/workflows/ci.yml)
+[![Go](https://img.shields.io/badge/Go-1.27-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![Astro](https://img.shields.io/badge/Astro-7-BC52EE?logo=astro&logoColor=white)](https://astro.build)
+[![Symfony](https://img.shields.io/badge/Symfony-7.4-000000?logo=symfony&logoColor=white)](https://symfony.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://postgresql.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
 
-A production blog platform running on [web3main.pro](https://web3main.pro). A **Go REST API**
-serves all public traffic; Astro renders the public site server-side against that API, and a
-Symfony app provides the admin panel. Traefik routes by path, so the three services share one
-domain without a gateway of their own.
+The blog platform behind [web3main.pro](https://web3main.pro). Astro renders the public site
+server-side from a **Go REST API**, a Symfony app provides the admin panel, and Traefik routes
+between them by path, so all three share one domain.
 
 ## Architecture
 
@@ -25,11 +24,11 @@ domain without a gateway of their own.
               ┌──────────────────┼──────────────────┐
               ▼                  ▼                  ▼
      /admin, /login      /storage, /sitemap.xml    everything else
-      /admin-assets       /robots.txt, /llms.txt         │
-              │                  │                       │
+     /logout             /robots.txt, /llms.txt          │
+     /admin-assets               │                       │
        ┌──────▼──────┐    ┌──────▼──────┐        ┌───────▼───────┐
        │   Symfony   │    │   api-go    │◀───────│  Astro (SSR)  │
-       │  FrankenPHP │    │  chi + bun  │  REST  │   Node 24     │
+       │  FrankenPHP │    │  chi + bun  │  REST  │   Node 26     │
        │    admin    │    │             │  X-API │  public site  │
        └──────┬──────┘    └──────┬──────┘  -Key  └───────────────┘
               │                  │
@@ -40,134 +39,118 @@ domain without a gateway of their own.
                 └─────────────┘
 ```
 
-Astro never touches the database — it fetches from `api-go` over the internal Docker network,
-authenticated with an API key. Public traffic therefore flows through Go, while Symfony is
-reachable only on the admin paths.
+Astro never touches the database: it calls `api-go` over the internal Docker network with an
+API key, so the browser never sees the key. Symfony is reachable only on the admin paths.
+`api-go` is also exposed directly on its own host (`API_GO_HOST`).
 
-**Observability:** structured logs are shipped by Vector into VictoriaLogs; Traefik exports
-Prometheus metrics and OTLP traces to Jaeger.
+**Observability:** Vector ships container logs to VictoriaLogs; Traefik sends OTLP traces to
+Jaeger and exposes Prometheus metrics for the optional Grafana stack. See [Docs](Docs/Readme.md).
 
-## api-go
+## Services
 
-The main service. Layout follows the [standard Go project layout](https://go.dev/doc/modules/layout).
+| Directory         | Role                                                                                     | Details                              |
+| ----------------- | ---------------------------------------------------------------------------------------- | ------------------------------------ |
+| `api-go/`         | Public REST API, static uploads, sitemap / robots / llms.txt                             | [Readme](api-go/Readme.md)           |
+| `frontend-astro/` | SSR public site: Astro 7, Node adapter, Tailwind CSS v4                                  | [Readme](frontend-astro/Readme.md)   |
+| `api-symfony/`    | Admin panel: Symfony 7.4 on FrankenPHP (worker mode), Doctrine ORM, AdminLTE             | —                                    |
 
-```
-api-go/
-├── cmd/api/            entry point — wiring, graceful shutdown
-└── internal/
-    ├── config/         viper, env-bound, sane defaults
-    ├── handler/        HTTP handlers (one file per resource)
-    ├── middleware/     API-key auth, structured logging, panic recovery
-    ├── model/          bun models
-    ├── repository/     data access behind interfaces
-    └── server/         chi router and middleware chain
-```
+The admin covers posts, modular multilingual articles, comments, users, categories, tags,
+products, orders, portfolio, subscribers and contact messages. Articles are stored as typed
+blocks validated against a shared [JSON contract](api-symfony/contracts/article-blocks/v1/CONTRACT.md).
 
-**Stack:** chi (routing) · bun + pgdriver (PostgreSQL) · viper (config) ·
-`log/slog` (structured logging) · testify + testcontainers-go (tests)
+### api-go design notes
 
-**Design notes**
-
-- Interfaces are declared where they are consumed (`server.NewRouter` accepts
-  `repository.PostRepository`), constructors return concrete types — "accept interfaces,
-  return structs".
-- `context.Context` propagates cancellation; the HTTP server drains in-flight requests on
-  SIGINT/SIGTERM within a configurable shutdown timeout.
-- Panics in handlers are recovered by middleware, logged with a stack trace, and turned into a
-  500 rather than killing the process.
-- `slog` emits JSON in production and human-readable text in development.
-- Handlers stay thin: request decoding and validation up front, persistence behind a
-  repository interface, a single JSON response helper for both success and error shapes.
-
-### Tests
-
-Repository tests spin up a real PostgreSQL container via testcontainers-go — no mocks
-standing in for the database. Handler and middleware tests drive the router through
-`httptest`, so routing, auth and JSON shaping are covered end to end.
-
-```bash
-make test-go        # runs on the host; testcontainers starts its own PostgreSQL
-```
+- Layout follows the [standard Go project layout](https://go.dev/doc/modules/layout):
+  `cmd/api` for wiring, `internal/{config,handler,middleware,model,repository,server}`.
+- Handlers depend on repository interfaces; `server.NewRouter` receives them as arguments.
+- The server drains in-flight requests on SIGINT/SIGTERM within a configurable timeout.
+- Panics are recovered by middleware, logged, and turned into a 500.
+- `log/slog` emits JSON in production and text in development.
 
 ## Quick Start
 
 Requires Docker and an `/etc/hosts` entry pointing `blog.test` and `api.blog.test` at `127.0.0.1`.
 
 ```bash
-cp .env.example .env          # then set MAIN_HOST, API_GO_HOST, GO_API_KEY
+cp .env.example .env                              # MAIN_HOST=blog.test, API_GO_HOST=api.blog.test, APP_ENV=dev
+cp api-go/.env.example api-go/.env                # MAIN_HOST=blog.test
+cp frontend-astro/.env.example frontend-astro/.env # PUBLIC_SITE_URL=http://blog.test
+cp api-symfony/.env.dev.example api-symfony/.env
 make up
+make composer-install
 ```
 
-| Service             | URL                                |
-| ------------------- | ---------------------------------- |
-| Public site (Astro) | http://blog.test |
-| Go API | http://api.blog.test/api/health |
-| Admin panel | http://blog.test/admin |
-| Traefik dashboard | http://traefik.localhost:8080 |
-| Jaeger traces | http://jaeger.localhost |
-| Logs (VictoriaLogs) | http://logs.localhost |
+Compose passes `GO_API_KEY` from the root `.env` to both `api-go` and Astro as `API_KEY`.
+
+The database schema predates the Symfony app and is not created by migrations, and there is no
+seed data. Restore a dump of an existing database, then run `make migrates`.
+
+| Service             | URL                             |
+| ------------------- | ------------------------------- |
+| Public site (Astro) | http://blog.test                |
+| Go API              | http://api.blog.test/api/health |
+| Admin panel         | http://blog.test/admin          |
+| Traefik dashboard   | http://localhost:8080           |
+| Jaeger traces       | http://jaeger.localhost         |
+| Logs (VictoriaLogs) | http://logs.localhost           |
 
 ## API
 
 All `/api/*` routes except `/api/health` require an `X-API-Key` header.
 
-| Method | Endpoint                  | Purpose                          |
-| ------ | ------------------------- | -------------------------------- |
-| GET | `/api/health` | Liveness probe (unauthenticated) |
-| GET | `/api/` | Homepage feed, paginated |
-| GET | `/api/post/{slug}` | Single post |
-| GET | `/api/search` | Full-text search |
-| GET | `/api/category/{slug}` | Posts by category |
-| GET | `/api/tag/{slug}` | Posts by tag |
-| POST | `/api/comment` | Submit a comment |
-| POST | `/api/postlike/{postId}` | Toggle a like |
-| POST | `/api/subscribe` | Newsletter signup |
-| POST | `/api/contacts` | Contact form |
+| Method | Endpoint                                | Purpose                                 |
+| ------ | --------------------------------------- | --------------------------------------- |
+| GET    | `/api/health`                           | Liveness probe (unauthenticated)        |
+| GET    | `/api/`                                 | Homepage feed, paginated                |
+| GET    | `/api/post/{slug}`                      | Single post                             |
+| GET    | `/api/post/{slug}/resolve`              | Published locales of a modular article  |
+| GET    | `/api/post/{slug}/locale/{locale}`      | One published locale of an article      |
+| GET    | `/api/search`                           | Search in titles, descriptions, content |
+| GET    | `/api/category/{slug}`                  | Posts by category                       |
+| GET    | `/api/tag/{slug}`                       | Posts by tag                            |
+| GET    | `/api/contacts`                         | Contact details                         |
+| POST   | `/api/contacts`                         | Contact form                            |
+| POST   | `/api/comment`                          | Submit a comment                        |
+| POST   | `/api/postlike/{postId}`                | Toggle a like                           |
+| POST   | `/api/subscribe`                        | Newsletter signup                       |
 
-`api-go` also serves `/sitemap.xml`, `/robots.txt`, `/llms.txt` (per-domain variants) and
-static uploads under `/storage/*`.
-
-## Other Services
-
-**Astro** (`frontend-astro/`) — SSR public frontend on the Node adapter, Tailwind CSS v4,
-dark theme. Dev runs Vite with HMR; production builds a standalone server bundle.
-
-**Symfony** (`api-symfony/`) — admin panel on FrankenPHP (Caddy worker mode, zstd/gzip),
-Doctrine ORM, AdminLTE. Covers posts, comments, users, categories, tags, products, orders,
-portfolio and subscribers. Tests are integration-style on PHPUnit 12.
+`api-go` also serves `/sitemap.xml`, `/robots.txt`, `/llms.txt` (per-domain files) and static
+uploads under `/storage/*`. Details: [api-go/Readme.md](api-go/Readme.md).
 
 ## Commands
 
 ```bash
-make up                  # start dev stack
-make down                # stop
+make up                  # start the dev stack
+make down                # stop it
 make build               # rebuild and start
-make test-go             # Go tests
-make test                # Symfony tests (in container)
-make phpstan             # static analysis on changed files
+make test                # Symfony tests (PHPUnit, in the container)
+make test-go             # Go tests (on the host; testcontainers starts its own PostgreSQL)
+make phpstan             # static analysis of changed PHP files
+make cs-fix              # PHP CS Fixer
 make bash                # shell into the Symfony container
+make monitoring-up       # optional Prometheus + Grafana stack
 ```
 
 See the [Makefile](Makefile) for the full list.
 
-## Deployment
+## Tests and CI
 
-Images are built for `linux/amd64` and pulled from a private registry; Traefik terminates TLS
-with Let's Encrypt certificates.
+- **Go:** repository tests run against a real PostgreSQL started by testcontainers-go; handlers
+  and middleware are tested through `httptest`.
+- **Symfony:** PHPUnit 12, integration-style, on SQLite.
+- **Astro:** `node --test` unit tests plus `astro check`.
+- **Cross-runtime:** CI publishes an article with Symfony and reads it back with Go on the same
+  PostgreSQL, so the two services cannot drift apart on the shared schema.
+
+## Deployment
 
 ```bash
 docker compose -f compose.yml -f compose.override.prod.yaml up -d --build
 ```
 
-The Symfony image **must** be built from the `prod` stage — `--target prod` — since the
-`dev` stage deliberately ships without application code or vendored dependencies.
-
-## Engineering trade-offs
-
-- Public reads go through the Go API, while Symfony remains focused on the admin surface. This keeps the migration incremental instead of requiring a risky full rewrite.
-- Astro is isolated from PostgreSQL and receives only the API contract, so frontend rendering and persistence can evolve independently.
-- Integration tests use real PostgreSQL containers where persistence semantics matter; lightweight HTTP tests cover routing, middleware and response contracts.
-- Deprecated code remains behind explicit boundaries so modernization progress stays reviewable.
+Traefik terminates TLS with Let's Encrypt certificates. The Symfony image must be built from the
+`prod` stage (the compose file sets `target: prod`): the `dev` stage ships without application
+code or vendored dependencies. Image versions are pinned in `.env`.
 
 ## License
 
