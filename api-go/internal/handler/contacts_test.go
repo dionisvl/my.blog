@@ -10,13 +10,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestContactsHandlerUsesMainHost(t *testing.T) {
+func TestContactsHandlerUsesConfiguredContacts(t *testing.T) {
 	rec := httptest.NewRecorder()
 
-	NewContactsHandler("example.com").ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/contacts", nil))
+	NewContactsHandler("example.com", "hello@example.com").ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/contacts", nil))
 
 	require.Equal(t, http.StatusOK, rec.Code)
 	var body map[string]string
 	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &body))
 	assert.Equal(t, "https://example.com", body["website"])
+	assert.Equal(t, "hello@example.com", body["email"])
 }
