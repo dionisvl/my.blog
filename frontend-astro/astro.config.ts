@@ -7,7 +7,7 @@ import {
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 
-const siteUrl = process.env.PUBLIC_SITE_URL ?? "http://phpqas.local";
+const siteUrl = process.env.PUBLIC_SITE_URL ?? "http://blog.test";
 const allowedHost = new URL(siteUrl).hostname;
 
 // https://astro.build/config

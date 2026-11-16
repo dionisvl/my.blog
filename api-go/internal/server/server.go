@@ -57,7 +57,7 @@ func NewRouter(
 	searchHandler := handler.NewSearchHandler(postRepo, logger)
 	tagHandler := handler.NewTagHandler(postRepo, tagRepo, logger)
 	categoryHandler := handler.NewCategoryHandler(postRepo, categoryRepo, logger)
-	contactsHandler := handler.NewContactsHandler(cfg.App.MainHost)
+	contactsHandler := handler.NewContactsHandler(cfg.App.MainHost, cfg.App.ContactEmail)
 	commentHandler := handler.NewCommentHandler(commentRepo, logger)
 	postLikeHandler := handler.NewPostLikeHandler(postLikeRepo, logger)
 	seoHandler := handler.NewSEOHandler(cfg.Files.SeoDir, cfg.App.MainHost, logger, articleRepo)

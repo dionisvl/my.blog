@@ -50,6 +50,8 @@ type AuthConfig struct {
 type AppConfig struct {
 	Env      string `mapstructure:"env"`
 	MainHost string `mapstructure:"main_host"`
+	// ContactEmail is the public contact address; it defaults to info@<MainHost>.
+	ContactEmail string `mapstructure:"contact_email"`
 }
 
 func Load() (*Config, error) {
@@ -81,6 +83,7 @@ func Load() (*Config, error) {
 	_ = v.BindEnv("auth.api_key", "API_KEY")
 	_ = v.BindEnv("app.env", "APP_ENV")
 	_ = v.BindEnv("app.main_host", "MAIN_HOST")
+	_ = v.BindEnv("app.contact_email", "CONTACT_EMAIL")
 	_ = v.BindEnv("server.cors_origins", "CORS_ALLOWED_ORIGINS")
 	_ = v.BindEnv("server.trusted_proxies", "TRUSTED_PROXIES")
 	_ = v.BindEnv("files.seo_dir", "SEO_DIR")
@@ -99,6 +102,9 @@ func Load() (*Config, error) {
 	}
 	if err := validate(&cfg); err != nil {
 		return nil, err
+	}
+	if strings.TrimSpace(cfg.App.ContactEmail) == "" {
+		cfg.App.ContactEmail = "info@" + cfg.App.MainHost
 	}
 
 	return &cfg, nil

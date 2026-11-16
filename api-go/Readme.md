@@ -56,6 +56,7 @@ Anti-bot check on the POST forms: `countMe >= 3` and an empty `honeypot`.
 | `DATABASE_URL`         | PostgreSQL DSN                                               |
 | `API_KEY`              | Secret for the `X-API-Key` header (required)                 |
 | `MAIN_HOST`            | Public host; selects the SEO files (required)                |
+| `CONTACT_EMAIL`        | Public contact address (default `info@<MAIN_HOST>`)          |
 | `APP_ENV`              | `dev` or `prod`                                              |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated origins; CORS is off when empty              |
 | `TRUSTED_PROXIES`      | Comma-separated CIDRs trusted for `X-Forwarded-For` (default: loopback and private ranges) |

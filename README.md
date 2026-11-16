@@ -72,9 +72,9 @@ blocks validated against a shared [JSON contract](api-symfony/contracts/article-
 Requires Docker and an `/etc/hosts` entry pointing `blog.test` and `api.blog.test` at `127.0.0.1`.
 
 ```bash
-cp .env.example .env                              # MAIN_HOST=blog.test, API_GO_HOST=api.blog.test, APP_ENV=dev
-cp api-go/.env.example api-go/.env                # MAIN_HOST=blog.test
-cp frontend-astro/.env.example frontend-astro/.env # PUBLIC_SITE_URL=http://blog.test
+cp .env.example .env
+cp api-go/.env.example api-go/.env
+cp frontend-astro/.env.example frontend-astro/.env
 cp api-symfony/.env.dev.example api-symfony/.env
 make up
 make composer-install

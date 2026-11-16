@@ -48,7 +48,7 @@ services:
 
   pets-app:
     volumes:
-      - /var/www/my.fb.admin/var/www/pets.phpqa.ru/app:/app:rw
+      - ${PETS_APP_DIR:?set PETS_APP_DIR in .env}:/app:rw
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.pets.rule=Host(`pets.local`)"

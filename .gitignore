@@ -20,6 +20,8 @@ compose.override.yaml
 /data/prometheus/
 /data/grafana/
 /data/alertmanager/
+/data/media-private/
+/data/media-s3/
 /letsencrypt/
 
 # Server-specific Traefik file-provider routes (e.g. the 3x-ui panel)

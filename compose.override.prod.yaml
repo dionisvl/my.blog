@@ -71,7 +71,7 @@ services:
   pets-app:
     image: ${DOCKER_REGISTRY_SERVER}/pets-app:${PHP_VERSION}
     volumes:
-      - /home/pets.my.blog:/app:rwte
+      - ${PETS_APP_DIR:?set PETS_APP_DIR in .env}:/app:rw
       - ./.docker/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
       - ./.docker/php/pets-security.ini:/usr/local/etc/php/conf.d/zz-pets-security.ini:ro
     labels:
@@ -92,10 +92,10 @@ services:
 
   symfony:
     volumes:
-      - /home/my.blog/data/media-private:/app/var/media-private
+      - ./data/media-private:/app/var/media-private
       - ./.docker/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
       - ./.docker/php/media-upload.ini:/usr/local/etc/php/conf.d/zz-media-upload.ini:ro
-    image: ${DOCKER_REGISTRY_SERVER}/phpqa-api:${PHP_VERSION}
+    image: ${DOCKER_REGISTRY_SERVER}/my-blog-symfony:${PHP_VERSION}
     build:
       context: ./api-symfony
       dockerfile: ./Dockerfile
@@ -277,7 +277,7 @@ services:
       RUSTFS_ADDRESS: ":9000"
       RUSTFS_VOLUMES: /data
     volumes:
-      - /home/my.blog/data/media-s3:/data
+      - ./data/media-s3:/data
     expose:
       - "9000"
     networks:

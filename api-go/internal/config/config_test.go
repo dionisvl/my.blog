@@ -45,6 +45,33 @@ func TestLoad(t *testing.T) {
 	}
 }
 
+func TestLoadContactEmail(t *testing.T) {
+	tests := []struct {
+		name string
+		env  string
+		want string
+	}{
+		{name: "defaults to the main host", env: "", want: "info@example.com"},
+		{name: "explicit address", env: "hello@example.org", want: "hello@example.org"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			dir := t.TempDir()
+			writeConfigFile(t, dir, "app:\n  env: prod\n")
+			chdir(t, dir)
+			t.Setenv("API_KEY", "secret")
+			t.Setenv("MAIN_HOST", "example.com")
+			t.Setenv("CONTACT_EMAIL", tt.env)
+
+			cfg, err := Load()
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, cfg.App.ContactEmail)
+		})
+	}
+}
+
 func TestLoadRejectsInvalidTrustedProxy(t *testing.T) {
 	dir := t.TempDir()
 	writeConfigFile(t, dir, "server:\n  trusted_proxies: [\"10.0.0.0/8\", \"not-a-cidr\"]\n")
