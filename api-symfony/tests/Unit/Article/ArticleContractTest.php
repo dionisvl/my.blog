@@ -132,7 +132,9 @@ final class ArticleContractTest extends TestCase
         $files = ['schema.json'];
 
         foreach (['valid', 'invalid'] as $kind) {
-            foreach (glob($dir.'/fixtures/'.$kind.'/*.json') ?: [] as $file) {
+            $matches = glob($dir.'/fixtures/'.$kind.'/*.json');
+
+            foreach (false === $matches ? [] : $matches as $file) {
                 $files[] = 'fixtures/'.$kind.'/'.basename($file);
             }
         }

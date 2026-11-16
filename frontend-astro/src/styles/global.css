@@ -6,7 +6,7 @@
   }
 
   a {
-    @apply hover:text-gray-300 transition-colors;
+    @apply transition-colors hover:text-gray-300;
   }
 
   code,
@@ -17,12 +17,12 @@
 
 .prose {
   @apply max-w-none;
-  --tw-prose-body: theme('colors.gray.200');
-  --tw-prose-headings: theme('colors.gray.100');
-  --tw-prose-links: theme('colors.blue.400');
-  --tw-prose-bold: theme('colors.gray.100');
-  --tw-prose-code: theme('colors.gray.200');
-  --tw-prose-pre-bg: theme('colors.gray.800');
+  --tw-prose-body: theme("colors.gray.200");
+  --tw-prose-headings: theme("colors.gray.100");
+  --tw-prose-links: theme("colors.blue.400");
+  --tw-prose-bold: theme("colors.gray.100");
+  --tw-prose-code: theme("colors.gray.200");
+  --tw-prose-pre-bg: theme("colors.gray.800");
 }
 
 #navbarMenu {

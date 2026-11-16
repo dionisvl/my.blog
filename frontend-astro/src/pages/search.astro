@@ -9,7 +9,8 @@ import { formatDate, excerpt } from "../lib/format";
 import { canonicalFor } from "../lib/url";
 import { preferredLanguage } from "../lib/host";
 
-const preferredLang = preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
+const preferredLang =
+  preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
 Astro.response.headers.set("Vary", "Cookie");
 const q = Astro.url.searchParams.get("q") ?? "";
 let data = null;
@@ -18,94 +19,99 @@ let home = await getHome(1, preferredLang);
 if (q) {
   try {
     data = await search(q, preferredLang);
-  } catch {
-  }
+  } catch {}
 }
 
 const title = "Search - Web3 Blog";
-const description = "Search our blog for articles and posts on Web3, development, and software engineering.";
+const description =
+  "Search our blog for articles and posts on Web3, development, and software engineering.";
 ---
 
-<Layout title={title} description={description} canonical={canonicalFor(Astro.url.pathname)}>
-  <div class="w-full md:w-2/3 pr-0 md:pr-6">
+<Layout
+  title={title}
+  description={description}
+  canonical={canonicalFor(Astro.url.pathname)}
+>
+  <div class="w-full pr-0 md:w-2/3 md:pr-6">
     <div class="mb-6">
-      <form action="/search" method="get" role="search" class="flex mb-6">
+      <form action="/search" method="get" role="search" class="mb-6 flex">
         <input
           type="text"
           name="q"
           value={q}
           placeholder="Search articles..."
-          class="flex-grow px-4 py-2 bg-gray-700 border border-gray-600 rounded-l text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="flex-grow rounded-l border border-gray-600 bg-gray-700 px-4 py-2 text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
         />
         <button
           type="submit"
-          class="px-6 py-2 bg-blue-600 text-white rounded-r hover:bg-blue-700 transition"
+          class="rounded-r bg-blue-600 px-6 py-2 text-white transition hover:bg-blue-700"
         >
           Search
         </button>
       </form>
 
-      {!q ? (
-        <div class="bg-gray-800 border border-gray-700 text-gray-300 p-4 rounded">
-          Enter a search query to find articles.
-        </div>
-      ) : data?.posts?.length ? (
-        <>
-          <div class="bg-green-900 border-l-4 border-green-500 text-green-300 p-4 mb-6 rounded">
-            The search results for your query <b>{q}</b> are:
+      {
+        !q ? (
+          <div class="rounded border border-gray-700 bg-gray-800 p-4 text-gray-300">
+            Enter a search query to find articles.
           </div>
+        ) : data?.posts?.length ? (
+          <>
+            <div class="mb-6 rounded border-l-4 border-green-500 bg-green-900 p-4 text-green-300">
+              The search results for your query <b>{q}</b> are:
+            </div>
 
-          {data.posts.map((post) => (
-            <article class="bg-gray-800 rounded-lg shadow-sm mb-6 overflow-hidden border border-gray-700">
-              <div class="flex flex-col md:flex-row">
-                <div class="flex-shrink-0 w-full md:w-32 flex items-center justify-center p-2">
-                  <div class="h-12 w-full flex items-center justify-center overflow-hidden">
-                    <LazyImage
-                      src={post.image_url}
-                      alt={post.title}
-                      class="h-12 w-auto object-contain"
-                    />
+            {data.posts.map(post => (
+              <article class="mb-6 overflow-hidden rounded-lg border border-gray-700 bg-gray-800 shadow-sm">
+                <div class="flex flex-col md:flex-row">
+                  <div class="flex w-full flex-shrink-0 items-center justify-center p-2 md:w-32">
+                    <div class="flex h-12 w-full items-center justify-center overflow-hidden">
+                      <LazyImage
+                        src={post.image_url}
+                        alt={post.title}
+                        class="h-12 w-auto object-contain"
+                      />
+                    </div>
+                  </div>
+                  <header class="flex-grow p-3">
+                    <h3 class="text-lg font-semibold">
+                      <a
+                        href={`/post/${post.slug}`}
+                        class="text-white transition hover:text-blue-400"
+                      >
+                        {post.title}
+                      </a>
+                    </h3>
+                  </header>
+                </div>
+                <div class="p-4 pt-0">
+                  {post.description && (
+                    <div class="prose mb-2 max-w-none">
+                      <Fragment set:html={post.description} />
+                    </div>
+                  )}
+                  <div class="prose search-element-body mb-4 max-w-none text-sm text-gray-400">
+                    {excerpt(post.content, 200)}
+                  </div>
+                  <div class="flex items-center justify-between border-t border-gray-700 pt-4 text-sm text-gray-400">
+                    <span>
+                      By{" "}
+                      <a href="#" class="hover:text-blue-400">
+                        {post.author?.name}
+                      </a>{" "}
+                      on {formatDate(post.created_at)}
+                    </span>
                   </div>
                 </div>
-                <header class="flex-grow p-3">
-                  <h3 class="text-lg font-semibold">
-                    <a
-                      href={`/post/${post.slug}`}
-                      class="text-white hover:text-blue-400 transition"
-                    >
-                      {post.title}
-                    </a>
-                  </h3>
-                </header>
-              </div>
-              <div class="p-4 pt-0">
-                {post.description && (
-                  <div class="prose max-w-none mb-2">
-                    <Fragment set:html={post.description} />
-                  </div>
-                )}
-                <div class="prose max-w-none text-sm text-gray-400 mb-4 search-element-body">
-                  {excerpt(post.content, 200)}
-                </div>
-                <div class="flex justify-between items-center text-sm text-gray-400 pt-4 border-t border-gray-700">
-                  <span>
-                    By
-                    {" "}
-                    <a href="#" class="hover:text-blue-400">
-                      {post.author?.name}
-                    </a>
-                    {" "}on {formatDate(post.created_at)}
-                  </span>
-                </div>
-              </div>
-            </article>
-          ))}
-        </>
-      ) : (
-        <div class="bg-yellow-900 border-l-4 border-yellow-500 text-yellow-300 p-4 rounded">
-          For your query <b>{q}</b> nothing found.
-        </div>
-      )}
+              </article>
+            ))}
+          </>
+        ) : (
+          <div class="rounded border-l-4 border-yellow-500 bg-yellow-900 p-4 text-yellow-300">
+            For your query <b>{q}</b> nothing found.
+          </div>
+        )
+      }
     </div>
   </div>
 

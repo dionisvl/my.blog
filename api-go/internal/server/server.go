@@ -31,7 +31,11 @@ func NewRouter(
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
-	r.Use(middleware.RealIP)
+	if len(cfg.Server.TrustedProxies) > 0 {
+		r.Use(middleware.ClientIPFromXFF(cfg.Server.TrustedProxies...))
+	} else {
+		r.Use(middleware.ClientIPFromRemoteAddr)
+	}
 	r.Use(mw.Logging(logger))
 	r.Use(mw.Recovery(logger))
 	r.Use(middleware.Timeout(30 * time.Second))

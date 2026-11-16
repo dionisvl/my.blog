@@ -9,13 +9,15 @@ const { id, heading, items } = Astro.props;
 ---
 
 <section id={`block-${id}`} class="my-8">
-  <h2 class="text-2xl font-bold text-white mb-3">{heading}</h2>
+  <h2 class="mb-3 text-2xl font-bold text-white">{heading}</h2>
   {
-    items.map((item) => (
+    items.map(item => (
       <details class="mb-2 rounded-md border border-gray-600 bg-gray-800 p-3">
-        <summary class="cursor-pointer font-medium text-white">{item.question}</summary>
-        <!-- answerHtml is server-sanitized (allow-list). -->
-        <div class="prose max-w-none mt-2" set:html={item.answerHtml} />
+        <summary class="cursor-pointer font-medium text-white">
+          {item.question}
+        </summary>
+        {/* answerHtml is server-sanitized (allow-list). */}
+        <div class="prose mt-2 max-w-none" set:html={item.answerHtml} />
       </details>
     ))
   }

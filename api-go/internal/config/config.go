@@ -2,6 +2,8 @@ package config
 
 import (
 	"errors"
+	"fmt"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -29,6 +31,8 @@ type ServerConfig struct {
 	WriteTimeout    time.Duration `mapstructure:"write_timeout"`
 	ShutdownTimeout time.Duration `mapstructure:"shutdown_timeout"`
 	CORSOrigins     []string      `mapstructure:"cors_origins"`
+	// TrustedProxies are the CIDRs whose X-Forwarded-For entries are believed; the client IP comes from the TCP peer when empty.
+	TrustedProxies []string `mapstructure:"trusted_proxies"`
 }
 
 type DatabaseConfig struct {
@@ -60,6 +64,7 @@ func Load() (*Config, error) {
 	v.SetDefault("server.read_timeout", 5*time.Second)
 	v.SetDefault("server.write_timeout", 10*time.Second)
 	v.SetDefault("server.shutdown_timeout", 15*time.Second)
+	v.SetDefault("server.trusted_proxies", []string{"127.0.0.0/8", "::1/128", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fc00::/7"})
 	v.SetDefault("database.max_open_conns", 10)
 	v.SetDefault("database.max_idle_conns", 5)
 	v.SetDefault("database.conn_max_lifetime", 30*time.Minute)
@@ -77,6 +82,7 @@ func Load() (*Config, error) {
 	_ = v.BindEnv("app.env", "APP_ENV")
 	_ = v.BindEnv("app.main_host", "MAIN_HOST")
 	_ = v.BindEnv("server.cors_origins", "CORS_ALLOWED_ORIGINS")
+	_ = v.BindEnv("server.trusted_proxies", "TRUSTED_PROXIES")
 	_ = v.BindEnv("files.seo_dir", "SEO_DIR")
 	_ = v.BindEnv("files.storage_dir", "STORAGE_DIR")
 	_ = v.BindEnv("files.media_base_url", "MEDIA_BASE_URL")
@@ -104,6 +110,11 @@ func validate(cfg *Config) error {
 	}
 	if strings.TrimSpace(cfg.App.MainHost) == "" {
 		return errors.New("MAIN_HOST must not be empty")
+	}
+	for _, prefix := range cfg.Server.TrustedProxies {
+		if _, err := netip.ParsePrefix(prefix); err != nil {
+			return fmt.Errorf("TRUSTED_PROXIES: invalid CIDR %q: %w", prefix, err)
+		}
 	}
 
 	return nil

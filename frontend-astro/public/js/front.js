@@ -4,67 +4,75 @@
  * @type {Likes}
  */
 class Likes {
-    static toggle(element, event) {
-        event.preventDefault();
-        let post_id = element.dataset.post_id;
-        let device_memory = navigator.deviceMemory || 0;
-        let response = request('/api/postlike/' + post_id, 'POST', {device_memory: device_memory})
+  static toggle(element, event) {
+    event.preventDefault();
+    let post_id = element.dataset.post_id;
+    let device_memory = navigator.deviceMemory || 0;
+    let response = request("/api/postlike/" + post_id, "POST", {
+      device_memory: device_memory,
+    });
 
-        response
-            .then(data => {
-                if (data.status === 'ok') {
-                    if (data.data === 'liked') {
-                        this.like(post_id);
-                    } else if (data.data === 'unliked') {
-                        this.unlike(post_id);
-                    }
-                }
-            })
-    }
+    response.then(data => {
+      if (data.status === "ok") {
+        if (data.data === "liked") {
+          this.like(post_id);
+        } else if (data.data === "unliked") {
+          this.unlike(post_id);
+        }
+      }
+    });
+  }
 
-    static like(post_id) {
-        let like_button_count = document.querySelector("a[data-post_id='" + post_id + "'] .like_button_count");
-        like_button_count.innerHTML = parseInt(like_button_count.innerHTML) + 1;
+  static like(post_id) {
+    let like_button_count = document.querySelector(
+      "a[data-post_id='" + post_id + "'] .like_button_count"
+    );
+    like_button_count.innerHTML = parseInt(like_button_count.innerHTML) + 1;
 
-        let heart = document.querySelector("a[data-post_id='" + post_id + "'] .svg-inline--fa");
-        heart.dataset.prefix = 'fas';
-    }
+    let heart = document.querySelector(
+      "a[data-post_id='" + post_id + "'] .svg-inline--fa"
+    );
+    heart.dataset.prefix = "fas";
+  }
 
-    static unlike(post_id) {
-        let like_button_count = document.querySelector("a[data-post_id='" + post_id + "'] .like_button_count");
-        like_button_count.innerHTML = parseInt(like_button_count.innerHTML) - 1;
+  static unlike(post_id) {
+    let like_button_count = document.querySelector(
+      "a[data-post_id='" + post_id + "'] .like_button_count"
+    );
+    like_button_count.innerHTML = parseInt(like_button_count.innerHTML) - 1;
 
-        let heart = document.querySelector("a[data-post_id='" + post_id + "'] .svg-inline--fa");
-        heart.dataset.prefix = 'far';
-    }
+    let heart = document.querySelector(
+      "a[data-post_id='" + post_id + "'] .svg-inline--fa"
+    );
+    heart.dataset.prefix = "far";
+  }
 }
 
 globalThis.Likes = Likes;
 
-
 function request(url, method, payload) {
-    return fetch(url, {
-        method: method,
-        body: JSON.stringify(payload),
-        headers: new Headers({
-            'Accept': 'application/json',
-            'Content-type': 'application/json'
-        })
-    })
-        .then(r => r.json())
-        .catch(() => {
-            return {status: 'error', data: 'request failed'};
-        })
+  return fetch(url, {
+    method: method,
+    body: JSON.stringify(payload),
+    headers: new Headers({
+      Accept: "application/json",
+      "Content-type": "application/json",
+    }),
+  })
+    .then(r => r.json())
+    .catch(() => {
+      return { status: "error", data: "request failed" };
+    });
 }
 
 // Anti-bot counter
-let ct = 0
+let ct = 0;
 
 function count_keyup() {
-    const elements = document.getElementsByClassName('countMe')
-    for (let i = 0; i < elements.length; i++) {
-        elements[i].value = ++ct
-    }
+  const elements = document.getElementsByClassName("countMe");
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].value = ++ct;
+  }
 }
 
 globalThis.count_keyup = count_keyup;

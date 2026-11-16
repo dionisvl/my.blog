@@ -81,8 +81,12 @@ func NewBareTestDB(t *testing.T) *TestDB {
 	tdb := &TestDB{DB: db, container: container}
 
 	t.Cleanup(func() {
-		db.Close()
-		container.Terminate(ctx)
+		if err := db.Close(); err != nil {
+			t.Errorf("close database: %v", err)
+		}
+		if err := container.Terminate(ctx); err != nil {
+			t.Errorf("terminate container: %v", err)
+		}
 	})
 
 	return tdb

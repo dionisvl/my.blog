@@ -9,14 +9,18 @@ interface Props extends SponsoredDisclosureProps {
 const { id, text, learnMoreLabel, learnMoreUrl } = Astro.props;
 ---
 
-<aside id={`block-${id}`} class="my-6 rounded-md border border-yellow-600 bg-gray-800 p-3 text-sm text-yellow-100" role="note">
+<aside
+  id={`block-${id}`}
+  class="my-6 rounded-md border border-yellow-600 bg-gray-800 p-3 text-sm text-yellow-100"
+  role="note"
+>
   <span>{text}</span>
   {
     learnMoreUrl && learnMoreLabel && (
       <a
         href={safeHref(learnMoreUrl)}
         rel={relFor(false, learnMoreUrl) || undefined}
-        class="ml-1 underline text-yellow-300 hover:text-yellow-200"
+        class="ml-1 text-yellow-300 underline hover:text-yellow-200"
       >
         {learnMoreLabel}
       </a>

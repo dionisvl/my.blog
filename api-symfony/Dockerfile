@@ -1,8 +1,11 @@
 ARG PHP_VERSION=8.4.27
+ARG COMPOSER_VERSION=2.11
+
+FROM composer:${COMPOSER_VERSION} AS composer
+
 FROM dunglas/frankenphp:php${PHP_VERSION} AS base
 
 RUN install-php-extensions \
-    pdo_mysql \
     pdo_pgsql \
     intl \
     gd \
@@ -28,18 +31,27 @@ RUN cp /tmp/apcu.so "$(php-config --extension-dir)/apcu.so" \
  && docker-php-ext-enable apcu \
  && rm /tmp/apcu.so
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+FROM ready AS dev
+RUN install-php-extensions xdebug
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+WORKDIR /app
 
+# Keep prod last: a build without --target must never produce the code-less dev image.
 FROM ready AS prod
 
 WORKDIR /app
+ENV COMPOSER_ALLOW_SUPERUSER=1 \
+    COMPOSER_CACHE_DIR=/tmp/composer-cache
+
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+RUN --mount=type=bind,from=composer,source=/usr/bin/composer,target=/usr/local/bin/composer \
+    --mount=type=cache,target=/tmp/composer-cache \
+    composer install --no-dev --no-scripts --no-autoloader --no-interaction
+
 COPY . /app
+# The classmap has to be dumped after the sources are in place, otherwise App\ is missing from it.
+RUN --mount=type=bind,from=composer,source=/usr/bin/composer,target=/usr/local/bin/composer \
+    composer dump-autoload --no-dev --classmap-authoritative --no-interaction
 
 EXPOSE 80 443
 CMD ["frankenphp", "run", "--config", "/etc/caddy/Caddyfile"]
-
-FROM ready AS dev
-RUN install-php-extensions xdebug
-WORKDIR /app

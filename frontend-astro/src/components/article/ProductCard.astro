@@ -6,20 +6,52 @@ interface Props extends ProductCardProps {
   id: string;
 }
 
-const { id, title, badge, tag, summary, bullets = [], rating, cta, secondaryCta, note } = Astro.props;
+const {
+  id,
+  title,
+  badge,
+  tag,
+  summary,
+  bullets = [],
+  rating,
+  cta,
+  secondaryCta,
+  note,
+} = Astro.props;
 ---
 
-<article id={`block-${id}`} class="my-6 rounded-lg border border-gray-600 bg-gray-800 p-5">
-  <header class="flex flex-wrap items-center gap-2 mb-2">
-    <h3 class={`text-xl font-semibold ${rating ? ratingClass(rating) : "text-white"}`}>{title}</h3>
-    {badge && <span class="rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white">{badge}</span>}
-    {tag && <span class="rounded-full bg-gray-700 px-2 py-0.5 text-xs text-gray-200">{tag}</span>}
+<article
+  id={`block-${id}`}
+  class="my-6 rounded-lg border border-gray-600 bg-gray-800 p-5"
+>
+  <header class="mb-2 flex flex-wrap items-center gap-2">
+    <h3
+      class={`text-xl font-semibold ${rating ? ratingClass(rating) : "text-white"}`}
+    >
+      {title}
+    </h3>
+    {
+      badge && (
+        <span class="rounded-full bg-blue-500 px-2 py-0.5 text-xs text-white">
+          {badge}
+        </span>
+      )
+    }
+    {
+      tag && (
+        <span class="rounded-full bg-gray-700 px-2 py-0.5 text-xs text-gray-200">
+          {tag}
+        </span>
+      )
+    }
   </header>
-  {summary && <p class="text-gray-200 mb-3">{summary}</p>}
+  {summary && <p class="mb-3 text-gray-200">{summary}</p>}
   {
     bullets.length > 0 && (
-      <ul class="list-disc pl-5 text-gray-300 mb-3">
-        {bullets.map((bullet) => <li>{bullet}</li>)}
+      <ul class="mb-3 list-disc pl-5 text-gray-300">
+        {bullets.map(bullet => (
+          <li>{bullet}</li>
+        ))}
       </ul>
     )
   }
@@ -30,7 +62,7 @@ const { id, title, badge, tag, summary, bullets = [], rating, cta, secondaryCta,
           href={safeHref(cta.url)}
           rel={relFor(cta.sponsored, cta.url) || undefined}
           target="_blank"
-          class="inline-block bg-blue-500 hover:bg-blue-600 text-white rounded-md px-4 py-2"
+          class="inline-block rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           {cta.label}
         </a>
@@ -42,7 +74,7 @@ const { id, title, badge, tag, summary, bullets = [], rating, cta, secondaryCta,
           href={safeHref(secondaryCta.url)}
           rel={relFor(secondaryCta.sponsored, secondaryCta.url) || undefined}
           target="_blank"
-          class="inline-block border border-gray-500 hover:bg-gray-700 text-gray-100 rounded-md px-4 py-2"
+          class="inline-block rounded-md border border-gray-500 px-4 py-2 text-gray-100 hover:bg-gray-700"
         >
           {secondaryCta.label}
         </a>

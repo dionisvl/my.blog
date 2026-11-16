@@ -25,6 +25,7 @@ use App\Entity\Post;
 use App\Entity\PostLocale;
 use App\Entity\User;
 use App\Kernel;
+use App\Repository\PostRepository;
 use App\Tests\Support\ContractFixtures;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,8 +40,8 @@ const SMOKE_REQUIRED_TABLES = ['users', 'posts', 'post_locales'];
 
 $mode = $argv[1] ?? 'publish';
 
-if (!\in_array($mode, ['publish', 'unpublish'], true)) {
-    fwrite(STDERR, "Usage: php tests/Support/article_migrated_schema_smoke.php [publish|unpublish]\n");
+if (!in_array($mode, ['publish', 'unpublish'], true)) {
+    fwrite(\STDERR, "Usage: php tests/Support/article_migrated_schema_smoke.php [publish|unpublish]\n");
 
     exit(2);
 }
@@ -48,7 +49,7 @@ if (!\in_array($mode, ['publish', 'unpublish'], true)) {
 function smokeCheck(bool $condition, string $message): void
 {
     if (!$condition) {
-        throw new \RuntimeException('Assertion failed: '.$message);
+        throw new RuntimeException('Assertion failed: '.$message);
     }
 }
 
@@ -58,7 +59,7 @@ $kernel->boot();
 try {
     $container = $kernel->getContainer()->get('test.service_container');
     $entityManager = $container->get('doctrine')->getManager();
-    \assert($entityManager instanceof EntityManagerInterface);
+    assert($entityManager instanceof EntityManagerInterface);
 
     $connection = $entityManager->getConnection();
     smokeCheck($connection->getDatabasePlatform() instanceof PostgreSQLPlatform, 'the smoke test only runs against PostgreSQL');
@@ -67,8 +68,9 @@ try {
     $connection->executeStatement("SET application_name = 'article-migrated-schema-smoke'");
 
     $existingTables = $connection->createSchemaManager()->listTableNames();
+
     foreach (SMOKE_REQUIRED_TABLES as $table) {
-        smokeCheck(\in_array($table, $existingTables, true), \sprintf('migrated schema is missing table "%s"; run the migrated database first', $table));
+        smokeCheck(in_array($table, $existingTables, true), sprintf('migrated schema is missing table "%s"; run the migrated database first', $table));
     }
 
     $sanitizer = ContractFixtures::sanitizer();
@@ -80,16 +82,22 @@ try {
     );
 
     $postRepository = $entityManager->getRepository(Post::class);
+
+    if (!$postRepository instanceof PostRepository) {
+        throw new RuntimeException('Post repository must be a PostRepository.');
+    }
+
     $localeRepository = $entityManager->getRepository(PostLocale::class);
     $anchor = $postRepository->findOneBy(['slug' => SMOKE_SLUG]);
 
     if ('unpublish' === $mode) {
-        smokeCheck($anchor instanceof Post, \sprintf('no post with slug "%s" exists; nothing to unpublish', SMOKE_SLUG));
+        smokeCheck($anchor instanceof Post, sprintf('no post with slug "%s" exists; nothing to unpublish', SMOKE_SLUG));
         smokeCheck($anchor->isModular(), 'the smoke anchor must be a modular article');
 
         $locale = $entityManager->find(PostLocale::class, ['postId' => (int) $anchor->getId(), 'locale' => SMOKE_LOCALE]);
+
         if (!$locale instanceof PostLocale || !$locale->isPublished()) {
-            echo \sprintf("already unpublished: %s (%s)\n", SMOKE_SLUG, SMOKE_LOCALE);
+            echo sprintf("already unpublished: %s (%s)\n", SMOKE_SLUG, SMOKE_LOCALE);
 
             exit(0);
         }
@@ -101,7 +109,7 @@ try {
         smokeCheck($anchor instanceof Post && $anchor->getStatus(), 'anchor must be hidden (status = true) after the last locale is unpublished');
         smokeCheck(null === $postRepository->findPublishedBySlug(SMOKE_SLUG), 'slug must no longer resolve to a published post');
 
-        echo \sprintf("unpublished: %s (%s), post id %d\n", SMOKE_SLUG, SMOKE_LOCALE, (int) $anchor->getId());
+        echo sprintf("unpublished: %s (%s), post id %d\n", SMOKE_SLUG, SMOKE_LOCALE, (int) $anchor->getId());
 
         exit(0);
     }
@@ -115,15 +123,16 @@ try {
             && SMOKE_TITLE === $anchor->getTitle()
             && $locale instanceof PostLocale
             && $locale->isPublished(),
-            \sprintf('slug "%s" already exists in an unexpected state; reset the disposable database and rerun', SMOKE_SLUG),
+            sprintf('slug "%s" already exists in an unexpected state; reset the disposable database and rerun', SMOKE_SLUG),
         );
 
-        echo \sprintf("already seeded: %s (%s), post id %d\n", SMOKE_SLUG, SMOKE_LOCALE, (int) $anchor->getId());
+        echo sprintf("already seeded: %s (%s), post id %d\n", SMOKE_SLUG, SMOKE_LOCALE, (int) $anchor->getId());
 
         exit(0);
     }
 
     $author = $entityManager->getRepository(User::class)->findOneBy(['email' => SMOKE_AUTHOR_EMAIL]);
+
     if (!$author instanceof User) {
         $author = new User();
         $author->setName('Smoke Author')
@@ -163,7 +172,7 @@ try {
     smokeCheck(SMOKE_TITLE === $locale->getTitle(), 'locale title must be stored unescaped');
     smokeCheck(SMOKE_SUMMARY === $locale->getSummary(), 'locale summary must be stored unescaped');
 
-    echo \sprintf(
+    echo sprintf(
         "published: %s (%s), post id %d\n",
         SMOKE_SLUG,
         SMOKE_LOCALE,
@@ -172,7 +181,7 @@ try {
 
     exit(0);
 } catch (Throwable $e) {
-    fwrite(STDERR, \get_class($e).': '.$e->getMessage()."\n");
+    fwrite(\STDERR, $e::class.': '.$e->getMessage()."\n");
 
     exit(1);
 } finally {

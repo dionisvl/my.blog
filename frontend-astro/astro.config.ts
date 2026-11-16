@@ -17,7 +17,10 @@ export default defineConfig({
   integrations: [],
   // Without this Astro ignores the Host header and every URL reads as "localhost".
   security: {
-    allowedDomains: [{ hostname: allowedHost }, { hostname: `www.${allowedHost}` }],
+    allowedDomains: [
+      { hostname: allowedHost },
+      { hostname: `www.${allowedHost}` },
+    ],
   },
   markdown: {
     shikiConfig: {

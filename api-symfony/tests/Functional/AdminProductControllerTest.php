@@ -151,11 +151,15 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
         $this->client->loginUser($user);
 
         $tmpPreview = tempnam(sys_get_temp_dir(), 'upl').'.png';
-        file_put_contents($tmpPreview, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC'));
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC', true);
+        self::assertIsString($png);
+        file_put_contents($tmpPreview, $png);
         $previewFile = new \Symfony\Component\HttpFoundation\File\UploadedFile($tmpPreview, 'preview.png', 'image/png', null, true);
 
         $tmpDetail = tempnam(sys_get_temp_dir(), 'upl').'.png';
-        file_put_contents($tmpDetail, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC'));
+        $pngDetail = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC', true);
+        self::assertIsString($pngDetail);
+        file_put_contents($tmpDetail, $pngDetail);
         $detailFile = new \Symfony\Component\HttpFoundation\File\UploadedFile($tmpDetail, 'detail.png', 'image/png', null, true);
 
         try {
@@ -203,6 +207,7 @@ final class AdminProductControllerTest extends DatabaseWebTestCase
             if (file_exists($tmpPreview)) {
                 unlink($tmpPreview);
             }
+
             if (file_exists($tmpDetail)) {
                 unlink($tmpDetail);
             }

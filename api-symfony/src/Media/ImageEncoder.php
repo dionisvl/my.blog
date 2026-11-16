@@ -73,7 +73,7 @@ final readonly class ImageEncoder
             throw new \InvalidArgumentException('Animated GIF is not supported.');
         }
 
-        if (str_starts_with($data, 'RIFF') && 'WEBP' === substr($data, 8, 4) && (str_contains(substr($data, 12, 4096), 'ANIM') || ("VP8X" === substr($data, 12, 4) && 0 !== (\ord($data[20]) & 0x02)))) {
+        if (str_starts_with($data, 'RIFF') && 'WEBP' === substr($data, 8, 4) && (str_contains(substr($data, 12, 4096), 'ANIM') || ('VP8X' === substr($data, 12, 4) && 0 !== (\ord($data[20]) & 0x02)))) {
             throw new \InvalidArgumentException('Animated WebP is not supported.');
         }
     }

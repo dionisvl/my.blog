@@ -98,6 +98,7 @@ final readonly class ArticlePublisher
             $this->assertUnambiguousLegacySlug($anchor);
 
             $row = $this->findLocale($postId, $locale);
+
             if (null !== $row) {
                 $this->entityManager->refresh($row);
             }
@@ -151,6 +152,7 @@ final readonly class ArticlePublisher
         return $this->entityManager->wrapInTransaction(function () use ($anchor, $postId, $locale): PostLocale {
             $this->lockAnchorForPublication($anchor);
             $this->assertModular($anchor, $locale);
+
             if (!$anchor->isModular() && $anchor->getStatus()) {
                 throw new ArticleStateException('The legacy original is no longer published.');
             }
@@ -197,6 +199,7 @@ final readonly class ArticlePublisher
         $this->entityManager->wrapInTransaction(function () use ($row, $anchor): void {
             $this->lockAnchorForPublication($anchor);
             $this->entityManager->refresh($row);
+
             if (!$row->isPublished()) {
                 throw new ArticleStateException(\sprintf('Locale "%s" is not published.', $row->getLocale()));
             }

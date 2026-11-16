@@ -15,20 +15,33 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class ImageUploaderTest extends TestCase
 {
-    private string $root;
-    private LocalMediaStorage $storage;
-    private ImageUploader $uploader;
+    private ?LocalMediaStorage $storage = null;
+    private ?ImageUploader $uploader = null;
 
     protected function setUp(): void
     {
-        $this->root = sys_get_temp_dir().'/up-'.bin2hex(random_bytes(4));
-        $this->storage = new LocalMediaStorage($this->root.'/public', $this->root.'/private', '/storage');
+        $root = sys_get_temp_dir().'/up-'.bin2hex(random_bytes(4));
+        $this->storage = new LocalMediaStorage($root.'/public', $root.'/private', '/storage');
         $this->uploader = new ImageUploader($this->storage, new FileValidator(), new ImageEncoder());
+    }
+
+    private function storage(): LocalMediaStorage
+    {
+        \assert(null !== $this->storage);
+
+        return $this->storage;
+    }
+
+    private function uploader(): ImageUploader
+    {
+        \assert(null !== $this->uploader);
+
+        return $this->uploader;
     }
 
     private function upload(string $path, string $name, string $mime, MediaTarget $t = MediaTarget::Post): string
     {
-        return $this->uploader->upload(new UploadedFile($path, $name, $mime, null, true), $t);
+        return $this->uploader()->upload(new UploadedFile($path, $name, $mime, null, true), $t);
     }
 
     public function testPngBecomesWebpAndOriginalIsKeptPrivately(): void
@@ -37,20 +50,20 @@ final class ImageUploaderTest extends TestCase
         $name = $this->upload($src, 'a.png', 'image/png');
 
         self::assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}_[0-9a-f]{16}\.webp$/', $name);
-        $public = $this->storage->get(Visibility::Public, 'uploads/'.$name);
+        $public = $this->storage()->get(Visibility::Public, 'uploads/'.$name);
         self::assertNotNull($public);
         self::assertSame('image/webp', (new \finfo(\FILEINFO_MIME_TYPE))->buffer($public));
 
         $key = 'originals/uploads/'.hash_file('sha256', $src).'.png';
-        self::assertSame(file_get_contents($src), $this->storage->get(Visibility::Private, $key));
-        self::assertFalse($this->storage->exists(Visibility::Public, $key));
+        self::assertSame(file_get_contents($src), $this->storage()->get(Visibility::Private, $key));
+        self::assertFalse($this->storage()->exists(Visibility::Public, $key));
     }
 
     public function testTargetsUseTheirOwnPrefix(): void
     {
         foreach ([MediaTarget::Product, MediaTarget::Portfolio] as $t) {
             $name = $this->upload(MediaTestImages::file('jpeg'), 'a.jpg', 'image/jpeg', $t);
-            self::assertTrue($this->storage->exists(Visibility::Public, $t->key($name)));
+            self::assertTrue($this->storage()->exists(Visibility::Public, $t->key($name)));
         }
     }
 
@@ -59,7 +72,7 @@ final class ImageUploaderTest extends TestCase
         $payload = '<?php echo "pwned"; ?>SECRET_MARKER';
         $name = $this->upload(MediaTestImages::file('png', 40, 30, $payload), 'a.png', 'image/png');
 
-        $public = (string) $this->storage->get(Visibility::Public, 'uploads/'.$name);
+        $public = (string) $this->storage()->get(Visibility::Public, 'uploads/'.$name);
         self::assertStringNotContainsString('SECRET_MARKER', $public);
         self::assertStringNotContainsString('<?php', $public);
     }
@@ -86,6 +99,11 @@ final class ImageUploaderTest extends TestCase
     public function testOversizedDimensionsAreRejectedBeforeDecoding(): void
     {
         $im = imagecreatetruecolor(6500, 10);
+
+        if (false === $im) {
+            throw new \RuntimeException('Failed to create image.');
+        }
+
         ob_start();
         imagepng($im);
         $path = (string) tempnam(sys_get_temp_dir(), 'big');
@@ -106,17 +124,17 @@ final class ImageUploaderTest extends TestCase
         } catch (\InvalidArgumentException) {
         }
 
-        self::assertSame([], iterator_to_array($this->storage->keys(Visibility::Public), false));
-        self::assertSame([], iterator_to_array($this->storage->keys(Visibility::Private), false));
+        self::assertSame([], iterator_to_array($this->storage()->keys(Visibility::Public), false));
+        self::assertSame([], iterator_to_array($this->storage()->keys(Visibility::Private), false));
     }
 
     public function testDiscardRemovesOnlyThePublicFile(): void
     {
         $src = MediaTestImages::file('png');
         $name = $this->upload($src, 'a.png', 'image/png');
-        $this->uploader->discard(MediaTarget::Post, $name);
+        $this->uploader()->discard(MediaTarget::Post, $name);
 
-        self::assertFalse($this->storage->exists(Visibility::Public, 'uploads/'.$name));
-        self::assertCount(1, iterator_to_array($this->storage->keys(Visibility::Private), false));
+        self::assertFalse($this->storage()->exists(Visibility::Public, 'uploads/'.$name));
+        self::assertCount(1, iterator_to_array($this->storage()->keys(Visibility::Private), false));
     }
 }

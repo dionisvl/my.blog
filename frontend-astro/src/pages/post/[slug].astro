@@ -17,7 +17,8 @@ import {
 import { isGeoIpLocaleRoutingEnabled } from "../../lib/geoip-config";
 
 const { slug } = Astro.params;
-const preferredLang = preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
+const preferredLang =
+  preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
 const m = messagesFor(preferredLang ?? "en");
 
 let resolution: Awaited<ReturnType<typeof resolveArticle>> | null = null;
@@ -29,19 +30,29 @@ try {
 }
 
 if (resolution?.route_mode === "neutral") {
-  const preference = parseLanguagePreference(Astro.request.headers.get("cookie"));
+  const preference = parseLanguagePreference(
+    Astro.request.headers.get("cookie")
+  );
   const preferenceIsPublished =
-    preference !== null && resolution.locales.some((locale) => locale.locale === preference);
+    preference !== null &&
+    resolution.locales.some(locale => locale.locale === preference);
   // www.<host> only serves readers in Russia (the middleware sends everyone else away), so the host decides.
   const countryCode =
-    !preferenceIsPublished && isGeoIpLocaleRoutingEnabled() && isWwwHost(Astro.url.hostname) ? "RU" : null;
+    !preferenceIsPublished &&
+    isGeoIpLocaleRoutingEnabled() &&
+    isWwwHost(Astro.url.hostname)
+      ? "RU"
+      : null;
   const locale = selectPublishedLocale(resolution, preference, countryCode);
   if (!locale) {
     Astro.response.status = 404;
     return Astro.rewrite("/404");
   }
 
-  const response = Astro.redirect(`/${locale}/post/${encodeURIComponent(slug!)}`, 302);
+  const response = Astro.redirect(
+    `/${locale}/post/${encodeURIComponent(slug!)}`,
+    302
+  );
   response.headers.set("Cache-Control", "private, no-store");
   response.headers.set("Vary", "Cookie");
   return response;
@@ -49,11 +60,7 @@ if (resolution?.route_mode === "neutral") {
 
 let data: PostResponse;
 try {
-  data = await getPost(
-    slug!,
-    Astro,
-    preferredLang,
-  );
+  data = await getPost(slug!, Astro, preferredLang);
 } catch (error) {
   if (error instanceof ApiClientError && error.status === 404) {
     Astro.response.status = 404;
@@ -81,17 +88,19 @@ const shareTitle = encodeURIComponent(post.title);
   ogType="article"
   canonical={absoluteUrl(`/post/${post.slug}`)}
 >
-  <div class="article-page mx-auto -mx-2 min-w-0 w-[calc(100%+1rem)] max-w-[760px] sm:mx-auto sm:w-full">
+  <div
+    class="article-page -mx-2 mx-auto w-[calc(100%+1rem)] max-w-[760px] min-w-0 sm:mx-auto sm:w-full"
+  >
     <article
-      class="bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-700"
+      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 shadow-sm"
     >
       {
         post.image_url && (
-          <div class="w-full h-64 md:h-96 flex items-center justify-center bg-gray-700 overflow-hidden [&>.lazy-wrap]:w-full [&>.lazy-wrap]:h-full">
+          <div class="flex h-64 w-full items-center justify-center overflow-hidden bg-gray-700 md:h-96 [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full">
             <LazyImage
               src={post.image_url}
               alt={post.title}
-              class="w-full h-full object-contain"
+              class="h-full w-full object-contain"
               height="384"
             />
           </div>
@@ -99,10 +108,10 @@ const shareTitle = encodeURIComponent(post.title);
       }
 
       <div class="px-1 py-6 sm:p-6">
-        <header class="text-center mb-6">
+        <header class="mb-6 text-center">
           {
             post.category && (
-              <h6 class="text-sm mb-2">
+              <h6 class="mb-2 text-sm">
                 <a
                   href={`/category/${post.category.slug}`}
                   class="text-blue-500 hover:text-blue-700"
@@ -112,7 +121,7 @@ const shareTitle = encodeURIComponent(post.title);
               </h6>
             )
           }
-          <h1 class="text-3xl font-bold text-white mb-2">{post.title}</h1>
+          <h1 class="mb-2 text-3xl font-bold text-white">{post.title}</h1>
         </header>
 
         <div class="prose max-w-none">
@@ -122,8 +131,8 @@ const shareTitle = encodeURIComponent(post.title);
         {
           data.aphorism && (
             <div class="mt-8">
-              <h4 class="font-semibold mb-2 text-white">Quote of the day:</h4>
-              <div class="border-2 rounded-sm p-2 m-2 flex items-center bg-gray-700 text-white">
+              <h4 class="mb-2 font-semibold text-white">Quote of the day:</h4>
+              <div class="m-2 flex items-center rounded-sm border-2 bg-gray-700 p-2 text-white">
                 {data.aphorism.text}
               </div>
             </div>
@@ -132,11 +141,11 @@ const shareTitle = encodeURIComponent(post.title);
 
         {
           post.tags && post.tags.length > 0 && (
-            <div class="flex flex-wrap mt-6 mb-4">
-              {post.tags.map((tag) => (
+            <div class="mt-6 mb-4 flex flex-wrap">
+              {post.tags.map(tag => (
                 <a
                   href={`/tag/${tag.slug}`}
-                  class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-sm mr-2 mb-2 transition text-white"
+                  class="mr-2 mb-2 rounded-full bg-gray-700 px-3 py-1 text-sm text-white transition hover:bg-gray-600"
                 >
                   {tag.title}
                 </a>
@@ -146,7 +155,7 @@ const shareTitle = encodeURIComponent(post.title);
         }
 
         <div
-          class="flex justify-between items-center text-sm text-gray-400 pt-4 border-t border-gray-700"
+          class="flex items-center justify-between border-t border-gray-700 pt-4 text-sm text-gray-400"
         >
           <span>
             {
@@ -163,19 +172,19 @@ const shareTitle = encodeURIComponent(post.title);
           </span>
 
           <div class="flex items-center">
-            <span class="flex items-center mr-4">
+            <span class="mr-4 flex items-center">
               <i class="fas fa-eye mr-1"></i>
               {post.views_count}
             </span>
             <a
-              class="flex items-center w-full sm:w-auto group"
+              class="group flex w-full items-center sm:w-auto"
               onclick="Likes.toggle(this,event);"
               data-post_id={post.id}
               href="#"
               title="Like"
             >
               <i
-                class="far fa-heart text-red-500 mr-1 heart-icon transition-transform duration-500"
+                class="far fa-heart heart-icon mr-1 text-red-500 transition-transform duration-500"
               ></i>
               <span
                 class="like_button_count transition-colors duration-500 group-hover:text-blue-400"
@@ -189,7 +198,7 @@ const shareTitle = encodeURIComponent(post.title);
                 href={`https://t.me/share/url?url=${shareUrl}&text=${shareTitle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors"
+                class="text-gray-400 transition-colors hover:text-blue-400"
                 title="Share on Telegram"
                 aria-label="Share on Telegram"
               >
@@ -199,7 +208,7 @@ const shareTitle = encodeURIComponent(post.title);
                 href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors"
+                class="text-gray-400 transition-colors hover:text-blue-400"
                 title="Share on X (Twitter)"
                 aria-label="Share on X (Twitter)"
               >
@@ -209,7 +218,7 @@ const shareTitle = encodeURIComponent(post.title);
                 href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-gray-400 hover:text-blue-400 transition-colors"
+                class="text-gray-400 transition-colors hover:text-blue-400"
                 title="Share on LinkedIn"
                 aria-label="Share on LinkedIn"
               >
@@ -224,18 +233,18 @@ const shareTitle = encodeURIComponent(post.title);
     <!-- Comments Section -->
     <div class="mt-8">
       {
-        post.comments?.map((comment) => (
-          <div class="bg-gray-800 p-4 mb-4 rounded-lg border border-gray-700 flex">
+        post.comments?.map(comment => (
+          <div class="mb-4 flex rounded-lg border border-gray-700 bg-gray-800 p-4">
             <div class="mr-4 flex-shrink-0">
               <img
-                class="rounded-full w-12 h-12 object-cover"
+                class="h-12 w-12 rounded-full object-cover"
                 src="/storage/blog_images/comment.jpg"
                 alt={comment.author_name}
               />
             </div>
             <div>
               <h5 class="font-semibold text-white">{comment.author_name}</h5>
-              <p class="text-xs text-gray-400 mb-2">
+              <p class="mb-2 text-xs text-gray-400">
                 {fromNow(comment.created_at)}
               </p>
               <p class="text-gray-300">{comment.text}</p>
@@ -246,12 +255,18 @@ const shareTitle = encodeURIComponent(post.title);
     </div>
 
     <!-- Comment Form -->
-    <div class="bg-gray-800 p-6 mt-8 rounded-lg border border-gray-700">
-      <h4 class="text-xl font-semibold mb-4 text-white">Leave a reply</h4>
+    <div class="mt-8 rounded-lg border border-gray-700 bg-gray-800 p-6">
+      <h4 class="mb-4 text-xl font-semibold text-white">Leave a reply</h4>
 
       <div id="comment-flash"></div>
 
-      <form class="w-full" role="form" method="post" action="/api/comment" id="comment-form">
+      <form
+        class="w-full"
+        role="form"
+        method="post"
+        action="/api/comment"
+        id="comment-form"
+      >
         <input type="hidden" name="post_id" value={post.id} />
         <div class="mb-4">
           {/* Honeypot field - should remain empty */}
@@ -262,14 +277,14 @@ const shareTitle = encodeURIComponent(post.title);
 
           <textarea
             required
-            class="w-full border border-gray-600 bg-gray-700 text-white rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+            class="w-full rounded-md border border-gray-600 bg-gray-700 p-3 text-white placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             rows="4"
             name="message"
             placeholder="Write some comment"
             onkeyup="count_keyup()"></textarea>
         </div>
         <button
-          class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md transition duration-200 font-medium"
+          class="rounded-md bg-blue-500 px-6 py-2 font-medium text-white transition duration-200 hover:bg-blue-600"
         >
           Post Comment
         </button>
@@ -277,12 +292,12 @@ const shareTitle = encodeURIComponent(post.title);
 
       <script>
         const form = document.getElementById(
-          "comment-form",
+          "comment-form"
         ) as HTMLFormElement | null;
         const flashDiv = document.getElementById("comment-flash");
 
         if (form) {
-          form.addEventListener("submit", async (e) => {
+          form.addEventListener("submit", async e => {
             e.preventDefault();
 
             const formData = new FormData(form);
@@ -305,7 +320,7 @@ const shareTitle = encodeURIComponent(post.title);
                 form.reset();
                 form
                   .querySelectorAll<HTMLInputElement>('input[name="countMe"]')
-                  .forEach((input) => (input.value = "0"));
+                  .forEach(input => (input.value = "0"));
               } else if (flashDiv) {
                 flashDiv.innerHTML =
                   '<div class="bg-red-500 text-white p-3 rounded mb-4">' +
@@ -322,23 +337,58 @@ const shareTitle = encodeURIComponent(post.title);
         }
       </script>
     </div>
-  <div class="article-related mt-8 space-y-8">
-    {[{ title: m.sidebar.featured, posts: data.featured_posts }, { title: m.sidebar.recent, posts: data.recent_posts }].map((section) => (
+    <div class="article-related mt-8 space-y-8">
+      {
+        [
+          { title: m.sidebar.featured, posts: data.featured_posts },
+          { title: m.sidebar.recent, posts: data.recent_posts },
+        ].map(section => (
+          <section>
+            <h2 class="mb-4 text-xl font-semibold text-white">
+              {section.title}
+            </h2>
+            <div class="space-y-3">
+              {section.posts.map(item => (
+                <a
+                  href={`/post/${item.slug}`}
+                  class="flex items-center gap-4 rounded-lg border border-gray-700 bg-gray-800 p-3 hover:border-gray-500"
+                >
+                  {item.image_url && (
+                    <img
+                      src={item.image_url}
+                      alt=""
+                      loading="lazy"
+                      class="h-16 w-24 rounded object-cover"
+                    />
+                  )}
+                  <span class="min-w-0 flex-1 font-medium text-gray-200">
+                    {item.title}
+                  </span>
+                  <time class="shrink-0 text-xs text-gray-400">
+                    {formatDate(item.created_at)}
+                  </time>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))
+      }
       <section>
-        <h2 class="text-xl font-semibold text-white mb-4">{section.title}</h2>
-        <div class="space-y-3">
-          {section.posts.map((item) => <a href={`/post/${item.slug}`} class="flex items-center gap-4 rounded-lg border border-gray-700 bg-gray-800 p-3 hover:border-gray-500">
-            {item.image_url && <img src={item.image_url} alt="" loading="lazy" class="h-16 w-24 rounded object-cover" />}
-            <span class="min-w-0 flex-1 font-medium text-gray-200">{item.title}</span>
-            <time class="shrink-0 text-xs text-gray-400">{formatDate(item.created_at)}</time>
-          </a>)}
+        <h2 class="mb-4 text-xl font-semibold text-white">Categories</h2>
+        <div class="flex flex-wrap gap-2">
+          {
+            data.categories.map(category => (
+              <a
+                href={`/category/${category.slug}`}
+                class="rounded-full border border-gray-700 bg-gray-800 px-3 py-1 text-sm text-gray-300 hover:text-blue-400"
+              >
+                {category.title}{" "}
+                <span class="text-gray-500">({category.posts_count})</span>
+              </a>
+            ))
+          }
         </div>
       </section>
-    ))}
-    <section>
-      <h2 class="text-xl font-semibold text-white mb-4">Categories</h2>
-      <div class="flex flex-wrap gap-2">{data.categories.map((category) => <a href={`/category/${category.slug}`} class="rounded-full border border-gray-700 bg-gray-800 px-3 py-1 text-sm text-gray-300 hover:text-blue-400">{category.title} <span class="text-gray-500">({category.posts_count})</span></a>)}</div>
-    </section>
-  </div>
+    </div>
   </div>
 </Layout>

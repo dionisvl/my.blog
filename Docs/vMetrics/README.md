@@ -1,103 +1,50 @@
-# Victoria Logs + vmUI - Centralized Logging
-
-Logging stack using Victoria Logs, Vector, and vmauth for JSON log collection and search.
-
-## Quick Links
-
-- **Dev UI**: http://logs.localhost/select/vmui/
-- **Prod UI**: https://vmui.production-web.site/select/vmui/
-- **Credentials**: Set in `.env` (VMAUTH_ADMIN_USER, VMAUTH_ADMIN_PASS)
-
-## Architecture
+# Logs (VictoriaLogs)
 
 ```
-Apps → Docker logs → Vector → Victoria Logs → vmauth → VMUI
-       (JSON)       (parse)   (store/index)   (auth)  (search UI)
+containers ─▶ Docker logs ─▶ Vector ─▶ VictoriaLogs ─▶ vmauth ─▶ VMUI
+                             (parse JSON)  (store)      (BasicAuth)
 ```
 
-## Components
+All three services start with the rest of the stack (`make up`); image versions are pinned in `.env`.
 
-| Component | Image | Purpose |
-|-----------|-------|---------|
-| Victoria Logs | victoriametrics/victoria-logs:v1.44.0 | Log storage and indexing |
-| Vector | timberio/vector:nightly-2026-01-30-alpine | Docker log collector & transformer |
-| vmauth | victoriametrics/vmauth:v1.101.0 | Authentication layer |
-| VMUI | `/select/vmui/` | Web search interface |
+| Component    | Role                                                    | Config                                  |
+| ------------ | ------------------------------------------------------- | --------------------------------------- |
+| VictoriaLogs | Stores logs for 30 days                                 | `compose.yml` (`-retentionPeriod`)      |
+| Vector       | Reads container logs, merges JSON fields into the entry | `.devops/vmetrics/vector.toml`          |
+| vmauth       | BasicAuth in front of VictoriaLogs, `/select/*` only    | `.devops/vmetrics/vmauth-entrypoint.sh` |
 
-## Getting Started
+## Access
 
-1. Configure `.env`:
-   ```bash
-   VMAUTH_ADMIN_USER=admin
-   VMAUTH_ADMIN_PASS=YourSecurePassword
-   VMAUTH_READONLY_USER=readonly
-   VMAUTH_READONLY_PASS=YourReadOnlyPassword
-   ```
+| Environment | URL                        |
+| ----------- | -------------------------- |
+| Dev         | http://logs.localhost/select/vmui/ |
+| Prod        | `https://vmui.<MAIN_HOST>` |
 
-2. Start services:
-   ```bash
-   docker compose up -d
-   ```
+Log in with `VMAUTH_ADMIN_USER` / `VMAUTH_ADMIN_PASS` or `VMAUTH_READONLY_USER` /
+`VMAUTH_READONLY_PASS` from `.env`. Both accounts can only query; nothing can be written through
+vmauth. After changing them: `docker compose restart vmauth`.
 
-3. Open VMUI at http://logs.localhost/select/vmui/ (dev) or https://vmui.production-web.site/select/vmui/ (prod)
-
-## Basic Queries
-
-LogsQL examples (run in VMUI):
+## Queries
 
 ```logsql
-_time:1h                              # Last 1 hour
-error _time:1h                        # Errors only
-{container_name="symfony"} _time:1h   # Specific container
-_time:1h | stats count() by (container_name)  # Group by container
+_time:1h                                       # last hour
+error _time:1h                                 # entries containing "error"
+{container_name="symfony"} _time:1h            # one container
+_time:1h | stats count() by (container_name)   # volume per container
 ```
 
-See [QUICKSTART.md](QUICKSTART.md) for more examples.
-
-## Configuration
-
-### Essential Files
-
-- `.env` - Credentials and settings
-- `compose.yml` - Victoria Logs, Vector, vmauth definitions
-- `.devops/vmetrics/vector.toml` - Log collection pipeline
-- `.devops/vmetrics/vmauth-entrypoint.sh` - Auth config generator
-- `api-symfony/config/packages/monolog.yaml` - Application logging
-- `api-symfony/Caddyfile` - Web server logging
-
-### Key Settings
-
-```bash
-# .env
-RETENTION_PERIOD=30d              # Log retention (7d, 30d, 90d, 365d)
-VMAUTH_ADMIN_USER=admin
-VMAUTH_ADMIN_PASS=SecurePassword
-VMAUTH_READONLY_USER=readonly
-VMAUTH_READONLY_PASS=ReadOnlyPassword
-```
-
-See [CONFIGURATION.md](CONFIGURATION.md) for detailed setup.
+Stream fields (`container_name`, `service`) are indexed and fast to filter on. To index another
+field, add it to `_stream_fields` in `vector.toml` and restart Vector.
 
 ## Troubleshooting
 
-**VMUI returns 404**: Check hostname is `logs.localhost`. Verify vmauth running: `docker compose logs vmauth | head -5`
+| Symptom          | Check                                                                        |
+| ---------------- | ---------------------------------------------------------------------------- |
+| Request rejected | vmauth routes only `/select/*` paths                                         |
+| 401              | Credentials in `.env`, then restart vmauth                                   |
+| No logs          | `docker compose ps vector victoria-logs`; the app must log to stdout/stderr  |
 
-**401 Unauthorized**: Password is wrong. Verify `VMAUTH_ADMIN_PASS` in `.env`
+## References
 
-**No logs visible**: Check Victoria Logs and Vector are running: `docker compose ps`. Verify app logs to stdout in monolog.yaml
-
-**Slow queries**: Use indexed fields: `{container_name="symfony"}` is fast, `{request_id="123"}` is slow (not indexed)
-
-## Security
-
-- Victoria Logs not exposed to host (`expose` only, no `ports`)
-- vmauth restricts to read-only `/select/*` paths
-- Credentials stored in `.env` (not in config files)
-- HTTPS enabled in production (Traefik + Let's Encrypt)
-
-## Official Documentation
-
-- [Victoria Logs Docs](https://docs.victoriametrics.com/victorialogs/)
-- [LogsQL Examples](https://docs.victoriametrics.com/victorialogs/logsql-examples/)
-- [Vector Documentation](https://vector.dev/docs/)
-- [vmauth Documentation](https://docs.victoriametrics.com/vmauth/)
+- [VictoriaLogs](https://docs.victoriametrics.com/victorialogs/) · [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/)
+- [Vector](https://vector.dev/docs/) · [vmauth](https://docs.victoriametrics.com/vmauth/)

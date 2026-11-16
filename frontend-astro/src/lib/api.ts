@@ -11,7 +11,7 @@ export class ApiClientError extends Error {
   constructor(
     public readonly status: number,
     public readonly body: string,
-    message: string,
+    message: string
   ) {
     super(message);
     this.name = "ApiClientError";
@@ -27,7 +27,7 @@ type CookieContext = {
 async function apiFetch<T>(
   path: string,
   init: RequestInit = {},
-  ctx?: CookieContext,
+  ctx?: CookieContext
 ): Promise<T> {
   const url = `${API_URL}${path}`;
   const headers: Record<string, string> = {
@@ -71,30 +71,40 @@ export function getHome(page = 1, lang?: string): Promise<HomeResponse> {
 export function getPost(
   slug: string,
   ctx?: CookieContext,
-  lang?: string,
+  lang?: string
 ): Promise<PostResponse> {
   const query = lang ? `?lang=${encodeURIComponent(lang)}` : "";
   return apiFetch<PostResponse>(
     `/api/post/${encodeURIComponent(slug)}${query}`,
     {},
-    ctx,
+    ctx
   );
 }
 
-export function getTag(slug: string, page = 1, lang?: string): Promise<TagResponse> {
+export function getTag(
+  slug: string,
+  page = 1,
+  lang?: string
+): Promise<TagResponse> {
   return apiFetch<TagResponse>(
-    `/api/tag/${encodeURIComponent(slug)}?page=${page}${langQuery(lang)}`,
+    `/api/tag/${encodeURIComponent(slug)}?page=${page}${langQuery(lang)}`
   );
 }
 
-export function getCategory(slug: string, page = 1, lang?: string): Promise<CategoryResponse> {
+export function getCategory(
+  slug: string,
+  page = 1,
+  lang?: string
+): Promise<CategoryResponse> {
   return apiFetch<CategoryResponse>(
-    `/api/category/${encodeURIComponent(slug)}?page=${page}${langQuery(lang)}`,
+    `/api/category/${encodeURIComponent(slug)}?page=${page}${langQuery(lang)}`
   );
 }
 
 export function search(q: string, lang?: string): Promise<SearchResponse> {
-  return apiFetch<SearchResponse>(`/api/search?q=${encodeURIComponent(q)}${langQuery(lang)}`);
+  return apiFetch<SearchResponse>(
+    `/api/search?q=${encodeURIComponent(q)}${langQuery(lang)}`
+  );
 }
 
 // ---- Write endpoints (called from Astro API routes) ----

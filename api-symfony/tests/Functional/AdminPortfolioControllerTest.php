@@ -137,7 +137,9 @@ final class AdminPortfolioControllerTest extends DatabaseWebTestCase
         $this->client->loginUser($user);
 
         $tmp = tempnam(sys_get_temp_dir(), 'upl').'.png';
-        file_put_contents($tmp, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC'));
+        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAIAAAAmkwkpAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAADElEQVQImWNgIB0AAAA0AAEjQ4N1AAAAAElFTkSuQmCC', true);
+        self::assertIsString($png);
+        file_put_contents($tmp, $png);
         $file = new \Symfony\Component\HttpFoundation\File\UploadedFile($tmp, 'test.png', 'image/png', null, true);
 
         try {

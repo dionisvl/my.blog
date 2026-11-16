@@ -25,7 +25,11 @@ func main() {
 	logger := setupLogger(cfg.App.Env)
 
 	db := repository.NewDB(cfg.Database)
-	defer repository.CloseDB(db)
+	defer func() {
+		if err := repository.CloseDB(db); err != nil {
+			logger.Error("failed to close database", slog.String("error", err.Error()))
+		}
+	}()
 
 	db.RegisterModel((*model.PostTag)(nil))
 

@@ -15,11 +15,16 @@ export function isWwwHost(hostname: string): boolean {
 
 /** Shared by both hosts so a language choice survives a host change; unset for localhost and IPs. */
 export function cookieDomain(): string | undefined {
-  const isName = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(siteHost) && !/^\d+(\.\d+){3}$/.test(siteHost);
+  const isName =
+    /^[a-z0-9-]+(\.[a-z0-9-]+)+$/i.test(siteHost) &&
+    !/^\d+(\.\d+){3}$/.test(siteHost);
   return isName ? `.${siteHost}` : undefined;
 }
 
-export function preferredLanguage(request: Request, hostname: string): ArticleLocale | null {
+export function preferredLanguage(
+  request: Request,
+  hostname: string
+): ArticleLocale | null {
   const chosen = parseLanguagePreference(request.headers.get("cookie"));
   if (chosen) return chosen;
   return isGeoIpLocaleRoutingEnabled() && isWwwHost(hostname) ? "ru" : null;

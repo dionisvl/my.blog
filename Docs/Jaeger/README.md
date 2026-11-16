@@ -1,40 +1,23 @@
-# Jaeger - Distributed Tracing
+# Tracing (Jaeger)
 
-Distributed tracing for observing request flows across services.
+Traefik creates a trace for every request and sends it to Jaeger over OTLP/HTTP
+(`jaeger:4318`). The applications themselves are not instrumented, so a trace shows Traefik's
+routers, middlewares and the upstream call.
 
-## What is Jaeger?
+Jaeger starts with the rest of the stack (`make up`).
 
-Jaeger captures and visualizes traces as requests flow through your system:
-- Request path and timeline
-- Service dependencies
-- Latency measurements
-- Error tracking
+| Environment | UI                           | Auth                              |
+| ----------- | ---------------------------- | --------------------------------- |
+| Dev         | http://jaeger.localhost      | none                              |
+| Prod        | `https://jaeger.<MAIN_HOST>` | BasicAuth, `JAEGER_AUTH` in `.env` |
 
-## How It Works
+## Using the UI
 
-```
-HTTP Request → Traefik (generates trace) → Service
-                    ↓
-              Jaeger (receives trace)
-                    ↓
-              Jaeger UI (visualizes trace)
-```
+1. Pick the `traefik` service and click **Find Traces**.
+2. Narrow down with **Min Duration** (slow requests) or the tag `error=true`.
+3. Open a trace to see the span timeline and status codes.
 
-Traefik automatically generates traces via OpenTelemetry (OTLP) and sends them to Jaeger for storage and visualization.
+## Limits
 
-## Accessing Jaeger UI
-
-View traces in the Jaeger UI dashboard.
-
-## Sampling
-
-Tracing all requests (100%) is useful for development but expensive for production. Configure sampling rates to balance visibility and performance.
-
-## Storage
-
-Development uses in-memory storage (traces lost on restart). For production, use persistent backends (Elasticsearch, Cassandra, etc.) or cloud-hosted solutions.
-
-## References
-
-- [Jaeger Documentation](https://www.jaegertracing.io/docs/)
-- [OpenTelemetry](https://opentelemetry.io/)
+- Storage is in memory: traces are lost when the container restarts.
+- Every request is traced; lower Traefik's `--tracing.sampleRate` if that becomes too much.

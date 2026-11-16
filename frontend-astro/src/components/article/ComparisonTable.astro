@@ -6,16 +6,26 @@ interface Props extends ComparisonTableProps {
   id: string;
 }
 
-const { id, caption, criteriaLabel, legend = [], columns, rows, ctaRow } = Astro.props;
+const {
+  id,
+  caption,
+  criteriaLabel,
+  legend = [],
+  columns,
+  rows,
+  ctaRow,
+} = Astro.props;
 
-const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, item]));
+const ctaByColumn = new Map(
+  (ctaRow?.items ?? []).map(item => [item.columnId, item])
+);
 ---
 
 <section id={`block-${id}`} class="my-8">
   {
     legend.length > 0 && (
-      <ul class="flex flex-wrap gap-4 text-sm mb-3" aria-label={caption}>
-        {legend.map((entry) => (
+      <ul class="mb-3 flex flex-wrap gap-4 text-sm" aria-label={caption}>
+        {legend.map(entry => (
           <li class={ratingClass(entry.rating)}>
             <span aria-hidden="true">●</span> {entry.label}
           </li>
@@ -24,19 +34,35 @@ const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, 
     )
   }
   <div class="overflow-x-auto">
-    <table class="comparison-table w-full text-sm border-collapse" data-selectable>
-      <caption class="text-left text-lg font-semibold text-white mb-2">{caption}</caption>
+    <table
+      class="comparison-table w-full border-collapse text-sm"
+      data-selectable
+    >
+      <caption class="mb-2 text-left text-lg font-semibold text-white"
+        >{caption}</caption
+      >
       <thead>
         <tr>
-          <th scope="col" class="text-left p-2 border-b border-gray-600 text-gray-300">{criteriaLabel}</th>
+          <th
+            scope="col"
+            class="border-b border-gray-600 p-2 text-left text-gray-300"
+            >{criteriaLabel}</th
+          >
           {
-            columns.map((column) => (
-              <th scope="col" data-col={column.id} class="text-left p-2 border-b border-gray-600 text-white align-top">
+            columns.map(column => (
+              <th
+                scope="col"
+                data-col={column.id}
+                class="border-b border-gray-600 p-2 text-left align-top text-white"
+              >
                 <div class="font-semibold">
                   {column.link ? (
                     <a
                       href={safeHref(column.link.url)}
-                      rel={relFor(column.link.sponsored, column.link.url) || undefined}
+                      rel={
+                        relFor(column.link.sponsored, column.link.url) ||
+                        undefined
+                      }
                       target="_blank"
                       class="text-blue-400 hover:text-blue-300"
                     >
@@ -46,7 +72,11 @@ const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, 
                     column.name
                   )}
                 </div>
-                {column.subtitle && <div class="text-xs text-gray-400 font-normal">{column.subtitle}</div>}
+                {column.subtitle && (
+                  <div class="text-xs font-normal text-gray-400">
+                    {column.subtitle}
+                  </div>
+                )}
               </th>
             ))
           }
@@ -54,13 +84,23 @@ const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, 
       </thead>
       <tbody>
         {
-          rows.map((row) => (
+          rows.map(row => (
             <tr>
-              <th scope="row" class="text-left p-2 border-b border-gray-700 text-gray-300 font-medium">{row.label}</th>
+              <th
+                scope="row"
+                class="border-b border-gray-700 p-2 text-left font-medium text-gray-300"
+              >
+                {row.label}
+              </th>
               {row.cells.map((cell, index) => (
-                <td data-col={columns[index]?.id} class={`p-2 border-b border-gray-700 align-top ${ratingClass(cell.rating)}`}>
+                <td
+                  data-col={columns[index]?.id}
+                  class={`border-b border-gray-700 p-2 align-top ${ratingClass(cell.rating)}`}
+                >
                   <div>{cell.value}</div>
-                  {cell.note && <div class="text-xs text-gray-400">{cell.note}</div>}
+                  {cell.note && (
+                    <div class="text-xs text-gray-400">{cell.note}</div>
+                  )}
                 </td>
               ))}
             </tr>
@@ -71,8 +111,10 @@ const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, 
         ctaRow && (
           <tfoot>
             <tr>
-              <th scope="row" class="text-left p-2 text-gray-300 font-medium">{ctaRow.label}</th>
-              {columns.map((column) => {
+              <th scope="row" class="p-2 text-left font-medium text-gray-300">
+                {ctaRow.label}
+              </th>
+              {columns.map(column => {
                 const cta = ctaByColumn.get(column.id);
                 return (
                   <td data-col={column.id} class="p-2">
@@ -84,8 +126,8 @@ const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, 
                         data-cta-for={column.id}
                         class={
                           cta.variant === "primary"
-                            ? "inline-block bg-blue-500 hover:bg-blue-600 text-white rounded-md px-3 py-1.5"
-                            : "inline-block border border-gray-500 hover:bg-gray-700 text-gray-100 rounded-md px-3 py-1.5"
+                            ? "inline-block rounded-md bg-blue-500 px-3 py-1.5 text-white hover:bg-blue-600"
+                            : "inline-block rounded-md border border-gray-500 px-3 py-1.5 text-gray-100 hover:bg-gray-700"
                         }
                       >
                         {cta.label}
@@ -105,7 +147,8 @@ const ctaByColumn = new Map((ctaRow?.items ?? []).map((item) => [item.columnId, 
 <style is:global>
   /* On narrow screens a card selector shows one product column at a time. */
   @media (max-width: 980px) {
-    table.comparison-table[data-selector-active] [data-col]:not(.is-selected-col) {
+    table.comparison-table[data-selector-active]
+      [data-col]:not(.is-selected-col) {
       display: none;
     }
   }

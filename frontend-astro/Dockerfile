@@ -1,6 +1,6 @@
 ARG NODE_VERSION=26.13.1
 ARG PNPM_VERSION=12.21.0
-FROM node:${NODE_VERSION}-alpine AS deps
+FROM node:${NODE_VERSION}-alpine AS base
 
 WORKDIR /app
 
@@ -8,9 +8,16 @@ ARG PNPM_VERSION
 RUN npm install -g pnpm@${PNPM_VERSION}
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
 
-FROM deps AS build
+FROM base AS deps
+RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
+    pnpm install --frozen-lockfile --store-dir /pnpm/store
+
+FROM base AS prod-deps
+RUN --mount=type=cache,target=/pnpm/store,sharing=locked \
+    pnpm install --prod --frozen-lockfile --store-dir /pnpm/store
+
+FROM deps AS source
 
 ARG PUBLIC_SITE_URL=https://web3main.pro
 ARG PUBLIC_SITE_TITLE=web3main.pro
@@ -26,7 +33,13 @@ ENV PUBLIC_SITE_URL=${PUBLIC_SITE_URL} \
     ASTRO_TELEMETRY_DISABLED=1
 
 COPY . .
-RUN pnpm build
+
+# Type checking runs in CI (--target check) instead of slowing down every image build.
+FROM source AS check
+RUN pnpm exec astro check
+
+FROM source AS build
+RUN pnpm exec astro build
 
 FROM node:${NODE_VERSION}-alpine AS prod
 
@@ -41,7 +54,7 @@ ENV NODE_ENV=production \
 
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 EXPOSE 4321
 

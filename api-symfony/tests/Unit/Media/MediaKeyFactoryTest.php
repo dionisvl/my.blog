@@ -50,6 +50,11 @@ final class MediaKeyFactoryTest extends TestCase
     {
         $bmp = (string) tempnam(sys_get_temp_dir(), 'bmp');
         $im = imagecreatetruecolor(4, 4);
+
+        if (false === $im) {
+            throw new \RuntimeException('Failed to create image.');
+        }
+
         imagebmp($im, $bmp);
         $this->expectException(\InvalidArgumentException::class);
         (new ImageEncoder())->encode($bmp);

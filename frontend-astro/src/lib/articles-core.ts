@@ -23,7 +23,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * upstream contract violation and must fail as such, not as an incidental TypeError.
  */
 export function isArticleLocaleShape(value: unknown): boolean {
-  if (!isRecord(value) || !isRecord(value.post) || !Array.isArray(value.locales)) {
+  if (
+    !isRecord(value) ||
+    !isRecord(value.post) ||
+    !Array.isArray(value.locales)
+  ) {
     return false;
   }
   const article = value.article;
@@ -33,7 +37,13 @@ export function isArticleLocaleShape(value: unknown): boolean {
     typeof article.published_at === "string" &&
     isRecord(article.document) &&
     Array.isArray(article.document.blocks) &&
-    article.document.blocks.every((block) => isRecord(block) && typeof block.type === "string" && typeof block.id === "string" && isRecord(block.props))
+    article.document.blocks.every(
+      block =>
+        isRecord(block) &&
+        typeof block.type === "string" &&
+        typeof block.id === "string" &&
+        isRecord(block.props)
+    )
   );
 }
 
@@ -57,7 +67,7 @@ function isSiteRelative(path: string): boolean {
  */
 export function planMissingLocaleRedirect(
   resolution: ArticleResolution,
-  requested: ArticleLocale,
+  requested: ArticleLocale
 ): RedirectPlan | null {
   const requestedPath = `/${requested}/post/${resolution.slug}`;
 
@@ -70,7 +80,11 @@ export function planMissingLocaleRedirect(
       return { status: 301, location: resolution.canonical_path };
     }
     const original = resolution.locales[0];
-    if (original && isSiteRelative(original.url) && original.url !== requestedPath) {
+    if (
+      original &&
+      isSiteRelative(original.url) &&
+      original.url !== requestedPath
+    ) {
       return { status: 302, location: original.url };
     }
     return null;
@@ -82,7 +96,7 @@ export function planMissingLocaleRedirect(
   }
 
   const target =
-    published.find((link) => link.locale === resolution.primary_locale) ??
+    published.find(link => link.locale === resolution.primary_locale) ??
     published[0];
 
   if (!isSiteRelative(target.url) || target.url === requestedPath) {
@@ -102,15 +116,15 @@ export interface Alternate {
  */
 export function buildAlternates(locales: LocaleLink[]): Alternate[] {
   const links = locales.filter(
-    (link) => isArticleLocale(link.locale) && isSiteRelative(link.url),
+    link => isArticleLocale(link.locale) && isSiteRelative(link.url)
   );
-  const alternates: Alternate[] = links.map((link) => ({
+  const alternates: Alternate[] = links.map(link => ({
     hreflang: link.locale,
     path: link.url,
   }));
 
-  const english = links.find((link) => link.locale === "en");
-  if (english && links.some((link) => link.locale === "ru")) {
+  const english = links.find(link => link.locale === "en");
+  if (english && links.some(link => link.locale === "ru")) {
     alternates.push({ hreflang: "x-default", path: english.url });
   }
   return alternates;
@@ -138,7 +152,7 @@ export function relFor(sponsored: boolean | undefined, url: string): string {
 /** Fills the `{name}` and `{cta}` placeholders of a card-selector label. Plain text in, plain text out. */
 export function fillTemplate(
   template: string,
-  values: { name?: string; cta?: string },
+  values: { name?: string; cta?: string }
 ): string {
   return template
     .replace(/\{name\}/g, values.name ?? "")
@@ -183,7 +197,7 @@ export function formatLongDate(value: string, locale: ArticleLocale): string {
 export function relativeTime(
   value: string,
   locale: ArticleLocale,
-  now: Date = new Date(),
+  now: Date = new Date()
 ): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {

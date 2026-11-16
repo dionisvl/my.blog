@@ -18,12 +18,12 @@ func (n *noListFS) Open(name string) (http.File, error) {
 
 	stat, err := f.Stat()
 	if err != nil {
-		f.Close()
+		_ = f.Close()
 		return nil, err
 	}
 
 	if stat.IsDir() {
-		f.Close()
+		_ = f.Close()
 		return nil, os.ErrNotExist
 	}
 

@@ -7,10 +7,10 @@ namespace App\Manager;
 use App\Dto\AdminPostPayload;
 use App\Entity\Post;
 use App\Entity\User;
-use App\Repository\CategoryRepository;
-use App\Repository\TagRepository;
 use App\Media\ImageUploader;
 use App\Media\MediaTarget;
+use App\Repository\CategoryRepository;
+use App\Repository\TagRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -40,6 +40,7 @@ final readonly class AdminPostManager
         }
 
         $slug = $this->slugger->slug($payload->title)->lower()->toString();
+
         if (null !== $this->entityManager->getRepository(Post::class)->findOneBy(['slug' => $slug])) {
             throw new ConflictHttpException('A post with this URL slug already exists.');
         }
@@ -102,6 +103,7 @@ final readonly class AdminPostManager
             $this->entityManager->flush();
         } catch (\Throwable $e) {
             $this->imageUploader->discard(MediaTarget::Post, $newImage);
+
             throw $e;
         }
 

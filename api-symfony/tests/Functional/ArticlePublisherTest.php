@@ -27,9 +27,23 @@ use Symfony\Component\HttpFoundation\Request;
  */
 final class ArticlePublisherTest extends DatabaseWebTestCase
 {
-    private ArticlePublisher $publisher;
+    private ?ArticlePublisher $publisher = null;
 
-    private User $author;
+    private ?User $author = null;
+
+    private function publisher(): ArticlePublisher
+    {
+        \assert(null !== $this->publisher);
+
+        return $this->publisher;
+    }
+
+    private function author(): User
+    {
+        \assert(null !== $this->author);
+
+        return $this->author;
+    }
 
     protected function setUp(): void
     {
@@ -49,7 +63,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testAnchorIsCreatedAsAHiddenModularDraft(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-one', 'ru', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-one', 'ru', $this->author(), 'Working title');
 
         self::assertTrue($anchor->isModular());
         self::assertSame(Post::ROUTE_NEUTRAL, $anchor->getRouteMode());
@@ -61,9 +75,9 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testSavingADraftNeverPublishesAnything(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-draft', 'en', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-draft', 'en', $this->author(), 'Working title');
 
-        $locale = $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Draft title'), $this->author);
+        $locale = $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Draft title'), $this->author());
 
         self::assertSame(1, $locale->getSchemaVersion());
         self::assertFalse($locale->isPublished());
@@ -74,10 +88,10 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testPublishMakesTheAnchorVisibleWithEscapedCardFields(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-publish', 'en', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Card <b>title</b>', '<script>alert(1)</script> & more'));
+        $anchor = $this->publisher()->createAnchor('modular-publish', 'en', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Card <b>title</b>', '<script>alert(1)</script> & more'));
 
-        $this->publisher->publish($anchor, 'en');
+        $this->publisher()->publish($anchor, 'en');
 
         $this->em->clear();
         $stored = self::postRepository()->findPublishedBySlug('modular-publish');
@@ -95,11 +109,11 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testEditingAPublishedLocaleUpdatesTheLiveContentAndCard(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-live', 'en', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Live title'));
-        $this->publisher->publish($anchor, 'en');
+        $anchor = $this->publisher()->createAnchor('modular-live', 'en', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Live title'));
+        $this->publisher()->publish($anchor, 'en');
 
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Next title'));
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Next title'));
 
         $locale = $this->localeRow($anchor, 'en');
         self::assertTrue($locale->isPublished(), 'there is no separate draft: the locale stays published');
@@ -110,12 +124,12 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testEditingAPublishedLocaleIsValidatedForPublication(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-live-invalid', 'en', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Live title'));
-        $this->publisher->publish($anchor, 'en');
+        $anchor = $this->publisher()->createAnchor('modular-live-invalid', 'en', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Live title'));
+        $this->publisher()->publish($anchor, 'en');
 
         try {
-            $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Live title', ''));
+            $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Live title', ''));
             self::fail('Live content must not lose its required summary.');
         } catch (ArticleValidationException $e) {
             self::assertContains('empty_value', $e->codes());
@@ -132,14 +146,14 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testSingleLocalePublicationIsValidAndLastUnpublishHidesTheAnchor(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-single', 'ru', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Only English'));
-        $this->publisher->publish($anchor, 'en');
+        $anchor = $this->publisher()->createAnchor('modular-single', 'ru', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Only English'));
+        $this->publisher()->publish($anchor, 'en');
 
         self::assertFalse($anchor->getStatus(), 'one published locale is enough, even if it is not the primary one');
         self::assertSame('Only English', $anchor->getTitle());
 
-        $this->publisher->unpublish($anchor, 'en');
+        $this->publisher()->unpublish($anchor, 'en');
 
         self::assertTrue($anchor->getStatus());
         self::assertFalse($this->localeRow($anchor, 'en')->isPublished());
@@ -148,16 +162,16 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testCardFieldsFollowThePrimaryLocaleAndSurviveUnpublishingTheOther(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-two', 'ru', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'ru', $this->draft('ru', 'Русский заголовок'));
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'English title'));
-        $this->publisher->publish($anchor, 'en');
+        $anchor = $this->publisher()->createAnchor('modular-two', 'ru', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'ru', $this->draft('ru', 'Русский заголовок'));
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'English title'));
+        $this->publisher()->publish($anchor, 'en');
         self::assertSame('English title', $anchor->getTitle());
 
-        $this->publisher->publish($anchor, 'ru');
+        $this->publisher()->publish($anchor, 'ru');
         self::assertSame('Русский заголовок', $anchor->getTitle(), 'the primary locale wins once published');
 
-        $this->publisher->unpublish($anchor, 'ru');
+        $this->publisher()->unpublish($anchor, 'ru');
         self::assertFalse($anchor->getStatus());
         self::assertSame('English title', $anchor->getTitle());
     }
@@ -169,11 +183,11 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
     #[DataProvider('refusedPublications')]
     public function testPublicationValidationBlocksPublishAndLeavesTheAnchorHidden(string $summary, array $document, array $expectedCodes): void
     {
-        $anchor = $this->publisher->createAnchor('modular-invalid', 'en', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', new ArticleDraft('Title', $summary, null, null, $document));
+        $anchor = $this->publisher()->createAnchor('modular-invalid', 'en', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', new ArticleDraft('Title', $summary, null, null, $document));
 
         try {
-            $this->publisher->publish($anchor, 'en');
+            $this->publisher()->publish($anchor, 'en');
             self::fail('Publication must be refused.');
         } catch (ArticleValidationException $e) {
             self::assertEqualsCanonicalizing($expectedCodes, $e->codes());
@@ -197,7 +211,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testSponsoredArticlePublishesWithoutVerificationDate(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-sponsored-no-date', 'en', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-sponsored-no-date', 'en', $this->author(), 'Working title');
         $document = [
             'schema_version' => 1,
             'locale' => 'en',
@@ -205,9 +219,9 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
                 ['id' => 'bar', 'type' => 'cta', 'props' => ['label' => 'Go', 'url' => 'https://partner.example.test/x', 'variant' => 'primary', 'sponsored' => true]],
             ],
         ];
-        $this->publisher->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
+        $this->publisher()->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
 
-        $published = $this->publisher->publish($anchor, 'en');
+        $published = $this->publisher()->publish($anchor, 'en');
 
         self::assertArrayNotHasKey('verified_at', $published->getDocument());
         self::assertNotNull($published->getPublishedAt());
@@ -215,7 +229,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testUnknownBlockTypeCannotBeSaved(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-unknown', 'en', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-unknown', 'en', $this->author(), 'Working title');
         $document = [
             'schema_version' => 1,
             'locale' => 'en',
@@ -223,99 +237,99 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
         ];
 
         $this->expectException(ArticleValidationException::class);
-        $this->publisher->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
+        $this->publisher()->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
     }
 
     public function testRichTextIsSanitizedBeforeItIsStored(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-sanitize', 'en', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-sanitize', 'en', $this->author(), 'Working title');
         $document = [
             'schema_version' => 1,
             'locale' => 'en',
             'blocks' => [['id' => 'body', 'type' => 'richText', 'props' => ['html' => '<p onclick="x()">Hi</p><script>alert(1)</script><a href="javascript:alert(1)">l</a>']]],
         ];
 
-        $saved = $this->publisher->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
+        $saved = $this->publisher()->saveDraft($anchor, 'en', new ArticleDraft('Title', 'Summary', null, null, $document));
 
         self::assertSame('<p>Hi</p>l', $saved->getDocument()['blocks'][0]['props']['html']);
     }
 
     public function testLocaleTextIsSearchable(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-search', 'en', $this->author, 'Working title');
-        $locale = $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'T'));
+        $anchor = $this->publisher()->createAnchor('modular-search', 'en', $this->author(), 'Working title');
+        $locale = $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'T'));
 
         self::assertStringContainsString('English-only article', $locale->getSearchText());
     }
 
     public function testPublishWithoutDraftAndLegacyPostsAreRefused(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-nodraft', 'en', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-nodraft', 'en', $this->author(), 'Working title');
 
         $legacy = new Post();
-        $legacy->setTitle('Legacy')->setSlug('legacy-one')->setContent('c')->setDescription('d')->setAuthor($this->author);
+        $legacy->setTitle('Legacy')->setSlug('legacy-one')->setContent('c')->setDescription('d')->setAuthor($this->author());
         $this->em->persist($legacy);
         $this->em->flush();
 
         try {
-            $this->publisher->publish($anchor, 'en');
+            $this->publisher()->publish($anchor, 'en');
             self::fail('Nothing to publish.');
         } catch (ArticleStateException) {
             self::addToAssertionCount(1);
         }
 
         $this->expectException(ArticleStateException::class);
-        $this->publisher->saveDraft($legacy, 'en', $this->draft('en', 'x'));
+        $this->publisher()->saveDraft($legacy, 'en', $this->draft('en', 'x'));
     }
 
     public function testSlugCollisionWithAnyExistingPostIsAConflict(): void
     {
         $legacy = new Post();
-        $legacy->setTitle('Legacy')->setSlug('taken-slug')->setContent('c')->setDescription('d')->setAuthor($this->author);
+        $legacy->setTitle('Legacy')->setSlug('taken-slug')->setContent('c')->setDescription('d')->setAuthor($this->author());
         $this->em->persist($legacy);
         $this->em->flush();
 
         try {
-            $this->publisher->createAnchor('taken-slug', 'en', $this->author, 'Working title');
+            $this->publisher()->createAnchor('taken-slug', 'en', $this->author(), 'Working title');
             self::fail('Expected a slug conflict.');
         } catch (ArticleConflictException $e) {
             self::assertSame(ArticleConflictException::CODE_SLUG_TAKEN, $e->reason);
         }
 
         $this->expectException(ArticleValidationException::class);
-        $this->publisher->createAnchor('Not A Slug!', 'en', $this->author, 'Working title');
+        $this->publisher()->createAnchor('Not A Slug!', 'en', $this->author(), 'Working title');
     }
 
     public function testSlugWithATrailingNewlineIsRejected(): void
     {
         $this->expectException(ArticleValidationException::class);
-        $this->publisher->createAnchor("modular-newline\n", 'en', $this->author, 'Working title');
+        $this->publisher()->createAnchor("modular-newline\n", 'en', $this->author(), 'Working title');
     }
 
     public function testVerificationWarningsFlagDivergingDates(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-dates', 'ru', $this->author, 'Working title');
+        $anchor = $this->publisher()->createAnchor('modular-dates', 'ru', $this->author(), 'Working title');
 
         foreach (['ru' => '2026-10-29', 'en' => '2026-10-01'] as $locale => $date) {
             $document = ContractFixtures::validDocument('minimal-en');
             $document['locale'] = $locale;
             $document['verified_at'] = $date;
-            $this->publisher->saveDraft($anchor, $locale, new ArticleDraft('T '.$locale, 'S', null, null, $document));
-            $this->publisher->publish($anchor, $locale);
+            $this->publisher()->saveDraft($anchor, $locale, new ArticleDraft('T '.$locale, 'S', null, null, $document));
+            $this->publisher()->publish($anchor, $locale);
         }
 
-        self::assertCount(1, $this->publisher->verificationWarnings($anchor));
+        self::assertCount(1, $this->publisher()->verificationWarnings($anchor));
     }
 
     public function testDraftAnchorIsNotPublicOnTheSymfonySiteUntilPublished(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-site', 'en', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Visible after publish'));
+        $anchor = $this->publisher()->createAnchor('modular-site', 'en', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Visible after publish'));
 
         $this->client->request(Request::METHOD_GET, '/post/modular-site');
         $this->assertResponseStatusCodeSame(404);
 
-        $this->publisher->publish($anchor, 'en');
+        $this->publisher()->publish($anchor, 'en');
 
         $this->client->request(Request::METHOD_GET, '/post/modular-site');
         $this->assertResponseIsSuccessful();
@@ -324,12 +338,12 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
 
     public function testLegacyAdminFormRefusesModularAnchors(): void
     {
-        $anchor = $this->publisher->createAnchor('modular-guard', 'en', $this->author, 'Working title');
-        $this->publisher->saveDraft($anchor, 'en', $this->draft('en', 'Guarded'));
-        $this->publisher->publish($anchor, 'en');
+        $anchor = $this->publisher()->createAnchor('modular-guard', 'en', $this->author(), 'Working title');
+        $this->publisher()->saveDraft($anchor, 'en', $this->draft('en', 'Guarded'));
+        $this->publisher()->publish($anchor, 'en');
         $id = (int) $anchor->getId();
 
-        $this->client->loginUser($this->author);
+        $this->client->loginUser($this->author());
 
         $this->client->request(Request::METHOD_GET, '/admin/posts/'.$id.'/edit');
         $this->assertResponseStatusCodeSame(409);
@@ -357,7 +371,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
     public function testLegacyPostsAreUnaffected(): void
     {
         $legacy = new Post();
-        $legacy->setTitle('Legacy')->setSlug('legacy-two')->setContent('c')->setDescription('d')->setAuthor($this->author);
+        $legacy->setTitle('Legacy')->setSlug('legacy-two')->setContent('c')->setDescription('d')->setAuthor($this->author());
         $this->em->persist($legacy);
         $this->em->flush();
         $this->em->clear();
@@ -371,7 +385,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
         self::assertNull($stored->getPrimaryLocale());
         self::assertFalse($stored->getStatus(), 'legacy default (published) is unchanged');
 
-        $this->client->loginUser($this->author);
+        $this->client->loginUser($this->author());
         $this->client->request(Request::METHOD_GET, '/admin/posts/'.$legacy->getId().'/edit');
         $this->assertResponseIsSuccessful();
     }
@@ -380,12 +394,12 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
     {
         $legacy = new Post();
         $legacy->setTitle('Original title')->setSlug('translated-legacy')->setContent('<p>Original body</p>')
-            ->setDescription('Original summary')->setAuthor($this->author)->setOriginalLocale('ru');
+            ->setDescription('Original summary')->setAuthor($this->author())->setOriginalLocale('ru');
         $this->em->persist($legacy);
         $this->em->flush();
 
-        $this->publisher->saveDraft($legacy, 'en', $this->draft('en', 'Translated title'), $this->author);
-        $this->publisher->publish($legacy, 'en');
+        $this->publisher()->saveDraft($legacy, 'en', $this->draft('en', 'Translated title'), $this->author());
+        $this->publisher()->publish($legacy, 'en');
 
         self::assertTrue($this->localeRow($legacy, 'en')->isPublished());
         self::assertSame('Original title', $legacy->getTitle());
@@ -393,7 +407,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
         self::assertSame(Post::ROUTE_LEGACY, $legacy->getRouteMode());
         self::assertFalse($legacy->getStatus());
 
-        $this->publisher->unpublish($legacy, 'en');
+        $this->publisher()->unpublish($legacy, 'en');
         self::assertFalse($this->localeRow($legacy, 'en')->isPublished());
         self::assertFalse($legacy->getStatus(), 'the legacy original remains public');
         self::assertSame('Original title', $legacy->getTitle());
@@ -403,13 +417,14 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
     {
         $legacy = new Post();
         $legacy->setTitle('Draft original')->setSlug('legacy-draft-translation')->setContent('Original')
-            ->setAuthor($this->author)->setOriginalLocale('ru')->setStatus(true);
+            ->setAuthor($this->author())->setOriginalLocale('ru')->setStatus(true);
         $this->em->persist($legacy);
         $this->em->flush();
 
-        $this->publisher->saveDraft($legacy, 'en', $this->draft('en', 'Translation'));
+        $this->publisher()->saveDraft($legacy, 'en', $this->draft('en', 'Translation'));
+
         try {
-            $this->publisher->publish($legacy, 'en');
+            $this->publisher()->publish($legacy, 'en');
             self::fail('The translation of a hidden legacy original must not become publishable.');
         } catch (ArticleStateException) {
             self::assertTrue($legacy->getStatus());
@@ -432,7 +447,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
         $this->classifiedLegacyPost('ambiguous-legacy-slug');
 
         try {
-            $this->publisher->saveDraft($translation, 'en', $this->draft('en', 'Translated title'), $this->author);
+            $this->publisher()->saveDraft($translation, 'en', $this->draft('en', 'Translated title'), $this->author());
             self::fail('A translation whose slug identifies two posts must not be stored.');
         } catch (ArticleConflictException $e) {
             self::assertSame(ArticleConflictException::CODE_SLUG_AMBIGUOUS, $e->reason);
@@ -446,11 +461,11 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
         $this->dropUniqueSlugIndexForLegacyDuplicates();
 
         $translation = $this->classifiedLegacyPost('late-ambiguous-slug');
-        $this->publisher->saveDraft($translation, 'en', $this->draft('en', 'Translated title'), $this->author);
+        $this->publisher()->saveDraft($translation, 'en', $this->draft('en', 'Translated title'), $this->author());
         $this->classifiedLegacyPost('late-ambiguous-slug');
 
         try {
-            $this->publisher->publish($translation, 'en');
+            $this->publisher()->publish($translation, 'en');
             self::fail('A duplicate slug that appears after drafting must block publication.');
         } catch (ArticleConflictException $e) {
             self::assertSame(ArticleConflictException::CODE_SLUG_AMBIGUOUS, $e->reason);
@@ -471,6 +486,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
     private function dropUniqueSlugIndexForLegacyDuplicates(): void
     {
         $connection = $this->em->getConnection();
+
         if (!$connection->getDatabasePlatform() instanceof PostgreSQLPlatform) {
             self::markTestSkipped('Duplicate legacy slugs are only exercised on PostgreSQL.');
         }
@@ -486,7 +502,7 @@ final class ArticlePublisherTest extends DatabaseWebTestCase
     {
         $legacy = new Post();
         $legacy->setTitle('Original title')->setSlug($slug)->setContent('<p>Original body</p>')
-            ->setDescription('Original summary')->setAuthor($this->author)->setOriginalLocale('ru');
+            ->setDescription('Original summary')->setAuthor($this->author())->setOriginalLocale('ru');
         $this->em->persist($legacy);
         $this->em->flush();
 

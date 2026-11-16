@@ -38,14 +38,14 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
 
         $this->client->request(Request::METHOD_POST, '/admin/articles/new', $form + ['_token' => 'wrong']);
         $this->assertResponseStatusCodeSame(403);
-        $this->assertNull($this->em->getRepository(Post::class)->findOneBy(['slug' => 'cards']));
+        self::assertNull($this->em->getRepository(Post::class)->findOneBy(['slug' => 'cards']));
 
         $id = $this->createArticle('cards');
 
         $anchor = $this->em->find(Post::class, $id);
-        $this->assertInstanceOf(Post::class, $anchor);
-        $this->assertTrue($anchor->isModular());
-        $this->assertSame('en', $anchor->getPrimaryLocale());
+        self::assertInstanceOf(Post::class, $anchor);
+        self::assertTrue($anchor->isModular());
+        self::assertSame('en', $anchor->getPrimaryLocale());
     }
 
     public function testDuplicateAndInvalidSlugsShowErrors(): void
@@ -76,7 +76,7 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
         $this->client->request(Request::METHOD_GET, \sprintf('/admin/articles/%d/en', $id));
         $this->assertResponseIsSuccessful();
         $content = (string) $this->client->getResponse()->getContent();
-        $this->assertStringNotContainsString('</script><script>alert(1)', $content);
+        self::assertStringNotContainsString('</script><script>alert(1)', $content);
         $this->assertSelectorExists('script#article-initial');
     }
 
@@ -98,16 +98,16 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
 
         $this->saveJson($id, 'en', $csrf, $body);
         $this->assertResponseIsSuccessful();
-        $this->assertTrue($this->json()['ok']);
+        self::assertTrue($this->json()['ok']);
 
         $this->em->clear();
         $row = $this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en']);
-        $this->assertInstanceOf(PostLocale::class, $row);
-        $this->assertFalse($row->isPublished());
+        self::assertInstanceOf(PostLocale::class, $row);
+        self::assertFalse($row->isPublished());
         $stored = $row->getDocument()['blocks'][0]['props']['html'];
-        $this->assertStringContainsString('<p>ok</p>', $stored);
-        $this->assertStringNotContainsString('script', $stored);
-        $this->assertStringNotContainsString('onerror', $stored);
+        self::assertStringContainsString('<p>ok</p>', $stored);
+        self::assertStringNotContainsString('script', $stored);
+        self::assertStringNotContainsString('onerror', $stored);
     }
 
     public function testInvalidDocumentReturnsIssues(): void
@@ -121,9 +121,9 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseStatusCodeSame(422);
         $payload = $this->json();
-        $this->assertFalse($payload['ok']);
-        $this->assertNotEmpty($payload['issues']);
-        $this->assertSame('unknown_block_type', $payload['issues'][0]['code']);
+        self::assertFalse($payload['ok']);
+        self::assertNotEmpty($payload['issues']);
+        self::assertSame('unknown_block_type', $payload['issues'][0]['code']);
 
         $this->client->request(Request::METHOD_POST, \sprintf('/admin/articles/%d/en/save', $id), [], [], ['HTTP_X_CSRF_TOKEN' => $csrf], '{not json');
         $this->assertResponseStatusCodeSame(400);
@@ -146,14 +146,14 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
         $this->client->request(Request::METHOD_POST, \sprintf('/admin/articles/%d/en/publish', $id), ['_token' => $csrf]);
         $this->assertResponseRedirects(\sprintf('/admin/articles/%d/en', $id));
         $this->em->clear();
-        $this->assertTrue($this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en'])?->isPublished());
-        $this->assertFalse($this->em->find(Post::class, $id)?->getStatus());
+        self::assertTrue($this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en'])?->isPublished());
+        self::assertFalse($this->em->find(Post::class, $id)?->getStatus());
 
         $this->client->request(Request::METHOD_POST, \sprintf('/admin/articles/%d/en/unpublish', $id), ['_token' => $csrf]);
         $this->assertResponseRedirects(\sprintf('/admin/articles/%d/en', $id));
         $this->em->clear();
-        $this->assertFalse($this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en'])?->isPublished());
-        $this->assertTrue($this->em->find(Post::class, $id)?->getStatus());
+        self::assertFalse($this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en'])?->isPublished());
+        self::assertTrue($this->em->find(Post::class, $id)?->getStatus());
     }
 
     public function testPublishingAnIncompleteDraftIsRefusedWithAMessage(): void
@@ -172,7 +172,7 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
         $this->client->followRedirect();
         $this->assertSelectorExists('.alert-danger');
         $this->em->clear();
-        $this->assertFalse($this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en'])?->isPublished());
+        self::assertFalse($this->em->find(PostLocale::class, ['postId' => $id, 'locale' => 'en'])?->isPublished());
     }
 
     public function testLegacyPostIsNotEditableHere(): void
@@ -195,8 +195,8 @@ final class AdminModularArticleControllerTest extends DatabaseWebTestCase
         $this->client->request(Request::METHOD_POST, '/admin/articles/new', ['slug' => $slug, 'title' => ucfirst($slug), 'primary_locale' => 'en', '_token' => $token]);
         $this->assertResponseRedirects();
         $anchor = $this->em->getRepository(Post::class)->findOneBy(['slug' => $slug]);
-        $this->assertInstanceOf(Post::class, $anchor);
-        $this->assertStringEndsWith(\sprintf('/admin/articles/%d/en', (int) $anchor->getId()), (string) $this->client->getResponse()->headers->get('Location'));
+        self::assertInstanceOf(Post::class, $anchor);
+        self::assertStringEndsWith(\sprintf('/admin/articles/%d/en', (int) $anchor->getId()), (string) $this->client->getResponse()->headers->get('Location'));
 
         return (int) $anchor->getId();
     }

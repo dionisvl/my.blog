@@ -1,36 +1,4 @@
-# Application
-app-laravel/api-laravel/storage/*.key
-app-laravel/api-laravel/vendor
-app-laravel/api-laravel/.env
-app-laravel/api-laravel/.env.backup
-app-laravel/api-laravel/.env.testing
-app-laravel/api-laravel/.phpunit.result.cache
-app-laravel/api-laravel/Homestead.json
-app-laravel/api-laravel/Homestead.yaml
-app-laravel/api-laravel/npm-debug.log
-app-laravel/api-laravel/yarn-error.log
-app-laravel/api-laravel/node_modules
-app-laravel/api-laravel/package-lock.json
-app-laravel/api-laravel/phpmyadmin/
-
-# app-laravel/api-laravel/public
-app-laravel/api-laravel/public/hot
-app-laravel/api-laravel/public/storage
-app-laravel/api-laravel/public/pets/
-app-laravel/api-laravel/public/css/front.css
-app-laravel/api-laravel/public/ckfinder/
-app-laravel/api-laravel/public/plugins/ckfinder/
-app-laravel/api-laravel/public/plugins/ckeditor/
-app-laravel/api-laravel/public/uploads/
-app-laravel/api-laravel/public/upload/
-app-laravel/api-laravel/public/vendor/telescope/
-app-laravel/api-laravel/public/robots.txt
-app-laravel/api-laravel/public/packages/chat/
-app-laravel/api-laravel/public/mix-manifest.json
-app-laravel/api-laravel/public/yandex_*
-app-laravel/api-laravel/.phpunit.cache/*
-
-data/db/mysql/db_data
+# Local data
 data/db/pg/db_data
 /data/victoria-logs/
 storage/

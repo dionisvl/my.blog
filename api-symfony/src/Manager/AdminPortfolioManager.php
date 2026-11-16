@@ -7,9 +7,9 @@ namespace App\Manager;
 use App\Dto\AdminPortfolioPayload;
 use App\Entity\Portfolio;
 use App\Entity\User;
-use App\Repository\PortfolioRepository;
 use App\Media\ImageUploader;
 use App\Media\MediaTarget;
+use App\Repository\PortfolioRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -68,6 +68,7 @@ final readonly class AdminPortfolioManager
             $this->entityManager->flush();
         } catch (\Throwable $e) {
             $this->imageUploader->discard(MediaTarget::Portfolio, $newImage);
+
             throw $e;
         }
 

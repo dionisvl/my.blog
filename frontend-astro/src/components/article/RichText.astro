@@ -15,4 +15,8 @@ const variantClass = {
 ---
 
 <!-- `html` is server-sanitized by the publisher (allow-list), so set:html is acceptable here. -->
-<div id={`block-${id}`} class={`prose max-w-none my-6 ${variantClass}`} set:html={html} />
+<div
+  id={`block-${id}`}
+  class={`prose max-w-none my-6 ${variantClass}`}
+  set:html={html}
+/>

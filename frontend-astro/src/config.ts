@@ -1,4 +1,9 @@
-import { PUBLIC_SITE_URL, PUBLIC_SITE_TITLE, PUBLIC_SITE_DESC, PUBLIC_SITE_AUTHOR } from "astro:env/client";
+import {
+  PUBLIC_SITE_URL,
+  PUBLIC_SITE_TITLE,
+  PUBLIC_SITE_DESC,
+  PUBLIC_SITE_AUTHOR,
+} from "astro:env/client";
 
 const siteUrl = PUBLIC_SITE_URL;
 const siteTitle = PUBLIC_SITE_TITLE;

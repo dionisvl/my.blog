@@ -1,5 +1,5 @@
-import type {APIRoute} from "astro";
-import {API_KEY, API_URL} from "astro:env/server";
+import type { APIRoute } from "astro";
+import { API_KEY, API_URL } from "astro:env/server";
 
 export const prerender = false;
 
@@ -26,7 +26,7 @@ export const POST: APIRoute = async ({ params, request }) => {
           : {}),
       },
       body: bodyText || "{}",
-    },
+    }
   );
 
   const text = await upstream.text();

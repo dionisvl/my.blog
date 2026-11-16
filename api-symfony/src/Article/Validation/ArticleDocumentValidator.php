@@ -121,7 +121,6 @@ final readonly class ArticleDocumentValidator
 
         if ($run->strict) {
             $this->validateSelectorReferences($run);
-
         }
     }
 
@@ -207,7 +206,7 @@ final readonly class ArticleDocumentValidator
     }
 
     /**
-     * @param array<mixed>        $block
+     * @param array<mixed> $block
      * @param array<string, true> $seenIds
      */
     private function validateBlockId(array $block, string $path, array &$seenIds, ValidationRun $run): ?string
@@ -359,7 +358,6 @@ final readonly class ArticleDocumentValidator
             }
         }
     }
-
 
     /**
      * @param array<string, mixed> $spec

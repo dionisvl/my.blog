@@ -22,6 +22,7 @@ func Logging(logger *slog.Logger) func(http.Handler) http.Handler {
 				slog.Duration("duration", time.Since(start)),
 				slog.String("request_id", chimw.GetReqID(r.Context())),
 				slog.String("remote_addr", r.RemoteAddr),
+				slog.String("client_ip", chimw.GetClientIP(r.Context())),
 			)
 		})
 	}

@@ -45,6 +45,19 @@ func TestLoad(t *testing.T) {
 	}
 }
 
+func TestLoadRejectsInvalidTrustedProxy(t *testing.T) {
+	dir := t.TempDir()
+	writeConfigFile(t, dir, "server:\n  trusted_proxies: [\"10.0.0.0/8\", \"not-a-cidr\"]\n")
+	chdir(t, dir)
+	t.Setenv("API_KEY", "secret")
+	t.Setenv("MAIN_HOST", "example.com")
+
+	cfg, err := Load()
+
+	assert.ErrorContains(t, err, `TRUSTED_PROXIES: invalid CIDR "not-a-cidr"`)
+	assert.Nil(t, cfg)
+}
+
 func writeConfigFile(t *testing.T, dir, content string) {
 	t.Helper()
 

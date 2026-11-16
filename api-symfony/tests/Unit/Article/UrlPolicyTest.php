@@ -42,7 +42,7 @@ final class UrlPolicyTest extends TestCase
 
         yield 'tab inside scheme' => ["java\tscript:alert(1)", UrlPolicy::CODE_INVALID];
 
-        yield 'backslash' => ['/\\evil.example.test', UrlPolicy::CODE_INVALID];
+        yield 'backslash' => ['/\evil.example.test', UrlPolicy::CODE_INVALID];
 
         yield 'no host' => ['https:///path', UrlPolicy::CODE_INVALID];
 

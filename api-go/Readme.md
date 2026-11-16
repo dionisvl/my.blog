@@ -1,88 +1,94 @@
 # api-go
 
-Go JSON API service running alongside the blog on the same domain at `/api/*`.
-Routed via Traefik: requests to `/api/` go to this service, everything else goes to Symfony.
-Shares the same PostgreSQL database (read-only for most tables, writes to `comments`, `posts_likes`, and `posts.views_count`).
+Go JSON API behind the public site. Astro calls it over the internal Docker network; Traefik
+also exposes it on its own host (`API_GO_HOST`) and routes `/storage/*`, `/sitemap.xml`,
+`/robots.txt` and `/llms.txt` of the main host to it.
+
+It shares the PostgreSQL database with the Symfony admin and mostly reads. It writes only
+comments, likes, contact messages, subscriptions and `posts.views_count`.
 
 ## Stack
 
 - **Routing**: chi v5
-- **Database**: PostgreSQL 18 + pgx v5 + bun ORM
-- **Logging**: log/slog (text in dev, JSON in prod)
-- **Config**: viper (YAML + env vars)
-- **Tests**: testify + testcontainers-go (real PostgreSQL per test)
+- **Database**: PostgreSQL 18, bun ORM with `pgdriver`
+- **Logging**: `log/slog` (text in dev, JSON in prod)
+- **Config**: viper (`config.yaml` + env vars)
+- **Tests**: testify + testcontainers-go (real PostgreSQL)
 
 ## Endpoints
 
-Root-level endpoints (no auth):
+No auth:
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/sitemap.xml` | Serves `public/seo/sitemap-{MAIN_HOST}.xml`. |
-| GET | `/robots.txt` | Serves `public/seo/robots-{MAIN_HOST}.txt`. |
-| GET | `/llms.txt` | Serves `public/seo/llms-{MAIN_HOST}.txt`. |
-| GET | `/storage/*` | Static file server for uploaded media (`public/storage/`). |
+| Method | Path           | Description                                                                         |
+| ------ | -------------- | ----------------------------------------------------------------------------------- |
+| GET    | `/api/health`  | Health check.                                                                       |
+| GET    | `/sitemap.xml` | `sitemap-{MAIN_HOST}.xml` from `SEO_DIR`, extended with published article locales.  |
+| GET    | `/robots.txt`  | `robots-{MAIN_HOST}.txt` from `SEO_DIR`.                                            |
+| GET    | `/llms.txt`    | `llms-{MAIN_HOST}.txt` from `SEO_DIR`.                                              |
+| GET    | `/storage/*`   | Uploaded media from `STORAGE_DIR`, no directory listing.                            |
 
-API endpoints — all require `X-API-Key` header except `/api/health`:
+`X-API-Key` header required:
 
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/health` | Health check. No auth required. |
-| GET | `/api/` | Paginated posts (10/page), categories with post counts, featured (3) and recent (4) posts. Query: `?page=N` |
-| GET | `/api/post/{slug}` | Single post with approved comments, tags, category, author, related posts, random aphorism. Increments `views_count` once per 24h via cookie. |
-| GET | `/api/search?q=` | Full-text search across title, description, content (ILIKE). Max 20 results. |
-| GET | `/api/tag/{slug}` | Posts by tag, paginated 10/page. |
-| GET | `/api/category/{slug}` | Posts by category, paginated 10/page. |
-| GET | `/api/contacts` | Static contact info. |
-| POST | `/api/contacts` | Submit contact form. JSON: `{name, email?, phone?, message, countMe, honeypot}`. Saves to `incomings` (status=0). Anti-bot: `countMe >= 3`, `honeypot` must be empty. |
-| POST | `/api/comment` | Create a comment (status=0, pending moderation). JSON body: `{message, post_id, countMe, honeypot}`. Anti-bot: `countMe >= 3`, `honeypot` must be empty. |
-| POST | `/api/postlike/{postId}` | Toggle like on a post. Cookie `likedPostToday{id}` tracks state. First call: creates like, sets cookie. Second call: removes like by exact timestamp, clears cookie. |
-| POST | `/api/subscribe` | Newsletter subscription. JSON: `{email}`. Saves to `subscriptions` with UUID token. Idempotent: duplicate email returns 200. |
+| Method | Path                               | Description                                                                                                  |
+| ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| GET    | `/api/`                            | Posts (10 per page, `?page=N`), categories, 3 featured and 4 recent posts.                                   |
+| GET    | `/api/post/{slug}`                 | Post with approved comments, tags, category, author, related posts and a random aphorism. Counts one view per 24 h (cookie `viewedPostToday{id}`). |
+| GET    | `/api/post/{slug}/resolve`         | Routing data of a modular article: its published locales.                                                    |
+| GET    | `/api/post/{slug}/locale/{locale}` | Content of one published locale (`ru` or `en`).                                                              |
+| GET    | `/api/search?q=`                   | Case-insensitive match in title, description and content. Up to 20 results.                                  |
+| GET    | `/api/tag/{slug}`                  | Posts by tag, 10 per page.                                                                                   |
+| GET    | `/api/category/{slug}`             | Posts by category, 10 per page.                                                                              |
+| GET    | `/api/contacts`                    | Static contact info.                                                                                         |
+| POST   | `/api/contacts`                    | Contact form: `{name, email?, phone?, message, countMe, honeypot}`.                                          |
+| POST   | `/api/comment`                     | New comment, pending moderation: `{message, post_id, countMe, honeypot}`.                                    |
+| POST   | `/api/postlike/{postId}`           | Toggles a like. Cookie `likedPostToday{id}` holds the like ID; a second call removes that like.              |
+| POST   | `/api/subscribe`                   | `{email}`. Returns 201, or 200 if the email is already subscribed.                                           |
+
+List endpoints accept `?lang=ru|en` (default `en`) to pick the locale of article cards.
+Anti-bot check on the POST forms: `countMe >= 3` and an empty `honeypot`.
 
 ## Configuration
 
-Via `config.yaml` or environment variables:
+`config.yaml` holds the defaults; environment variables override them.
 
-| Env var | Description |
-|---------|-------------|
-| `DATABASE_URL` | PostgreSQL DSN |
-| `API_KEY` | Secret key for `X-API-Key` header |
-| `APP_ENV` | `dev` or `prod` |
-| `SEO_DIR` | Path to SEO files directory (default: `/seo`) |
-| `STORAGE_DIR` | Path to storage files directory (default: `/storage`) |
+| Env var                | Description                                                  |
+| ---------------------- | ------------------------------------------------------------ |
+| `DATABASE_URL`         | PostgreSQL DSN                                               |
+| `API_KEY`              | Secret for the `X-API-Key` header (required)                 |
+| `MAIN_HOST`            | Public host; selects the SEO files (required)                |
+| `APP_ENV`              | `dev` or `prod`                                              |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated origins; CORS is off when empty              |
+| `TRUSTED_PROXIES`      | Comma-separated CIDRs trusted for `X-Forwarded-For` (default: loopback and private ranges) |
+| `SEO_DIR`              | Directory with SEO files (default `/seo`)                    |
+| `STORAGE_DIR`          | Directory with uploads (default `/storage`)                  |
+| `MEDIA_BASE_URL`       | Public prefix of media URLs (default `/storage`)             |
 
 ## Running
 
 ```bash
-# Start with the rest of the stack
-docker compose up --build api-go
-
-# Enter container
-docker compose exec api-go /bin/sh
-
-# Run tests (requires Docker for testcontainers)
-go test ./internal/repository/... -v -timeout 180s
+make up                      # from the repo root: starts api-go with the rest of the stack
+make test-go                 # from the repo root: all Go tests; needs Docker for testcontainers
+go test ./internal/handler/  # a single package
 ```
 
 ## Project structure
 
 ```
-cmd/api/main.go               # Entry point, DI, graceful shutdown
+cmd/api/main.go     entry point, wiring, graceful shutdown
 internal/
-  config/config.go            # Viper config
-  model/                      # Bun models: Post, Comment, Category, Tag, PostLike, User, Aphorism, Incoming, Subscription
-  repository/                 # DB interfaces + implementations
-    testhelper/db.go          # Testcontainers helper (PostgreSQL)
-    *_test.go                 # Integration tests
-  handler/                    # HTTP handlers + response helpers
-  middleware/                 # APIKeyAuth, Logging (slog), Recovery
-  server/server.go            # Chi router wiring
+  config/           viper config
+  model/            bun models
+  repository/       interfaces + implementations, integration tests
+    testhelper/     testcontainers PostgreSQL helper
+  handler/          HTTP handlers and response helpers
+  middleware/       API key auth, slog request logging, panic recovery
+  server/           chi router
 ```
 
 ## Notes
 
-- `Post.status = false` means published, `true` means draft. API only serves published posts.
-- `Comment.status = 0` means pending, `1` means approved. API only returns approved comments.
-- Images: stored as filename in DB, served as `/storage/uploads/{filename}`. Fallback: `/storage/blog_images/no-image.png`.
-- Cookie path is `/` so Symfony frontend shares the same view/like cookies.
-- Traefik router priority is set to `100` to ensure `/api/` routes are matched before the Symfony catch-all.
+- `posts.status = false` means published, `true` means draft. Only published posts are served.
+- `comments.status = 0` means pending, `1` means approved. Only approved comments are returned.
+- A modular article is public once at least one of its locales is published.
+- `posts.image` holds a file name, served as `{MEDIA_BASE_URL}/uploads/{filename}`;
+  the fallback is `{MEDIA_BASE_URL}/blog_images/no-image.png`.

@@ -49,13 +49,17 @@ trait MediaStorageContractTrait
 
     public function testRejectsUnsafeKeys(): void
     {
-        foreach (['../x.png', '/abs.png', 'a//b.png', 'a/../b.png', '', 'dir/'] as $bad) {
+        $unsafeKeys = ['../x.png', '/abs.png', 'a//b.png', 'a/../b.png', '', 'dir/'];
+        $rejected = [];
+
+        foreach ($unsafeKeys as $bad) {
             try {
                 $this->storage()->exists(Visibility::Public, $bad);
-                self::fail('Key accepted: '.$bad);
             } catch (\InvalidArgumentException) {
-                self::assertTrue(true);
+                $rejected[] = $bad;
             }
         }
+
+        self::assertSame($unsafeKeys, $rejected);
     }
 }
