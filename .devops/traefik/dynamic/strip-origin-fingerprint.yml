@@ -1,0 +1,12 @@
+http:
+  middlewares:
+    strip-origin-fingerprint:
+      headers:
+        customResponseHeaders:
+          Server: ""
+          X-Powered-By: ""
+          X-AspNet-Version: ""
+          X-AspNetMvc-Version: ""
+          X-PHP-Version: ""
+          X-Generator: ""
+          X-Runtime: ""
