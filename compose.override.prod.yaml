@@ -8,6 +8,8 @@ services:
       - "--log.level=WARN"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.middlewares=strip-origin-fingerprint@file"
+      - "--entrypoints.websecure.http.middlewares=strip-origin-fingerprint@file"
       - "--entrypoints.websecure.http3"
       # Registry pushes send whole layers in one request; the 60s default cuts them off.
       - "--entrypoints.websecure.transport.respondingTimeouts.readTimeout=600s"
@@ -69,7 +71,14 @@ services:
       - "traefik.http.routers.to-main-host.service=noop@internal"
 
   pets-app:
-    image: ${DOCKER_REGISTRY_SERVER}/pets-app:${PHP_VERSION}
+    image: ${PETS_IMAGE:-${DOCKER_REGISTRY_SERVER}/pets-app:${PHP_VERSION}}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "1", "-o", "/dev/null", "http://127.0.0.1/index.php"]
+      start_period: 5s
+      start_interval: 1s
+      interval: 30s
+      timeout: 2s
+      retries: 3
     volumes:
       - ${PETS_APP_DIR:?set PETS_APP_DIR in .env}:/app:rw
       - ./.docker/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
@@ -95,7 +104,7 @@ services:
       - ./data/media-private:/app/var/media-private
       - ./.docker/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
       - ./.docker/php/media-upload.ini:/usr/local/etc/php/conf.d/zz-media-upload.ini:ro
-    image: ${DOCKER_REGISTRY_SERVER}/my-blog-symfony:${PHP_VERSION}
+    image: ${SYMFONY_IMAGE:-${DOCKER_REGISTRY_SERVER}/my-blog-symfony:${PHP_VERSION}}
     build:
       context: ./api-symfony
       dockerfile: ./Dockerfile
