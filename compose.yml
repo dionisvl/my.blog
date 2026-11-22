@@ -1,9 +1,38 @@
 services:
+  docker-api-logs:
+    image: haproxy:3.2.27-alpine@sha256:7816a9801a6846b912bc37e48529808e2fa87c3c47992441940f68e393ebcfeb
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    group_add: ['${DOCKER_SOCKET_GID:-997}']
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./.devops/docker-api/logs.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: [docker-logs]
+    labels:
+      traefik.enable: 'false'
+
+  docker-api-routing:
+    image: haproxy:3.2.27-alpine@sha256:7816a9801a6846b912bc37e48529808e2fa87c3c47992441940f68e393ebcfeb
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    group_add: ['${DOCKER_SOCKET_GID:-997}']
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./.devops/docker-api/routing.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks: [docker-routing]
+    labels:
+      traefik.enable: 'false'
+
   traefik:
     restart: unless-stopped
     image: traefik:${TRAEFIK_VERSION:?set TRAEFIK_VERSION in .env}
     command:
       - "--providers.docker=true"
+      - "--providers.docker.endpoint=tcp://docker-api-routing:2375"
       - "--providers.docker.exposedByDefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.metrics.address=:8082"
@@ -29,10 +58,10 @@ services:
     expose:
       - "8082"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "/var/log/traefik:/var/log/traefik"
     networks:
       - app-network
+      - docker-routing
 
   symfony:
     env_file:
@@ -156,7 +185,6 @@ services:
   vector:
     image: timberio/vector:${VECTOR_VERSION:?set VECTOR_VERSION in .env}-alpine
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./.devops/vmetrics/vector.toml:/etc/vector/vector.toml:ro
     environment:
       VICTORIA_LOGS_HOST: victoria-logs
@@ -164,6 +192,7 @@ services:
     command: -c /etc/vector/vector.toml
     networks:
       - app-network
+      - docker-logs
     restart: unless-stopped
     depends_on:
       - victoria-logs
@@ -216,6 +245,11 @@ services:
         condition: service_healthy
 
 networks:
+  docker-routing:
+    internal: true
+  docker-logs:
+    name: myblog-docker-logs
+    internal: true
   app-network:
     driver: bridge
 
