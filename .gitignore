@@ -1,9 +1,9 @@
 # Local data
-data/db/pg/db_data
-/data/victoria-logs/
+/data/
 storage/
 .env
 .env.production
+.env.bak*
 
 # PHPStorm
 .idea
@@ -17,11 +17,6 @@ app.my.gochat
 
 # Docker
 compose.override.yaml
-/data/prometheus/
-/data/grafana/
-/data/alertmanager/
-/data/media-private/
-/data/media-s3/
 /letsencrypt/
 
 # Server-specific Traefik file-provider routes (e.g. the 3x-ui panel)
