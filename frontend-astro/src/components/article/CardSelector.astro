@@ -36,32 +36,30 @@ const defaultOption =
 >
   <h2 class="mb-2 text-xl font-bold text-white">{heading}</h2>
   <div role="group" aria-label={groupLabel} class="flex flex-wrap gap-2">
-    {
-      options.map(option => (
-        <button
-          type="button"
-          data-column={option.columnId}
-          data-name={option.label}
-          aria-pressed={option.id === defaultOption?.id ? "true" : "false"}
-          class="rounded-full border border-gray-500 px-3 py-1 text-sm text-gray-100 aria-pressed:border-blue-500 aria-pressed:bg-blue-500"
-        >
-          {option.label}
-        </button>
-      ))
-    }
+    {options.map(option => (
+      <button
+        type="button"
+        data-column={option.columnId}
+        data-name={option.label}
+        aria-pressed={option.id === defaultOption?.id ? "true" : "false"}
+        class="rounded-full border border-gray-500 px-3 py-1 text-sm text-gray-100 aria-pressed:border-blue-500 aria-pressed:bg-blue-500"
+      >
+        {option.label}
+      </button>
+    ))}
   </div>
   <p
     class="mt-2 text-sm text-gray-300"
     data-selected-caption
     aria-live="polite"
-  >
-  </p>
+  ></p>
   <p class="mt-1 text-xs text-gray-400">{labels.mobileHint}</p>
   <a
     data-selector-cta
     class="selector-cta mt-3 hidden rounded-md bg-blue-500 px-4 py-2 text-center text-white"
     target="_blank"
-    rel="noopener noreferrer"></a>
+    rel="noopener noreferrer"
+  ></a>
 </section>
 
 <script>

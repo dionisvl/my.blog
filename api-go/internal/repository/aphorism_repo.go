@@ -27,7 +27,7 @@ func (r *aphorismRepository) FindRandom(ctx context.Context) (*model.Aphorism, e
 		return nil, err
 	}
 
-	offset := rand.IntN(count)
+	offset := rand.Int64N(count)
 
 	var aphorism model.Aphorism
 	err = r.db.NewSelect().

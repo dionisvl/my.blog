@@ -49,8 +49,8 @@ func (r *postRepository) FindPublishedPaginated(ctx context.Context, page, perPa
 		Where("p.status = ?", false).
 		Where(publishedVisibilityExpr).
 		OrderExpr("p.created_at DESC").
-		Limit(perPage).
-		Offset((page - 1) * perPage).
+		Limit(int64(perPage)).
+		Offset(int64((page - 1) * perPage)).
 		ScanAndCount(ctx)
 	if err != nil {
 		return nil, 0, err
@@ -59,7 +59,7 @@ func (r *postRepository) FindPublishedPaginated(ctx context.Context, page, perPa
 	if err := r.attachDerivedFields(ctx, posts); err != nil {
 		return nil, 0, err
 	}
-	return posts, count, nil
+	return posts, int(count), nil
 }
 
 func (r *postRepository) FindPublishedBySlug(ctx context.Context, slug string) (*model.Post, error) {
@@ -107,7 +107,7 @@ func (r *postRepository) FindFeatured(ctx context.Context, limit int) ([]model.P
 		Where("p.is_featured = ?", true).
 		Where("p.status = ?", false).
 		Where(publishedVisibilityExpr).
-		Limit(limit).
+		Limit(int64(limit)).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (r *postRepository) FindRecentPublished(ctx context.Context, limit int) ([]
 		Where("p.status = ?", false).
 		Where(publishedVisibilityExpr).
 		OrderExpr("p.created_at DESC").
-		Limit(limit).
+		Limit(int64(limit)).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -152,8 +152,8 @@ func (r *postRepository) FindPublishedByCategorySlugPaginated(ctx context.Contex
 		Where("p.status = ?", false).
 		Where(publishedVisibilityExpr).
 		OrderExpr("p.created_at DESC").
-		Limit(perPage).
-		Offset((page - 1) * perPage).
+		Limit(int64(perPage)).
+		Offset(int64((page - 1) * perPage)).
 		ScanAndCount(ctx)
 	if err != nil {
 		return nil, 0, err
@@ -162,7 +162,7 @@ func (r *postRepository) FindPublishedByCategorySlugPaginated(ctx context.Contex
 	if err := r.attachDerivedFields(ctx, posts); err != nil {
 		return nil, 0, err
 	}
-	return posts, count, nil
+	return posts, int(count), nil
 }
 
 func (r *postRepository) FindPublishedByTagSlugPaginated(ctx context.Context, slug string, page, perPage int) ([]model.Post, int, error) {
@@ -178,8 +178,8 @@ func (r *postRepository) FindPublishedByTagSlugPaginated(ctx context.Context, sl
 		Where("p.status = ?", false).
 		Where(publishedVisibilityExpr).
 		OrderExpr("p.created_at DESC").
-		Limit(perPage).
-		Offset((page - 1) * perPage).
+		Limit(int64(perPage)).
+		Offset(int64((page - 1) * perPage)).
 		ScanAndCount(ctx)
 	if err != nil {
 		return nil, 0, err
@@ -188,7 +188,7 @@ func (r *postRepository) FindPublishedByTagSlugPaginated(ctx context.Context, sl
 	if err := r.attachDerivedFields(ctx, posts); err != nil {
 		return nil, 0, err
 	}
-	return posts, count, nil
+	return posts, int(count), nil
 }
 
 func (r *postRepository) SearchPublished(ctx context.Context, query string, limit int) ([]model.Post, error) {
@@ -211,7 +211,7 @@ func (r *postRepository) SearchPublished(ctx context.Context, query string, limi
 				WhereOr(publishedLocaleSearchExpr, pattern, pattern)
 		}).
 		OrderExpr("p.created_at DESC").
-		Limit(limit).
+		Limit(int64(limit)).
 		Scan(ctx)
 	if err != nil {
 		return nil, err
@@ -248,7 +248,7 @@ func (r *postRepository) countLikes(ctx context.Context, postID int) (int, error
 		TableExpr("posts_likes").
 		Where("post_id = ?", postID).
 		Count(ctx)
-	return count, err
+	return int(count), err
 }
 
 func (r *postRepository) attachLikeCounts(ctx context.Context, posts []model.Post) error {

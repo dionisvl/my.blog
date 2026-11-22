@@ -39,29 +39,27 @@ for (const block of blocks) {
 }
 ---
 
-{
-  blocks.map(block => {
-    switch (block.type) {
-      case "richText":
-        return <RichText id={block.id} {...block.props} />;
-      case "comparisonTable":
-        return <ComparisonTable id={block.id} {...block.props} />;
-      case "productCard":
-        return <ProductCard id={block.id} {...block.props} />;
-      case "faq":
-        return <Faq id={block.id} {...block.props} />;
-      case "cta":
-        return <CtaBlock id={block.id} {...block.props} />;
-      case "cardSelector":
-        return <CardSelector id={block.id} {...block.props} />;
-      case "sources":
-        return <Sources id={block.id} {...block.props} />;
-      case "sponsoredDisclosure":
-        return <SponsoredDisclosure id={block.id} {...block.props} />;
-      case "customCode":
-        return <CustomCode id={block.id} {...block.props} />;
-      default:
-        return null;
-    }
-  })
-}
+{blocks.map(block => {
+  switch (block.type) {
+    case "richText":
+      return <RichText id={block.id} {...block.props} />;
+    case "comparisonTable":
+      return <ComparisonTable id={block.id} {...block.props} />;
+    case "productCard":
+      return <ProductCard id={block.id} {...block.props} />;
+    case "faq":
+      return <Faq id={block.id} {...block.props} />;
+    case "cta":
+      return <CtaBlock id={block.id} {...block.props} />;
+    case "cardSelector":
+      return <CardSelector id={block.id} {...block.props} />;
+    case "sources":
+      return <Sources id={block.id} {...block.props} />;
+    case "sponsoredDisclosure":
+      return <SponsoredDisclosure id={block.id} {...block.props} />;
+    case "customCode":
+      return <CustomCode id={block.id} {...block.props} />;
+    default:
+      return null;
+  }
+})}

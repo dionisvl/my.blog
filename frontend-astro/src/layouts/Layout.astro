@@ -128,15 +128,13 @@ const currentYear = new Date().getFullYear();
 
     <meta name="description" content={metaDescription} />
     <link rel="canonical" href={canonicalUrl} />
-    {
-      alternates.map(alt => (
-        <link
-          rel="alternate"
-          hreflang={alt.hreflang}
-          href={absoluteUrl(alt.path)}
-        />
-      ))
-    }
+    {alternates.map(alt => (
+      <link
+        rel="alternate"
+        hreflang={alt.hreflang}
+        href={absoluteUrl(alt.path)}
+      />
+    ))}
     <meta name="robots" content="index,follow" />
     <meta
       name="googlebot"
@@ -167,7 +165,6 @@ const currentYear = new Date().getFullYear();
       type="application/ld+json"
       set:html={JSON.stringify(websiteSchema)}
     />
-
     <!-- Shared front-end styles -->
     <link rel="stylesheet" href="/css/front.css" />
 
@@ -191,9 +188,7 @@ const currentYear = new Date().getFullYear();
   <body class="bg-gray-900 text-gray-100">
     <!-- Navigation -->
     <nav class="sticky top-0 z-50 border-b border-gray-700 bg-gray-800">
-      <div
-        class="relative container mx-auto flex items-center justify-between px-4 py-2"
-      >
+      <div class="relative container mx-auto flex items-center justify-between px-4 py-2">
         <!-- Logo -->
         <a class="flex-shrink-0" href="/">
           <img
@@ -207,54 +202,52 @@ const currentYear = new Date().getFullYear();
         </a>
 
         <!-- Language switcher -->
-        {
-          switcherLocales.length > 1 && (
-            <form
-              method="post"
-              action="/api/language-preference"
-              class="mr-2 ml-auto flex items-center gap-1.5 md:order-last md:mr-0 md:ml-0"
-              title="Language"
+        {switcherLocales.length > 1 && (
+          <form
+            method="post"
+            action="/api/language-preference"
+            class="mr-2 ml-auto flex items-center gap-1.5 md:order-last md:mr-0 md:ml-0"
+            title="Language"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 flex-shrink-0 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 flex-shrink-0 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-                aria-hidden="true"
-              >
-                <circle cx="12" cy="12" r="9" />
-                <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" />
-              </svg>
-              <label for="language-select" class="sr-only">
-                Language
-              </label>
-              <select
-                id="language-select"
-                name="locale"
-                class="rounded border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                onchange="this.form.submit()"
-              >
-                {switcherLocales.map(code => (
-                  <option value={code} selected={code === switcherCurrent}>
-                    {LANGUAGE_LABELS[code]}
-                  </option>
-                ))}
-              </select>
-              {articleSlug ? (
-                <input type="hidden" name="slug" value={articleSlug} />
-              ) : (
-                <input type="hidden" name="next" value={switcherNext} />
-              )}
-              <noscript>
-                <button type="submit" class="text-sm text-blue-300 underline">
-                  OK
-                </button>
-              </noscript>
-            </form>
-          )
-        }
+              <circle cx="12" cy="12" r="9" />
+              <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" />
+            </svg>
+            <label for="language-select" class="sr-only">
+              Language
+            </label>
+            <select
+              id="language-select"
+              name="locale"
+              class="rounded border border-gray-600 bg-gray-700 px-2 py-1 text-sm text-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              onchange="this.form.submit()"
+            >
+              {switcherLocales.map(code => (
+                <option value={code} selected={code === switcherCurrent}>
+                  {LANGUAGE_LABELS[code]}
+                </option>
+              ))}
+            </select>
+            {articleSlug ? (
+              <input type="hidden" name="slug" value={articleSlug} />
+            ) : (
+              <input type="hidden" name="next" value={switcherNext} />
+            )}
+            <noscript>
+              <button type="submit" class="text-sm text-blue-300 underline">
+                OK
+              </button>
+            </noscript>
+          </form>
+        )}
 
         <!-- Burger button (mobile only) -->
         <button
@@ -276,7 +269,8 @@ const currentYear = new Date().getFullYear();
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"></path>
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
           </svg>
         </button>
 
@@ -286,21 +280,29 @@ const currentYear = new Date().getFullYear();
         >
           <a
             class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
-            href="/">{m.nav.home}</a
+            href="/"
           >
+            {m.nav.home}
+          </a>
           <a
             class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
-            href="/search">{m.nav.search}</a
+            href="/search"
           >
+            {m.nav.search}
+          </a>
           <a
             class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
-            href="/contacts/">{m.nav.contacts}</a
+            href="/contacts/"
           >
+            {m.nav.contacts}
+          </a>
 
           <a
             class="block w-full rounded px-2 py-2 font-medium text-gray-300 hover:text-blue-400 md:w-auto md:rounded-none md:px-0 md:py-0"
-            href="/login">{m.nav.login}</a
+            href="/login"
           >
+            {m.nav.login}
+          </a>
 
           <form
             class="relative w-full md:w-auto"
@@ -327,7 +329,8 @@ const currentYear = new Date().getFullYear();
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
             </svg>
           </form>
         </div>
@@ -416,35 +419,33 @@ const currentYear = new Date().getFullYear();
             <h3 class="mb-4 text-lg font-semibold uppercase">
               {m.footer.customCategory}
             </h3>
-            {
-              footerPost ? (
-                <div class="flex items-start">
-                  <div class="mr-3 flex-shrink-0">
-                    <a href={`/post/${footerPost.slug}`}>
-                      <img
-                        src={footerPost.image_url}
-                        alt={footerPost.title}
-                        loading="lazy"
-                        class="h-20 w-20 rounded object-cover"
-                      />
-                    </a>
-                  </div>
-                  <div>
-                    <a
-                      href={`/post/${footerPost.slug}`}
-                      class="font-medium text-white hover:text-blue-300"
-                    >
-                      {footerPost.title}
-                    </a>
-                    <p class="mt-1 text-sm text-gray-400">
-                      {formatFooterDate(footerPost.created_at)}
-                    </p>
-                  </div>
+            {footerPost ? (
+              <div class="flex items-start">
+                <div class="mr-3 flex-shrink-0">
+                  <a href={`/post/${footerPost.slug}`}>
+                    <img
+                      src={footerPost.image_url}
+                      alt={footerPost.title}
+                      loading="lazy"
+                      class="h-20 w-20 rounded object-cover"
+                    />
+                  </a>
                 </div>
-              ) : (
-                <p class="text-sm text-gray-400">{m.footer.noPosts}</p>
-              )
-            }
+                <div>
+                  <a
+                    href={`/post/${footerPost.slug}`}
+                    class="font-medium text-white hover:text-blue-300"
+                  >
+                    {footerPost.title}
+                  </a>
+                  <p class="mt-1 text-sm text-gray-400">
+                    {formatFooterDate(footerPost.created_at)}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p class="text-sm text-gray-400">{m.footer.noPosts}</p>
+            )}
           </div>
         </div>
       </div>
@@ -454,29 +455,30 @@ const currentYear = new Date().getFullYear();
         <div class="container mx-auto px-4">
           <div class="text-center text-gray-400">
             &copy; 2019-{currentYear}
-            <a href="#" class="hover:text-white">Web3 blog, </a> Designed with
-            <i class="fas fa-heart text-red-500"></i> and <a
-              href="#"
-              class="hover:text-white">Astro</a
-            >
+            <a href="#" class="hover:text-white">
+              Web3 blog,{" "}
+            </a>{" "}
+            Designed with
+            <i class="fas fa-heart text-red-500"></i> and{" "}
+            <a href="#" class="hover:text-white">
+              Astro
+            </a>
             &nbsp;·&nbsp;
-            <a href="/privacy/" class="text-blue-400 hover:text-blue-300"
-              >{m.footer.privacy}</a
-            >
-            {
-              showGeoIpAttribution && (
-                <>
-                  &nbsp;·&nbsp;
-                  <a
-                    href="https://db-ip.com"
-                    class="text-blue-400 hover:text-blue-300"
-                    rel="noopener noreferrer"
-                  >
-                    IP Geolocation by DB-IP
-                  </a>
-                </>
-              )
-            }
+            <a href="/privacy/" class="text-blue-400 hover:text-blue-300">
+              {m.footer.privacy}
+            </a>
+            {showGeoIpAttribution && (
+              <>
+                &nbsp;·&nbsp;
+                <a
+                  href="https://db-ip.com"
+                  class="text-blue-400 hover:text-blue-300"
+                  rel="noopener noreferrer"
+                >
+                  IP Geolocation by DB-IP
+                </a>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -487,7 +489,8 @@ const currentYear = new Date().getFullYear();
     <script src="/js/lazy-load.js" defer></script>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"
-      defer></script>
+      defer
+    ></script>
 
     <slot name="javascripts" />
   </body>

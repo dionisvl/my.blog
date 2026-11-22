@@ -12,28 +12,26 @@ const { id, heading, items } = Astro.props;
 <section id={`block-${id}`} class="my-8">
   <h2 class="mb-3 text-2xl font-bold text-white">{heading}</h2>
   <ol class="list-decimal space-y-1 pl-6 text-gray-300">
-    {
-      items.map(item => (
-        <li id={`source-${id}-${item.id}`}>
-          <a
-            href={safeHref(item.url)}
-            rel={relFor(item.sponsored, item.url) || undefined}
-            target="_blank"
-            class="text-blue-400 hover:text-blue-300"
-          >
-            {item.label}
-          </a>
-          {item.publisher && (
-            <span class="text-gray-400"> — {item.publisher}</span>
-          )}
-          {item.accessed_at && (
-            <time class="text-xs text-gray-500" datetime={item.accessed_at}>
-              {" "}
-              ({item.accessed_at})
-            </time>
-          )}
-        </li>
-      ))
-    }
+    {items.map(item => (
+      <li id={`source-${id}-${item.id}`}>
+        <a
+          href={safeHref(item.url)}
+          rel={relFor(item.sponsored, item.url) || undefined}
+          target="_blank"
+          class="text-blue-400 hover:text-blue-300"
+        >
+          {item.label}
+        </a>
+        {item.publisher && (
+          <span class="text-gray-400"> — {item.publisher}</span>
+        )}
+        {item.accessed_at && (
+          <time class="text-xs text-gray-500" datetime={item.accessed_at}>
+            {" "}
+            ({item.accessed_at})
+          </time>
+        )}
+      </li>
+    ))}
   </ol>
 </section>

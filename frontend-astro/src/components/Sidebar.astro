@@ -27,120 +27,108 @@ function formatPostDate(createdAt: string): string {
 <div class="w-full md:w-1/4">
   <div class="sticky top-4 space-y-3">
     <!-- Categories Widget -->
-    <div
-      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm"
-    >
+    <div class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm">
       <h3 class="mb-4 text-center text-lg font-semibold text-gray-100">
         {m.sidebar.categories}
       </h3>
       <ul class="space-y-2">
-        {
-          categories.map(category => (
-            <li class="border-b border-gray-700 pb-2 last:border-0 last:pb-0">
-              <a
-                href={`/category/${category.slug}`}
-                class="flex justify-between text-gray-300 transition hover:text-blue-400"
-              >
-                <span class="text-sm">{category.title}</span>
-                <span class="text-sm text-gray-400">
-                  ({category.posts_count})
-                </span>
-              </a>
-            </li>
-          ))
-        }
+        {categories.map(category => (
+          <li class="border-b border-gray-700 pb-2 last:border-0 last:pb-0">
+            <a
+              href={`/category/${category.slug}`}
+              class="flex justify-between text-gray-300 transition hover:text-blue-400"
+            >
+              <span class="text-sm">{category.title}</span>
+              <span class="text-sm text-gray-400">
+                ({category.posts_count})
+              </span>
+            </a>
+          </li>
+        ))}
       </ul>
     </div>
 
     <!-- Featured Posts Widget -->
-    <div
-      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm"
-    >
+    <div class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm">
       <h3 class="mb-4 text-center text-lg font-semibold text-gray-100">
         {m.sidebar.featured}
       </h3>
 
       <div class="space-y-4">
-        {
-          featuredPosts.map(post => (
-            <div class="flex space-x-3">
-              <div class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded">
-                <a
-                  href={`/post/${post.slug}`}
-                  aria-label={post.title}
-                  class="relative block h-full w-full [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full"
-                >
-                  <LazyImage
-                    src={post.image_url}
-                    alt={post.title}
-                    class="h-full w-full object-cover transition-all group-hover:brightness-60"
-                    width="20"
-                    height="20"
-                  />
-                </a>
-              </div>
-              <div>
-                <a
-                  href={`/post/${post.slug}`}
-                  class="mb-1 block text-sm font-medium text-gray-200 transition hover:text-blue-400"
-                >
-                  {post.title}
-                </a>
-                <span class="text-xs text-gray-400">
-                  {formatPostDate(post.created_at)}
-                </span>
-                {post.description && (
-                  <div class="text-xs text-gray-400">
-                    <Fragment set:html={post.description} />
-                  </div>
-                )}
-              </div>
+        {featuredPosts.map(post => (
+          <div class="flex space-x-3">
+            <div class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded">
+              <a
+                href={`/post/${post.slug}`}
+                aria-label={post.title}
+                class="relative block h-full w-full [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full"
+              >
+                <LazyImage
+                  src={post.image_url}
+                  alt={post.title}
+                  class="h-full w-full object-cover transition-all group-hover:brightness-60"
+                  width="20"
+                  height="20"
+                />
+              </a>
             </div>
-          ))
-        }
+            <div>
+              <a
+                href={`/post/${post.slug}`}
+                class="mb-1 block text-sm font-medium text-gray-200 transition hover:text-blue-400"
+              >
+                {post.title}
+              </a>
+              <span class="text-xs text-gray-400">
+                {formatPostDate(post.created_at)}
+              </span>
+              {post.description && (
+                <div class="text-xs text-gray-400">
+                  <Fragment set:html={post.description} />
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
 
     <!-- Recent Posts Widget -->
-    <div
-      class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm"
-    >
+    <div class="overflow-hidden rounded-lg border border-gray-700 bg-gray-800 p-4 shadow-sm">
       <h3 class="mb-4 text-center text-lg font-semibold text-gray-100">
         {m.sidebar.recent}
       </h3>
       <div class="space-y-4">
-        {
-          recentPosts.map(post => (
-            <div class="flex space-x-3">
-              <div class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded">
-                <a
-                  href={`/post/${post.slug}`}
-                  aria-label={post.title}
-                  class="relative block h-full w-full [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full"
-                >
-                  <LazyImage
-                    src={post.image_url}
-                    alt={post.title}
-                    class="h-full w-full object-cover transition-all group-hover:brightness-60"
-                    width="20"
-                    height="20"
-                  />
-                </a>
-              </div>
-              <div>
-                <a
-                  href={`/post/${post.slug}`}
-                  class="mb-1 block text-sm font-medium text-gray-200 transition hover:text-blue-400"
-                >
-                  {post.title}
-                </a>
-                <span class="text-xs text-gray-400">
-                  {formatPostDate(post.created_at)}
-                </span>
-              </div>
+        {recentPosts.map(post => (
+          <div class="flex space-x-3">
+            <div class="group relative h-20 w-20 flex-shrink-0 overflow-hidden rounded">
+              <a
+                href={`/post/${post.slug}`}
+                aria-label={post.title}
+                class="relative block h-full w-full [&>.lazy-wrap]:h-full [&>.lazy-wrap]:w-full"
+              >
+                <LazyImage
+                  src={post.image_url}
+                  alt={post.title}
+                  class="h-full w-full object-cover transition-all group-hover:brightness-60"
+                  width="20"
+                  height="20"
+                />
+              </a>
             </div>
-          ))
-        }
+            <div>
+              <a
+                href={`/post/${post.slug}`}
+                class="mb-1 block text-sm font-medium text-gray-200 transition hover:text-blue-400"
+              >
+                {post.title}
+              </a>
+              <span class="text-xs text-gray-400">
+                {formatPostDate(post.created_at)}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   </div>
