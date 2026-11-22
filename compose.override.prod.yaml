@@ -100,6 +100,12 @@ services:
       - app-network
 
   symfony:
+    user: "33:33"
+    environment:
+      XDG_CONFIG_HOME: /tmp/frankenphp-config
+      XDG_DATA_HOME: /tmp/frankenphp-data
+    tmpfs:
+      - /app/var/cache:uid=33,gid=33,mode=0750,size=128m
     volumes:
       - ./data/media-private:/app/var/media-private
       - ./.docker/php/session-upload-progress.ini:/usr/local/etc/php/conf.d/zz-session-upload-progress.ini:ro
@@ -173,6 +179,7 @@ services:
       - "traefik.http.services.vmui.loadbalancer.server.port=8427"
 
   api-go:
+    user: "1000:1000"
     env_file:
       - path: ./api-go/.env.production
         required: true
@@ -206,6 +213,7 @@ services:
       - "traefik.http.services.api-go.loadbalancer.server.port=8081"
 
   astro-frontend:
+    user: "1000:1000"
     build:
       context: ./frontend-astro
       dockerfile: ./Dockerfile
