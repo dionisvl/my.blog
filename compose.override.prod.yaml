@@ -2,7 +2,6 @@ services:
   traefik:
     command:
       - "--providers.docker=true"
-      - "--providers.docker.endpoint=tcp://docker-api-routing:2375"
       - "--providers.docker.exposedByDefault=false"
       - "--api.dashboard=true"
       - "--api.insecure=false"
@@ -47,9 +46,9 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "./.devops/traefik/dynamic:/etc/traefik/dynamic:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - app-network
-      - docker-routing
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.dashboard.rule=Host(`traefik.${MAIN_HOST}`)"
