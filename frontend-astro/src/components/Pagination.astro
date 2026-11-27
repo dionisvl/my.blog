@@ -26,7 +26,7 @@ const disabled = "cursor-not-allowed border-gray-800 text-gray-600";
 
 {total > 1 && (
   <nav aria-label="Pagination" class="my-6">
-    <ul class="flex items-center justify-center gap-2">
+    <ul class="flex flex-wrap items-center justify-center gap-2">
       <li>
         {prev ? (
           <a href={prev} rel="prev" class={`${base} ${idle}`}>
@@ -34,7 +34,7 @@ const disabled = "cursor-not-allowed border-gray-800 text-gray-600";
             <span class="ml-1">Previous</span>
           </a>
         ) : (
-          <span aria-disabled="true" class={`${base} ${disabled}`}>
+          <span aria-hidden="true" class={`${base} ${disabled}`}>
             <span aria-hidden="true">‹</span>
             <span class="ml-1">Previous</span>
           </span>
@@ -76,7 +76,7 @@ const disabled = "cursor-not-allowed border-gray-800 text-gray-600";
             <span aria-hidden="true">›</span>
           </a>
         ) : (
-          <span aria-disabled="true" class={`${base} ${disabled}`}>
+          <span aria-hidden="true" class={`${base} ${disabled}`}>
             <span class="mr-1">Next</span>
             <span aria-hidden="true">›</span>
           </span>

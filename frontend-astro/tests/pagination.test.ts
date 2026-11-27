@@ -69,20 +69,21 @@ describe("pageHref", () => {
 
 describe("parsePageParam", () => {
   it("accepts canonical page numbers", () => {
-    assert.deepEqual(parsePageParam(null), { page: 1, redirect: false });
-    assert.deepEqual(parsePageParam("6"), { page: 6, redirect: false });
+    assert.deepEqual(parsePageParam(null), { page: 1, redirect: false, notFound: false });
+    assert.deepEqual(parsePageParam("6"), { page: 6, redirect: false, notFound: false });
   });
 
   it("redirects non-canonical spellings", () => {
-    assert.deepEqual(parsePageParam("1"), { page: 1, redirect: true });
-    assert.deepEqual(parsePageParam("06"), { page: 6, redirect: true });
-    assert.deepEqual(parsePageParam("0"), { page: 1, redirect: true });
-    assert.deepEqual(parsePageParam(""), { page: 1, redirect: true });
-    assert.deepEqual(parsePageParam("abc"), { page: 1, redirect: true });
-    assert.deepEqual(parsePageParam("-2"), { page: 1, redirect: true });
+    assert.deepEqual(parsePageParam("1"), { page: 1, redirect: true, notFound: false });
+    assert.deepEqual(parsePageParam("06"), { page: 6, redirect: true, notFound: false });
+    assert.deepEqual(parsePageParam("0"), { page: 1, redirect: true, notFound: false });
+    assert.deepEqual(parsePageParam(""), { page: 1, redirect: true, notFound: false });
+    assert.deepEqual(parsePageParam("abc"), { page: 1, redirect: true, notFound: false });
+    assert.deepEqual(parsePageParam("-2"), { page: 1, redirect: true, notFound: false });
     assert.deepEqual(parsePageParam("99999999999"), {
       page: 1,
-      redirect: true,
+      redirect: false,
+      notFound: true,
     });
   });
 });
@@ -116,5 +117,56 @@ describe("isPageOutOfRange", () => {
     assert.equal(isPageOutOfRange(18, 17), true);
     assert.equal(isPageOutOfRange(17, 17), false);
     assert.equal(isPageOutOfRange(1, 0), false);
+  });
+});
+
+describe("paginationWindow invariants", () => {
+  it("holds for every total, current and sibling count", () => {
+    for (let total = 1; total <= 20; total++) {
+      for (let current = 1; current <= total; current++) {
+        for (let siblings = 0; siblings <= 3; siblings++) {
+          const items = paginationWindow(current, total, siblings);
+          const nums = items.filter((i): i is number => i !== E);
+          assert.equal(nums[0], 1);
+          assert.equal(nums.at(-1), total);
+          assert.ok(nums.includes(current));
+          assert.deepEqual(
+            nums,
+            [...new Set(nums)].sort((a, b) => a - b)
+          );
+          items.forEach((item, i) => {
+            if (item !== E) return;
+            assert.equal(typeof items[i - 1], "number");
+            assert.equal(typeof items[i + 1], "number");
+            const gap = (items[i + 1] as number) - (items[i - 1] as number) - 1;
+            assert.ok(gap >= 2);
+          });
+        }
+      }
+    }
+  });
+});
+
+describe("parsePageParam edge values", () => {
+  it("treats very long numbers as not found, not as a redirect", () => {
+    assert.equal(parsePageParam("999999999").notFound, false);
+    assert.equal(parsePageParam("1000000000").notFound, true);
+    assert.equal(parsePageParam("1000000000").redirect, false);
+  });
+
+  it("redirects non-canonical spellings", () => {
+    for (const raw of ["+2", " 2", "02", "1", "0", "abc", ""]) {
+      assert.equal(parsePageParam(raw).redirect, true, raw);
+    }
+    assert.equal(parsePageParam("02").page, 2);
+  });
+});
+
+describe("pageRedirectLocation with page above 1", () => {
+  it("normalises the page and keeps other parameters", () => {
+    assert.equal(
+      pageRedirectLocation("/", new URLSearchParams("utm=x&page=02"), 2),
+      "/?utm=x&page=2"
+    );
   });
 });

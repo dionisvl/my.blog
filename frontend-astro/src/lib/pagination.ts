@@ -41,14 +41,18 @@ export function pageHref(basePath: string, page: number): string {
 export function parsePageParam(raw: string | null): {
   page: number;
   redirect: boolean;
+  notFound: boolean;
 } {
-  if (raw === null) return { page: 1, redirect: false };
+  if (raw === null) return { page: 1, redirect: false, notFound: false };
+  if (/^[1-9]\d{9,}$/.test(raw)) {
+    return { page: 1, redirect: false, notFound: true };
+  }
   if (/^[1-9]\d{0,8}$/.test(raw)) {
     const page = Number(raw);
-    return { page, redirect: page === 1 };
+    return { page, redirect: page === 1, notFound: false };
   }
   const digits = /^\d{1,9}$/.test(raw) ? Number(raw) : 0;
-  return { page: Math.max(1, digits), redirect: true };
+  return { page: Math.max(1, digits), redirect: true, notFound: false };
 }
 
 /**

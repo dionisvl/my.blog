@@ -17,8 +17,12 @@ import Pagination from "../components/Pagination.astro";
 import PaginationLinks from "../components/PaginationLinks.astro";
 import { preferredLanguage } from "../lib/host";
 
-const basePath = Astro.url.pathname;
+const basePath = "/";
 const pageQuery = parsePageParam(Astro.url.searchParams.get("page"));
+if (pageQuery.notFound) {
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
+}
 if (pageQuery.redirect) {
   return Astro.redirect(
     pageRedirectLocation(basePath, Astro.url.searchParams, pageQuery.page),

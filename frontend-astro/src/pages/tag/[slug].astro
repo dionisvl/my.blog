@@ -22,8 +22,12 @@ const { slug } = Astro.params;
 const preferredLang =
   preferredLanguage(Astro.request, Astro.url.hostname) ?? undefined;
 Astro.response.headers.set("Vary", "Cookie");
-const basePath = Astro.url.pathname;
+const basePath = `/tag/${encodeURIComponent(slug!)}`;
 const pageQuery = parsePageParam(Astro.url.searchParams.get("page"));
+if (pageQuery.notFound) {
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
+}
 if (pageQuery.redirect) {
   return Astro.redirect(
     pageRedirectLocation(basePath, Astro.url.searchParams, pageQuery.page),
