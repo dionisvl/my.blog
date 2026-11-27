@@ -15,7 +15,7 @@ final readonly class AphorismQuery
     }
 
     /**
-     * @return array{id: int, detail_text: string}|null
+     * @return array{id: int, detail_text_ru: string}|null
      */
     public function findRandom(): ?array
     {
@@ -28,7 +28,7 @@ final readonly class AphorismQuery
         $offset = random_int(0, $count - 1);
 
         $row = $this->connection->fetchAssociative(
-            'SELECT id, detail_text FROM aphorism ORDER BY id ASC LIMIT 1 OFFSET :offset',
+            'SELECT id, detail_text_ru FROM aphorism ORDER BY id ASC LIMIT 1 OFFSET :offset',
             ['offset' => $offset],
             ['offset' => ParameterType::INTEGER],
         );
@@ -39,7 +39,7 @@ final readonly class AphorismQuery
 
         return [
             'id' => (int) $row['id'],
-            'detail_text' => (string) $row['detail_text'],
+            'detail_text_ru' => (string) $row['detail_text_ru'],
         ];
     }
 }

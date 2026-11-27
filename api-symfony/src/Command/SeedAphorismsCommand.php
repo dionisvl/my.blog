@@ -76,7 +76,8 @@ final class SeedAphorismsCommand extends Command
         while ($currentCount < $targetCount) {
             $text = $samples[$currentCount % \count($samples)];
             $this->connection->insert('aphorism', [
-                'detail_text' => $text,
+                'detail_text_ru' => $text,
+                'detail_text_en' => $text,
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);

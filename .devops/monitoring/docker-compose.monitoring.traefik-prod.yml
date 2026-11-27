@@ -19,12 +19,3 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       - "traefik.http.middlewares.grafana-auth.basicauth.users=${GRAFANA_AUTH}"
 
-  alertmanager:
-    labels:
-      - "traefik.http.routers.alertmanager.rule=Host(`alertmanager.web3main.pro`)"
-      - "traefik.http.routers.alertmanager.entrypoints=websecure"
-      - "traefik.http.routers.alertmanager.tls=true"
-      - "traefik.http.routers.alertmanager.tls.certresolver=myresolver"
-      - "traefik.http.routers.alertmanager.middlewares=alertmanager-auth"
-      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
-      - "traefik.http.middlewares.alertmanager-auth.basicauth.users=${ALERTMANAGER_AUTH}"

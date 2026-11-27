@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -66,10 +67,10 @@ func (f *fakeCategoryRepo) FindBySlug(ctx context.Context, slug string) (*model.
 }
 
 // fakeAphorismRepo implements repository.AphorismRepository for testing
-type fakeAphorismRepo struct{}
+type fakeAphorismRepo struct{ err error }
 
-func (f *fakeAphorismRepo) FindRandom(ctx context.Context) (*model.Aphorism, error) {
-	return nil, nil
+func (f *fakeAphorismRepo) FindDaily(ctx context.Context, postID int, locale string) (*model.Aphorism, error) {
+	return nil, f.err
 }
 
 func TestPostHandler_ViewCounting(t *testing.T) {
@@ -123,4 +124,14 @@ func TestPostHandler_ViewCounting(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestPostHandler_QuoteFailureKeepsArticleAvailable(t *testing.T) {
+	posts := &fakePostRepo{post: &model.Post{ID: 42, Slug: "test-post"}}
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	h := NewPostHandler(posts, &fakeCategoryRepo{}, &fakeAphorismRepo{err: errors.New("quote query failed")}, logger)
+	w := httptest.NewRecorder()
+	h.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/api/post/test-post", nil))
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.NotContains(t, w.Body.String(), `"aphorism"`)
 }

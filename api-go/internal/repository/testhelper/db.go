@@ -255,7 +255,9 @@ func (t *TestDB) migrate(tb testing.TB, ctx context.Context) {
 		)`,
 		`CREATE TABLE IF NOT EXISTS aphorism (
 			id          SERIAL PRIMARY KEY,
-			detail_text VARCHAR(255) NOT NULL,
+			detail_text_ru VARCHAR(255) NOT NULL,
+			detail_text_en TEXT,
+			source_en   TEXT,
 			created_at  TIMESTAMP NOT NULL DEFAULT NOW(),
 			updated_at  TIMESTAMP NOT NULL DEFAULT NOW()
 		)`,
