@@ -1,0 +1,18 @@
+---
+import { pageHref } from "../lib/pagination";
+import { absoluteUrl } from "../lib/url";
+
+interface Props {
+  page: number;
+  totalPages: number;
+  basePath: string;
+}
+
+const { page, totalPages, basePath } = Astro.props;
+const prev = page > 1 ? absoluteUrl(pageHref(basePath, page - 1)) : null;
+const next =
+  page < totalPages ? absoluteUrl(pageHref(basePath, page + 1)) : null;
+---
+
+{prev && <link rel="prev" href={prev} />}
+{next && <link rel="next" href={next} />}
