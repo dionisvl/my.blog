@@ -1,0 +1,87 @@
+---
+import type { Pagination } from "../lib/types";
+import { pageHref, paginationWindow } from "../lib/pagination";
+
+interface Props {
+  pagination: Pagination;
+  /** Listing path without the query string, e.g. "/" or "/tag/go". */
+  basePath: string;
+}
+
+const { pagination, basePath } = Astro.props;
+const total = pagination.total_pages;
+const current = Math.min(Math.max(1, pagination.current_page), total);
+const items = paginationWindow(current, total);
+const prev = current > 1 ? pageHref(basePath, current - 1) : null;
+const next = current < total ? pageHref(basePath, current + 1) : null;
+
+const base =
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded border px-3 py-2 transition sm:min-h-10 sm:min-w-10";
+const idle =
+  "border-gray-700 text-gray-300 hover:border-blue-400 hover:text-blue-400 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:outline-none";
+const active =
+  "border-blue-600 bg-blue-600 font-semibold text-white focus-visible:ring-2 focus-visible:ring-blue-300 focus-visible:outline-none";
+const disabled = "cursor-not-allowed border-gray-800 text-gray-600";
+---
+
+{total > 1 && (
+  <nav aria-label="Pagination" class="my-6">
+    <ul class="flex flex-wrap items-center justify-center gap-2">
+      <li>
+        {prev ? (
+          <a href={prev} rel="prev" class={`${base} ${idle}`}>
+            <span aria-hidden="true">‹</span>
+            <span class="ml-1">Previous</span>
+          </a>
+        ) : (
+          <span aria-hidden="true" class={`${base} ${disabled}`}>
+            <span aria-hidden="true">‹</span>
+            <span class="ml-1">Previous</span>
+          </span>
+        )}
+      </li>
+
+      <li class="px-2 text-gray-300 sm:hidden">
+        <span aria-hidden="true">
+          {current} / {total}
+        </span>
+        <span class="sr-only">
+          Page {current} of {total}
+        </span>
+      </li>
+
+      {items.map(item =>
+        item === "ellipsis" ? (
+          <li class="hidden px-1 text-gray-500 sm:block" aria-hidden="true">
+            …
+          </li>
+        ) : (
+          <li class="hidden sm:block">
+            <a
+              href={pageHref(basePath, item)}
+              class={`${base} ${item === current ? active : idle}`}
+              aria-current={item === current ? "page" : undefined}
+              aria-label={`Page ${item}`}
+            >
+              {item}
+            </a>
+          </li>
+        )
+      )}
+
+      <li>
+        {next ? (
+          <a href={next} rel="next" class={`${base} ${idle}`}>
+            <span class="mr-1">Next</span>
+            <span aria-hidden="true">›</span>
+          </a>
+        ) : (
+          <span aria-hidden="true" class={`${base} ${disabled}`}>
+            <span class="mr-1">Next</span>
+            <span aria-hidden="true">›</span>
+          </span>
+        )}
+      </li>
+    </ul>
+  </nav>
+)}
