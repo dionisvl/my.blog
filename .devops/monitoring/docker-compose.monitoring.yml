@@ -6,7 +6,6 @@ services:
       - "9090"
     volumes:
       - ./.devops/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./.devops/monitoring/prometheus/alerts:/etc/prometheus/alerts:ro
       - ./data/prometheus:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
@@ -56,42 +55,6 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
     command: sh -c "sleep 5 && sh /provisioning-init.sh"
     restart: on-failure
-    labels:
-      - "traefik.enable=false"
-
-  alertmanager:
-    image: prom/alertmanager:${ALERTMANAGER_VERSION:?set ALERTMANAGER_VERSION in .env}
-    container_name: alertmanager
-    expose:
-      - "9093"
-    volumes:
-      - ./.devops/monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-      - ./data/alertmanager:/alertmanager
-    command:
-      - "--config.file=/etc/alertmanager/alertmanager.yml"
-      - "--storage.path=/alertmanager"
-    networks:
-      - app-network
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-
-  node-exporter:
-    image: prom/node-exporter:${NODE_EXPORTER_VERSION:?set NODE_EXPORTER_VERSION in .env}
-    container_name: node-exporter
-    expose:
-      - "9100"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - "--path.procfs=/host/proc"
-      - "--path.sysfs=/host/sys"
-      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
-    networks:
-      - app-network
-    restart: unless-stopped
     labels:
       - "traefik.enable=false"
 

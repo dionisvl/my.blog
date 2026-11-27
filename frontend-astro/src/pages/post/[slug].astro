@@ -2,6 +2,7 @@
 export const prerender = false;
 
 import Layout from "../../layouts/Layout.astro";
+import DailyQuote from "../../components/DailyQuote.astro";
 import LazyImage from "../../components/LazyImage.astro";
 import { getPost, ApiClientError } from "../../lib/api";
 import type { PostResponse } from "../../lib/types";
@@ -120,14 +121,11 @@ const shareTitle = encodeURIComponent(post.title);
           <Fragment set:html={post.content} />
         </div>
 
-        {data.aphorism && (
-          <div class="mt-8">
-            <h4 class="mb-2 font-semibold text-white">Quote of the day:</h4>
-            <div class="m-2 flex items-center rounded-sm border-2 bg-gray-700 p-2 text-white">
-              {data.aphorism.text}
-            </div>
-          </div>
-        )}
+        <DailyQuote
+          quote={data.aphorism}
+          heading={m.article.quoteOfTheDay}
+          lang={preferredLang ?? "en"}
+        />
 
         {post.tags && post.tags.length > 0 && (
           <div class="mt-6 mb-4 flex flex-wrap">

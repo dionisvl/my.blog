@@ -43,8 +43,8 @@ Astro never touches the database: it calls `api-go` over the internal Docker net
 API key, so the browser never sees the key. Symfony is reachable only on the admin paths.
 `api-go` is also exposed directly on its own host (`API_GO_HOST`).
 
-**Observability:** Vector ships container logs to VictoriaLogs; Traefik sends OTLP traces to
-Jaeger and exposes Prometheus metrics for the optional Grafana stack. See [Docs](Docs/Readme.md).
+**Observability:** Traefik exposes Prometheus metrics for the optional Grafana stack; container logs are
+read with Dozzle. See [Docs](Docs/Readme.md).
 
 ## Services
 
@@ -91,8 +91,6 @@ seed data. Restore a dump of an existing database, then run `make migrates`.
 | Go API              | http://api.blog.test/api/health |
 | Admin panel         | http://blog.test/admin          |
 | Traefik dashboard   | http://localhost:8080           |
-| Jaeger traces       | http://jaeger.localhost         |
-| Logs (VictoriaLogs) | http://logs.localhost           |
 
 ## API
 

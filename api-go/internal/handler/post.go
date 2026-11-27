@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -76,9 +77,13 @@ func (h *PostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return err
 	})
 	g.Go(func() error {
-		var err error
-		aphorism, err = h.aphorisms.FindRandom(ctx)
-		return err
+		quote, err := h.aphorisms.FindDaily(ctx, post.ID, r.URL.Query().Get("lang"))
+		if err != nil {
+			logQuoteFailure(h.logger, post.ID, err)
+			return nil
+		}
+		aphorism = quote
+		return nil
 	})
 
 	if err := g.Wait(); err != nil {
@@ -116,4 +121,12 @@ func (h *PostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func isNotFound(err error) bool {
 	return errors.Is(err, sql.ErrNoRows)
+}
+
+// logQuoteFailure keeps the optional quote from failing the page; a cancelled request is not worth a log line.
+func logQuoteFailure(logger *slog.Logger, postID int, err error) {
+	if errors.Is(err, context.Canceled) {
+		return
+	}
+	logger.Warn("daily quote unavailable", slog.Int("post_id", postID), slog.String("error", err.Error()))
 }

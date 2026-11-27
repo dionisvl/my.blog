@@ -1,0 +1,23 @@
+---
+import type { Aphorism } from "../lib/types";
+
+interface Props {
+  quote?: Aphorism;
+  heading: string;
+  lang?: string;
+}
+
+const { quote, heading, lang } = Astro.props;
+---
+
+{quote && (
+  <section class="mt-8">
+    <h4 class="mb-2 font-semibold text-white">{heading}</h4>
+    <blockquote
+      lang={lang}
+      class="m-2 rounded-sm border-2 bg-gray-700 p-2 text-white"
+    >
+      {quote.text}
+    </blockquote>
+  </section>
+)}

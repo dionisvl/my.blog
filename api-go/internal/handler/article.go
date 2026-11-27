@@ -123,9 +123,13 @@ func (h *ArticleHandler) Locale(w http.ResponseWriter, r *http.Request) {
 		return err
 	})
 	g.Go(func() error {
-		var err error
-		aphorism, err = h.aphorisms.FindRandom(ctx)
-		return err
+		quote, err := h.aphorisms.FindDaily(ctx, post.ID, locale)
+		if err != nil {
+			logQuoteFailure(h.logger, post.ID, err)
+			return nil
+		}
+		aphorism = quote
+		return nil
 	})
 
 	if err := g.Wait(); err != nil {

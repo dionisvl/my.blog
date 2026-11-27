@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: read
+
 # A newer push to the same PR supersedes the running one; master runs always finish.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -70,7 +73,7 @@ jobs:
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
-    
+
     steps:
       - uses: actions/checkout@v4
 
@@ -157,7 +160,7 @@ jobs:
         working-directory: api-symfony
         env:
           DATABASE_URL: postgresql://article:article-ci-only@127.0.0.1:5432/article_migration_ci?serverVersion=18.0.0
-        run: php bin/console doctrine:migrations:execute --down --no-interaction 'DoctrineMigrations\Version20261102120000'
+        run: php bin/console doctrine:migrations:migrate --no-interaction first
 
       - name: Verify migrated-schema smoke rollback
         env:
@@ -171,7 +174,7 @@ jobs:
           test "$(psql_query "SELECT count(*) FROM posts WHERE slug = 'modular-publish' AND status = true")" = 1
           # DOWN drops post_locales, so the table must be absent.
           test "$(psql_query "SELECT to_regclass('public.post_locales') IS NULL")" = t
-          # The only migration was rolled back, so no version rows remain.
+          # All migrations were rolled back, so no version rows remain.
           test "$(psql_query "SELECT count(*) FROM doctrine_migration_versions")" = 0
 
   go-test:

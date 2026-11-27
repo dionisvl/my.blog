@@ -7,11 +7,6 @@ services:
       - "--providers.docker.exposedByDefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.metrics.address=:8082"
-      - "--tracing.otlp=true"
-      - "--tracing.otlp.http=true"
-      - "--tracing.otlp.http.endpoint=http://jaeger:4318/v1/traces"
-      - "--tracing.serviceName=traefik"
-      - "--tracing.addInternals=true"
       - "--metrics.prometheus=true"
       - "--metrics.prometheus.entryPoint=metrics"
       - "--metrics.prometheus.addEntryPointsLabels=true"
@@ -60,7 +55,6 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
-      - victoria-logs
     healthcheck:
       test: [ "CMD-SHELL", "php -r 'exit(file_get_contents(\"http://127.0.0.1/health\") === \"OK\" ? 0 : 1);'" ]
       interval: 5s
@@ -140,67 +134,6 @@ services:
       timeout: 5s
       retries: 5
 
-  victoria-logs:
-    image: victoriametrics/victoria-logs:${VICTORIA_LOGS_VERSION:?set VICTORIA_LOGS_VERSION in .env}
-    expose:
-      - "9428"
-    volumes:
-      - victoria_logs_data:/victoria-logs-data
-    command:
-      - -storageDataPath=/victoria-logs-data
-      - -retentionPeriod=30d
-    networks:
-      - app-network
-    restart: unless-stopped
-
-  vector:
-    image: timberio/vector:${VECTOR_VERSION:?set VECTOR_VERSION in .env}-alpine
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./.devops/vmetrics/vector.toml:/etc/vector/vector.toml:ro
-    environment:
-      VICTORIA_LOGS_HOST: victoria-logs
-      VICTORIA_LOGS_PORT: "9428"
-    command: -c /etc/vector/vector.toml
-    networks:
-      - app-network
-    restart: unless-stopped
-    depends_on:
-      - victoria-logs
-    labels:
-      - "traefik.enable=false"
-
-  vmauth:
-    image: victoriametrics/vmauth:${VMAUTH_VERSION:?set VMAUTH_VERSION in .env}
-    expose:
-      - "8427"
-    volumes:
-      - ./.devops/vmetrics/vmauth-entrypoint.sh:/entrypoint.sh:ro
-    environment:
-      VMAUTH_ADMIN_USER: ${VMAUTH_ADMIN_USER}
-      VMAUTH_ADMIN_PASS: ${VMAUTH_ADMIN_PASS}
-      VMAUTH_READONLY_USER: ${VMAUTH_READONLY_USER}
-      VMAUTH_READONLY_PASS: ${VMAUTH_READONLY_PASS}
-    entrypoint: sh /entrypoint.sh
-    networks:
-      - app-network
-    restart: unless-stopped
-    depends_on:
-      - victoria-logs
-
-  jaeger:
-    image: jaegertracing/jaeger:${JAEGER_VERSION:?set JAEGER_VERSION in .env}
-    command:
-      - "--set=receivers.otlp.protocols.grpc.endpoint=0.0.0.0:4317"
-      - "--set=receivers.otlp.protocols.http.endpoint=0.0.0.0:4318"
-    expose:
-      - "4317"   # OTLP gRPC receiver
-      - "4318"   # OTLP HTTP receiver
-      - "16686"  # Query UI (web interface)
-    networks:
-      - app-network
-    restart: unless-stopped
-
   astro-frontend:
     restart: unless-stopped
     environment:
@@ -221,7 +154,6 @@ networks:
 
 volumes:
   postgres18_data:
-  victoria_logs_data:
   astro_node_modules:
   astro_pnpm_store:
   geoip_data:
