@@ -50,3 +50,25 @@ export function parsePageParam(raw: string | null): {
   const digits = /^\d{1,9}$/.test(raw) ? Number(raw) : 0;
   return { page: Math.max(1, digits), redirect: true };
 }
+
+/**
+ * Redirect target for a non-canonical `page` value. The path is collapsed to a single leading
+ * slash (so it can never be read as a protocol-relative URL) and other query parameters are kept.
+ */
+export function pageRedirectLocation(
+  pathname: string,
+  search: URLSearchParams,
+  page: number
+): string {
+  const path = "/" + pathname.replace(/^[/\\]+/, "");
+  const rest = new URLSearchParams(search);
+  rest.delete("page");
+  if (page > 1) rest.set("page", String(page));
+  const query = rest.toString();
+  return query ? `${path}?${query}` : path;
+}
+
+/** True when the requested page lies beyond the last page reported by the API. */
+export function isPageOutOfRange(page: number, totalPages: number): boolean {
+  return page > 1 && page > totalPages;
+}

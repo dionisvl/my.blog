@@ -8,7 +8,12 @@ import { getCategory, getHome, ApiClientError } from "../../lib/api";
 import type { CategoryResponse, HomeResponse } from "../../lib/types";
 import { formatDate } from "../../lib/format";
 import { canonicalFor } from "../../lib/url";
-import { pageHref, parsePageParam } from "../../lib/pagination";
+import {
+  isPageOutOfRange,
+  pageHref,
+  pageRedirectLocation,
+  parsePageParam,
+} from "../../lib/pagination";
 import Pagination from "../../components/Pagination.astro";
 import PaginationLinks from "../../components/PaginationLinks.astro";
 import { preferredLanguage } from "../../lib/host";
@@ -20,7 +25,10 @@ Astro.response.headers.set("Vary", "Cookie");
 const basePath = Astro.url.pathname;
 const pageQuery = parsePageParam(Astro.url.searchParams.get("page"));
 if (pageQuery.redirect) {
-  return Astro.redirect(pageHref(basePath, pageQuery.page), 301);
+  return Astro.redirect(
+    pageRedirectLocation(basePath, Astro.url.searchParams, pageQuery.page),
+    301
+  );
 }
 const page = pageQuery.page;
 
@@ -35,6 +43,10 @@ try {
     return Astro.rewrite("/404");
   }
   throw error;
+}
+if (isPageOutOfRange(page, data.pagination.total_pages)) {
+  Astro.response.status = 404;
+  return Astro.rewrite("/404");
 }
 
 const category = data.category;

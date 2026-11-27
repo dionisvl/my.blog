@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  isPageOutOfRange,
   pageHref,
+  pageRedirectLocation,
   paginationWindow,
   parsePageParam,
 } from "../src/lib/pagination.ts";
@@ -82,5 +84,37 @@ describe("parsePageParam", () => {
       page: 1,
       redirect: true,
     });
+  });
+});
+
+describe("pageRedirectLocation", () => {
+  it("keeps other query parameters", () => {
+    assert.equal(
+      pageRedirectLocation("/", new URLSearchParams("page=1&utm_source=x"), 1),
+      "/?utm_source=x"
+    );
+    assert.equal(
+      pageRedirectLocation("/tag/go", new URLSearchParams("page=abc"), 1),
+      "/tag/go"
+    );
+  });
+
+  it("never produces a protocol-relative location", () => {
+    assert.equal(
+      pageRedirectLocation("//evil.example/", new URLSearchParams("page=1"), 1),
+      "/evil.example/"
+    );
+    assert.equal(
+      pageRedirectLocation("/\\evil.example", new URLSearchParams(), 1),
+      "/evil.example"
+    );
+  });
+});
+
+describe("isPageOutOfRange", () => {
+  it("flags pages beyond the last one but not page 1", () => {
+    assert.equal(isPageOutOfRange(18, 17), true);
+    assert.equal(isPageOutOfRange(17, 17), false);
+    assert.equal(isPageOutOfRange(1, 0), false);
   });
 });
